@@ -1,0 +1,8 @@
+{
+  "name": "BetterCrewlinkMobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "f5ec6ee4"
+}
