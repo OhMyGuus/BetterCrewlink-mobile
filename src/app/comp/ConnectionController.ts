@@ -59,6 +59,10 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		return this.peerConnections[socketId];
 	}
 
+	private getPlayer(clientId: number): Player {
+		return this.currentGameState.players.find((o) => o.clientId === clientId);
+	}
+
 	connect(gamecode: string, username: string) {
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
@@ -167,15 +171,14 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		console.log(this.peerConnections);
 		for (const element of Object.values(this.peerConnections)) {
 			console.log('updateAudioLocation ->', { element });
-			if (!element.audioElement) {
+			if (!element.audioElement || !element.client) {
 				continue;
 			}
 			console.log('[updateAudioLocation]');
 			const pan = element.audioElement.pan;
 			const audioContext = pan.context;
 			pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
-
-			const other = this.currentGameState.players[0];
+			const other = this.getPlayer(element.client?.clientId);
 			const panPos = [other.x - this.myPlayer.x, other.y - this.myPlayer.y];
 			pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
 			pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
@@ -218,11 +221,15 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		});
 
 		this.socketIOClient.on('setClient', (socketId: string, client: Client) => {
+			this.getSocketElement(socketId).client = client;
 			console.log('[client.setClient]', { socketId, client });
 		});
 
 		this.socketIOClient.on('setClients', (clients: SocketClientMap) => {
 			console.log('[client.setClients]', { clients });
+			for (const socketId of Object.keys(clients)) {
+				this.getSocketElement(socketId).client = clients[socketId];
+			}
 		});
 
 		this.socketIOClient.on('mobileAmongUsState', (amongUsState: AmongUsState) => {
