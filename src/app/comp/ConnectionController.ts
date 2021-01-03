@@ -108,7 +108,8 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		peer.on('stream', (stream: MediaStream) => {
 			this.emit('onstream', stream);
 			console.log('stream recieved', { stream });
-			this.getSocketElement(peerId).audioElement = this.createAudioSource(stream);
+			this.getSocketElement(peerId).audioElement = this.createAudioElement(stream);
+			console.log(this.getSocketElement(peerId).audioElement);
 		});
 
 		peer.on('signal', (data) => {
@@ -118,13 +119,12 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			});
 		});
 
-		this.peerConnections[peerId] = peer;
 		console.log('peerConnections', this.peerConnections);
 		return peer;
 	}
 
-	private createAudioSource(stream: MediaStream): AudioElement {
-		console.log('createAudioSource');
+	private createAudioElement(stream: MediaStream): AudioElement {
+		console.log('[createAudioElement]');
 		const htmlAudioElement = document.createElement('audio');
 		document.body.appendChild(htmlAudioElement);
 		htmlAudioElement.srcObject = stream;
@@ -144,12 +144,11 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		source.connect(pan);
 		pan.connect(gain);
 		gain.connect(compressor);
-		gain.gain.value = 5;
+		gain.gain.value = 1;
 		htmlAudioElement.volume = 1;
 		const audioContext = pan.context;
-		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
-
 		const panPos = [3, 0];
+		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
 		pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
 		pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
 		compressor.connect(context.destination);
@@ -165,10 +164,13 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	private updateAudioLocation() {
+		console.log(this.peerConnections);
 		for (const element of Object.values(this.peerConnections)) {
+			console.log('updateAudioLocation ->', { element });
 			if (!element.audioElement) {
 				continue;
 			}
+			console.log('[updateAudioLocation]');
 			const pan = element.audioElement.pan;
 			const audioContext = pan.context;
 			pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
