@@ -58,9 +58,23 @@ import './zone-flags';
  * Zone JS is required by default for Angular itself.
  */
 
-import 'zone.js/dist/zone';  // Included with Angular CLI.
-
+import 'zone.js/dist/zone'; // Included with Angular CLI.
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+(window as any).global = window;
+
+(window as any).process = (window as any).process || {
+	env: { DEBUG: undefined },
+	nextTick: function () {
+		return null;
+	},
+};
+
+// navigator.getUserMedia =
+// 	navigator.getUserMedia ||
+// 	navigator.webkitGetUserMedia ||
+// 	navigator.mozGetUserMedia ||
+// 	navigator.msGetUserMedia;
