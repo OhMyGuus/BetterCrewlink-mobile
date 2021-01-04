@@ -5,8 +5,9 @@ import Peer from 'simple-peer';
 import { connectionController, IConnectionController as IConnectionController } from '../comp/ConnectionController';
 import { GameState, AmongUsState } from '../comp/AmongUsState';
 import { promise } from 'protractor';
-import { IDeviceInfo } from '../comp/smallInterfaces';
-
+import { IDeviceInfo, ISettings } from '../comp/smallInterfaces';
+import { Storage } from '@ionic/storage';
+import { audioController } from '../comp/AudioController';
 
 @Component({
 	selector: 'app-main',
@@ -14,50 +15,54 @@ import { IDeviceInfo } from '../comp/smallInterfaces';
 	styleUrls: ['./main.page.scss'],
 })
 export class MainPage implements OnInit {
-	constructor() {
-		connectionController.on('gamestateChange', (gamestate: AmongUsState) => {});
-		this.cManager = connectionController;
-	}
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
 	gameState: AmongUsState;
-	username = 'G';
-	gamecode = 'DEV12345';
-	testing: any = [];
 	microphones: IDeviceInfo[] = [];
-	selectedMicrophone: IDeviceInfo;
+	settings: ISettings = {
+		gamecode: '',
+		voiceServer: 'https://crewl.ink',
+		username: '',
+		selectedMicrophone: 'default',
+	};
 
-	async getDevices(): Promise<IDeviceInfo[]> {
-		let deviceId = 0;
-		return (await navigator.mediaDevices.enumerateDevices())
-			.filter((o) => o.kind === 'audioinput')
-			.map((o) => {
-				return {
-					label: o.label || `Microphone ${deviceId++}`,
-					deviceId: o.deviceId,
-				};
-			});
+	constructor(private storage: Storage) {
+		connectionController.on('gamestateChange', (gamestate: AmongUsState) => {});
+		this.cManager = connectionController;
+		storage.get('settings').then((val) => {
+			console.log('gotsettings', val);
+			if (val && val !== null) {
+				this.settings = val;
+			}
+		});
 	}
 
 	connect() {
-		console.log('[ConnectButton].[click]', {
-			gamecode: this.gamecode,
-			username: this.username,
-			selectedDevice: this.selectedMicrophone,
-		});
-		const audioSelect = document.querySelector('select#audioSource') as HTMLSelectElement;
-		connectionController.connect(this.gamecode, this.username, this.selectedMicrophone.deviceId);
+		connectionController.connect(
+			this.settings.voiceServer,
+			this.settings.gamecode,
+			this.settings.username,
+			this.settings.selectedMicrophone
+		);
 	}
 
 	disconnect() {
 		connectionController.disconnect();
 	}
 
+	onSettingsChange() {
+		console.log('onsettingschange');
+		this.storage.set('settings', this.settings);
+	}
+
+	compareFn(e1: string, e2: string): boolean {
+		return e1 && e2 ? e1 === e2 : false;
+	}
+
 	ngOnInit() {
-		this.getDevices().then((o) => {
+		audioController.getDevices().then((o) => {
 			this.microphones = o;
-			this.selectedMicrophone = this.microphones[0];
 		});
 	}
 }

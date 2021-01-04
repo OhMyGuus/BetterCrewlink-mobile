@@ -48,12 +48,12 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		return this.currentGameState.players.find((o) => o.clientId === clientId);
 	}
 
-	connect(gamecode: string, username: string, deviceID: string) {
+	connect(voiceserver: string, gamecode: string, username: string, deviceID: string) {
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
 		console.log('deviceID: ', deviceID);
-		this.initialize('https://crewl.ink');
+		this.initialize(voiceserver);
 		this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
 	}
 

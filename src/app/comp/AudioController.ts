@@ -2,7 +2,7 @@ import { EventEmitter as EventEmitterO } from 'events';
 import Peer from 'simple-peer';
 import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
-import { SocketElementMap, SocketElement, Client, AudioElement, SocketClientMap } from './smallInterfaces';
+import { SocketElementMap, SocketElement, Client, AudioElement, SocketClientMap, IDeviceInfo } from './smallInterfaces';
 
 export default class AudioController extends EventEmitterO {
 	audioDeviceId = 'default';
@@ -132,6 +132,18 @@ export default class AudioController extends EventEmitterO {
 		element?.audioElement?.mediaStreamAudioSource?.disconnect();
 		element?.audioElement?.audioContext?.close();
 		element?.audioElement?.htmlAudioElement.remove();
+	}
+
+	async getDevices(): Promise<IDeviceInfo[]> {
+		let deviceId = 0;
+		return (await navigator.mediaDevices.enumerateDevices())
+			.filter((o) => o.kind === 'audioinput')
+			.map((o) => {
+				return {
+					label: o.label || `Microphone ${deviceId++}`,
+					deviceId: o.deviceId,
+				};
+			});
 	}
 }
 

@@ -2,6 +2,13 @@ import Peer from 'simple-peer';
 import { Player } from './AmongUsState';
 import { connectionController } from './ConnectionController';
 
+export interface ISettings {
+	voiceServer: string;
+	username: string;
+	gamecode: string;
+	selectedMicrophone: string;
+}
+
 export interface Client {
 	playerId: number;
 	clientId: number;
