@@ -1,5 +1,5 @@
 {
-  "appId": "io.ionic.starter",
+  "appId": "io.bettercrewlink.app",
   "appName": "BetterCrewlinkMobile",
   "bundledWebRuntime": false,
   "npmClient": "npm",
@@ -9,5 +9,7 @@
       "launchShowDuration": 0
     }
   },
+  "overrideUserAgent": "CrewLink/1.2.1 (win32)",
+
   "cordova": {}
 }

@@ -3,6 +3,8 @@ import { promise } from 'protractor';
 import Peer from 'simple-peer';
 import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
+import { SocketElementMap, SocketElement, Client, AudioElement, SocketClientMap } from './smallInterfaces';
+import { audioController } from './AudioController';
 
 const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 	iceServers: [
@@ -22,46 +24,27 @@ declare interface ConnectionController {
 	on(event: 'gamestateChange', listener: (e: AmongUsState) => void): this;
 }
 
-interface AudioElement {
-	htmlAudioElement: HTMLAudioElement;
-	audioContext: AudioContext;
-	mediaStreamAudioSource: MediaStreamAudioSourceNode;
-	gain: GainNode;
-	pan: PannerNode;
-	compressor: DynamicsCompressorNode;
-}
-
-interface SocketElement {
-	socketId: string;
-	peer?: Peer;
-	client?: Client;
-	audioElement?: AudioElement;
-}
-
-interface SocketElementMap {
-	[socketId: string]: SocketElement;
-}
-
 class ConnectionController extends EventEmitterO implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;
-	peerConnections: SocketElementMap = {};
+	socketElements: SocketElementMap = new SocketElementMap();
 	amongusUsername: string;
 	currenGameCode: string;
 	gamecode: string;
 	public joined: boolean;
-	myPlayer: Player;
-	stream: MediaStream;
+	localPLayer: Player;
 	deviceID: string;
 
 	private getSocketElement(socketId: string): SocketElement {
-		if (!this.peerConnections[socketId]) {
-			this.peerConnections[socketId] = { socketId };
+		if (!this.socketElements.has(socketId)) {
+			this.socketElements.set(socketId, new SocketElement(socketId));
 		}
-		return this.peerConnections[socketId];
+
+		return this.socketElements.get(socketId);
 	}
 
-	private getPlayer(clientId: number): Player {
+	getPlayer(clientId: number): Player {
+		// cache clientid & socketid
 		return this.currentGameState.players.find((o) => o.clientId === clientId);
 	}
 
@@ -70,8 +53,8 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
 		console.log('deviceID: ', deviceID);
-		this.initialize('https://bettercrewl.ink:6524');
-		this.socketIOClient.emit('mobileJoin', this.gamecode);
+		this.initialize('https://crewl.ink');
+		this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
 	}
 
 	disconnect() {
@@ -81,47 +64,28 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		this.socketIOClient.disconnect();
 		this.joined = false;
 		this.disconnectSockets();
+		audioController.disconnect(this.socketElements);
 	}
 
 	private disconnectSockets() {
-		for (const element of Object.values(this.peerConnections)) {
+		for (const element of Object.values(this.socketElements)) {
 			element?.audioElement?.compressor?.disconnect();
 			element?.audioElement?.pan?.disconnect();
 			element?.audioElement?.gain?.disconnect();
 			element?.audioElement?.mediaStreamAudioSource?.disconnect();
 			element?.audioElement?.audioContext?.close();
 			element?.audioElement?.htmlAudioElement.remove();
-			this.stream.getTracks().forEach((track) => track.stop());
-			this.peerConnections[element.socketId] = undefined;
+			this.socketElements[element.socketId] = undefined;
 		}
 	}
+
+	// move to different controller
 	private async startAudio() {
-		const audio: MediaTrackConstraintSet = {
-			deviceId: this.deviceID,
-			autoGainControl: false,
-			echoCancellation: true,
-			latency: 0,
-			noiseSuppression: true,
-		};
-
-		this.stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
-
-		console.log('connected to microphone');
+		await audioController.startAudio();
 
 		this.socketIOClient.on('join', async (peerId: string, client: Client) => {
 			console.log('[client.join]', { peerId, client });
-			this.createPeerConnection(peerId, this.stream, true);
-		});
-
-		this.socketIOClient.on('signal', ({ data, from }: { data: Peer.SignalData; from: string }) => {
-			console.log('signal');
-			const socketElement = this.getSocketElement(from);
-
-			if (!socketElement.peer) {
-				socketElement.peer = this.createPeerConnection(from, this.stream, false);
-			}
-			console.log(socketElement.peer);
-			socketElement.peer.signal(data);
+			this.createPeerConnection(peerId, audioController.stream, true);
 		});
 	}
 
@@ -137,7 +101,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		peer.on('stream', (recievedDtream: MediaStream) => {
 			this.emit('onstream', recievedDtream);
 			console.log('stream recieved', { recievedDtream });
-			this.getSocketElement(peerId).audioElement = this.createAudioElement(recievedDtream);
+			this.getSocketElement(peerId).audioElement = audioController.createAudioElement(recievedDtream);
 			console.log(this.getSocketElement(peerId).audioElement);
 		});
 
@@ -148,84 +112,32 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			});
 		});
 
-		console.log('peerConnections', this.peerConnections);
+		console.log('peerConnections', this.socketElements);
 		return peer;
 	}
 
-	private createAudioElement(stream: MediaStream): AudioElement {
-		console.log('[createAudioElement]');
-		const htmlAudioElement = document.createElement('audio');
-		document.body.appendChild(htmlAudioElement);
-		htmlAudioElement.srcObject = stream;
-
-		const context = new AudioContext();
-		const source = context.createMediaStreamSource(stream);
-		const gain = context.createGain();
-		const pan = context.createPanner();
-		const compressor = context.createDynamicsCompressor();
-
-		pan.refDistance = 0.1;
-		pan.panningModel = 'equalpower';
-		pan.distanceModel = 'linear';
-		pan.maxDistance = 5;
-		pan.rolloffFactor = 1;
-
-		source.connect(pan);
-		pan.connect(gain);
-		gain.connect(compressor);
-		gain.gain.value = 1;
-		htmlAudioElement.volume = 1;
-		const audioContext = pan.context;
-		const panPos = [3, 0];
-		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
-		pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
-		pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
-		compressor.connect(context.destination);
-
-		return {
-			htmlAudioElement,
-			audioContext: context,
-			mediaStreamAudioSource: source,
-			gain,
-			pan,
-			compressor,
-		};
-	}
-
-	private updateAudioLocation() {
-		console.log(this.peerConnections);
-		for (const element of Object.values(this.peerConnections)) {
-			console.log('updateAudioLocation ->', { element });
-			if (!element.audioElement || !element.client) {
-				continue;
-			}
-			console.log('[updateAudioLocation]');
-			const pan = element.audioElement.pan;
-			const audioContext = pan.context;
-			pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
-			const other = this.getPlayer(element.client?.clientId);
-			const panPos = [other.x - this.myPlayer.x, other.y - this.myPlayer.y];
-			pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
-			pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
-		}
-	}
 
 	private onGameStateChange(amongUsState: AmongUsState) {
-		this.myPlayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
-		if (!this.myPlayer) {
+		this.currentGameState = amongUsState;
+		this.localPLayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
+		if (!this.localPLayer) {
 			return;
 		}
 
 		if (!this.joined || this.currenGameCode !== this.gamecode) {
 			this.currenGameCode = this.gamecode;
-			console.log(this.myPlayer);
+			console.log(this.localPLayer);
 			this.startAudio().then(() => {
-				this.socketIOClient.emit('id', this.myPlayer.id, this.myPlayer.clientId);
-				this.socketIOClient.emit('join', this.gamecode, this.myPlayer.id, this.myPlayer.clientId);
+				this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
+				this.socketIOClient.emit('join', this.gamecode, this.localPLayer.id, this.localPLayer.clientId);
 			});
 			this.joined = true;
 		}
-		this.updateAudioLocation();
+
+		this.socketElements.forEach((value) => {
+			value.updatePLayer();
+			audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+		});
 	}
 
 	private initialize(serverUrl: string) {
@@ -257,10 +169,22 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			}
 		});
 
-		this.socketIOClient.on('mobileAmongUsState', (amongUsState: AmongUsState) => {
-			this.currentGameState = amongUsState;
-			this.emit('gamestateChange', amongUsState);
-			this.onGameStateChange(amongUsState);
+		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
+			if (data.hasOwnProperty('gameState')) {
+				console.log('gamestateupdate?');
+				this.onGameStateChange(data  as AmongUsState);
+				return;
+			}
+
+			if (!audioController.stream) {
+				return;
+			}
+			const socketElement = this.getSocketElement(from);
+
+			if (!socketElement.peer) {
+				socketElement.peer = this.createPeerConnection(from, audioController.stream, false);
+			}
+			socketElement.peer.signal(data);
 		});
 	}
 }

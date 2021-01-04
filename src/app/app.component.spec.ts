@@ -9,7 +9,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-	// tslint:disable-next-line: one-variable-per-declaration
+	// tslint:disable-next-line
 	let statusBarSpy, splashScreenSpy, platformReadySpy, platformSpy;
 
 	beforeEach(async(() => {

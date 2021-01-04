@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package io.bettercrewlink.app;
 
 import android.os.Bundle;
 

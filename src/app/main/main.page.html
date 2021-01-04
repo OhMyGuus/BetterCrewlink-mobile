@@ -10,10 +10,14 @@
 	<div *ngIf="!cManager.joined; else connected">
 		<ion-list lines="full" class="ion-no-margin">
 			<ion-list-header lines="full">
-				<ion-label> Connection information </ion-label>
+				<ion-label fixed class='fixedLabel'> Connection information </ion-label>
 			</ion-list-header>
 			<ion-item>
-				<ion-label position="fixed">Ingame name</ion-label>
+				<ion-label  >Voice server</ion-label>
+				<ion-input [(ngModel)]="voiceserver" placeholder="Voice server"></ion-input>
+			</ion-item>
+			<ion-item>
+				<ion-label>Ingame name</ion-label>
 				<ion-input [(ngModel)]="username" placeholder="ingamename"></ion-input>
 			</ion-item>
 			<ion-item>

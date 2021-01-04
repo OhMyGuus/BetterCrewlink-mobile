@@ -5,6 +5,7 @@ import Peer from 'simple-peer';
 import { connectionController, IConnectionController as IConnectionController } from '../comp/ConnectionController';
 import { GameState, AmongUsState } from '../comp/AmongUsState';
 import { promise } from 'protractor';
+import { IDeviceInfo } from '../comp/smallInterfaces';
 
 
 @Component({
