@@ -11,3 +11,9 @@ interface SocketObject {
 interface SocketClientMap {
 	[socketId: string]: Client;
 }
+
+
+interface IDeviceInfo {
+	label: string;
+	deviceId: string;
+}

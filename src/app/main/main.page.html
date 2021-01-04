@@ -21,6 +21,19 @@
 				<ion-input [(ngModel)]="gamecode" placeholder="lobbycode"></ion-input>
 			</ion-item>
 			<ion-item>
+				<ion-label>Microphone</ion-label>
+				<ion-select [(ngModel)]="selectedMicrophone" [compareWith]="compareFn">
+					<ion-select-option
+						*ngFor="let microphone of microphones;  let i = index"
+						[value]="microphone"
+						>{{microphone.label}} -</ion-select-option
+					>
+				</ion-select>
+			</ion-item>
+
+			<hr />
+
+			<ion-item>
 				<ion-button (click)="connect()">Connect</ion-button>
 			</ion-item>
 		</ion-list>
@@ -33,10 +46,7 @@
 			<ion-item *ngFor="let item of cManager.currentGameState.players;">
 				<ion-label position="fixed">{{item.name}}</ion-label>
 			</ion-item>
-		
 		</ion-list>
-
-
 
 		<ion-button (click)="disconnect()">disconnect</ion-button>
 	</ng-template>

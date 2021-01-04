@@ -8,20 +8,13 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(),
-    AppRoutingModule
-  ],
-  providers: [
-    StatusBar,
-    SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
-  ],
-  bootstrap: [AppComponent]
+	declarations: [AppComponent],
+	entryComponents: [],
+	imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
+	providers: [StatusBar, SplashScreen, BackgroundMode, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+	bootstrap: [AppComponent],
 })
 export class AppModule {}

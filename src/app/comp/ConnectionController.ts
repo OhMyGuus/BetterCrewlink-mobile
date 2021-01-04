@@ -38,19 +38,21 @@ interface SocketElement {
 	audioElement?: AudioElement;
 }
 
-interface socketElementMap {
+interface SocketElementMap {
 	[socketId: string]: SocketElement;
 }
 
 class ConnectionController extends EventEmitterO implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;
-	peerConnections: socketElementMap = {};
+	peerConnections: SocketElementMap = {};
 	amongusUsername: string;
 	currenGameCode: string;
 	gamecode: string;
 	public joined: boolean;
 	myPlayer: Player;
+	stream: MediaStream;
+	deviceID: string;
 
 	private getSocketElement(socketId: string): SocketElement {
 		if (!this.peerConnections[socketId]) {
@@ -63,29 +65,52 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		return this.currentGameState.players.find((o) => o.clientId === clientId);
 	}
 
-	connect(gamecode: string, username: string) {
+	connect(gamecode: string, username: string, deviceID: string) {
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
+		this.deviceID = deviceID;
+		console.log('deviceID: ', deviceID);
 		this.initialize('https://bettercrewl.ink:6524');
 		this.socketIOClient.emit('mobileJoin', this.gamecode);
 	}
 
+	disconnect() {
+		this.gamecode = '';
+		this.amongusUsername = '';
+		this.socketIOClient.emit('leave');
+		this.socketIOClient.disconnect();
+		this.joined = false;
+		this.disconnectSockets();
+	}
+
+	private disconnectSockets() {
+		for (const element of Object.values(this.peerConnections)) {
+			element?.audioElement?.compressor?.disconnect();
+			element?.audioElement?.pan?.disconnect();
+			element?.audioElement?.gain?.disconnect();
+			element?.audioElement?.mediaStreamAudioSource?.disconnect();
+			element?.audioElement?.audioContext?.close();
+			element?.audioElement?.htmlAudioElement.remove();
+			this.stream.getTracks().forEach((track) => track.stop());
+			this.peerConnections[element.socketId] = undefined;
+		}
+	}
 	private async startAudio() {
 		const audio: MediaTrackConstraintSet = {
-			deviceId: 'default',
+			deviceId: this.deviceID,
 			autoGainControl: false,
 			echoCancellation: true,
 			latency: 0,
 			noiseSuppression: true,
 		};
 
-		const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
+		this.stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
 
 		console.log('connected to microphone');
 
 		this.socketIOClient.on('join', async (peerId: string, client: Client) => {
 			console.log('[client.join]', { peerId, client });
-			this.createPeerConnection(peerId, stream, true);
+			this.createPeerConnection(peerId, this.stream, true);
 		});
 
 		this.socketIOClient.on('signal', ({ data, from }: { data: Peer.SignalData; from: string }) => {
@@ -93,7 +118,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			const socketElement = this.getSocketElement(from);
 
 			if (!socketElement.peer) {
-				socketElement.peer = this.createPeerConnection(from, stream, false);
+				socketElement.peer = this.createPeerConnection(from, this.stream, false);
 			}
 			console.log(socketElement.peer);
 			socketElement.peer.signal(data);
@@ -109,10 +134,10 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			config: DEFAULT_ICE_CONFIG,
 		});
 
-		peer.on('stream', (stream: MediaStream) => {
-			this.emit('onstream', stream);
-			console.log('stream recieved', { stream });
-			this.getSocketElement(peerId).audioElement = this.createAudioElement(stream);
+		peer.on('stream', (recievedDtream: MediaStream) => {
+			this.emit('onstream', recievedDtream);
+			console.log('stream recieved', { recievedDtream });
+			this.getSocketElement(peerId).audioElement = this.createAudioElement(recievedDtream);
 			console.log(this.getSocketElement(peerId).audioElement);
 		});
 
