@@ -3,7 +3,7 @@
 		<ion-buttons slot="start">
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
-		<ion-title>Better Crewlink Mobile v0.0.3</ion-title>
+		<ion-title>Better-Crewlink Mobile v0.0.3</ion-title>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
@@ -47,7 +47,7 @@
 						[compareWith]="compareFn"
 						(ionChange)="onSettingsChange()"
 					>
-						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.name"
+						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.deviceId"
 							>{{microphone.label}}</ion-select-option
 						>
 					</ion-select>
