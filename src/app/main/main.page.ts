@@ -50,8 +50,9 @@ export class MainPage implements OnInit {
 					this.settings.voiceServer,
 					this.settings.gamecode.toUpperCase(),
 					this.settings.username,
-					this.settings.selectedMicrophone
+					this.settings.selectedMicrophone,
 				);
+				document.getElementById("Menu").style.visibility = "visible";
 			} else {
 				alert('Cannot access Microphone or network');
 			}
