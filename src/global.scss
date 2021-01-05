@@ -24,3 +24,16 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+:root {
+    --ion-color-primary: #1d1a23;
+    --ion-color-primary-contrast: #ba68c8;
+    --ion-color-secondary: #25232a;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-shade: #121114;
+    --ion-color-secondary-tint: #464250;
+    --ion-color-light: #dfdfdf;
+  }
+.masters {
+    background-color: #25232a;
+}

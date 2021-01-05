@@ -1,7 +1,8 @@
 {
   "name": "BetterCrewlinkMobile",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular",
   "id": "f5ec6ee4"
