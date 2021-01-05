@@ -10,12 +10,21 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { IonicStorageModule } from '@ionic/storage';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { Platform } from '@ionic/angular';
 
 @NgModule({
 	declarations: [AppComponent],
 	entryComponents: [],
 	imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, IonicStorageModule.forRoot()],
-	providers: [StatusBar, SplashScreen, BackgroundMode, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy}],
+	providers: [
+		StatusBar,
+		SplashScreen,
+		BackgroundMode,
+		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+		AndroidPermissions,
+		Platform,
+	],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

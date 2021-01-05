@@ -14,9 +14,15 @@ const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 	],
 };
 
+export enum ConnectionState {
+	disconnected = 0,
+	connecting = 1,
+	conencted = 2,
+}
+
 export declare interface IConnectionController {
 	currentGameState: AmongUsState;
-	joined: boolean;
+	connectionState: ConnectionState;
 }
 
 declare interface ConnectionController {
@@ -30,8 +36,8 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	socketElements: SocketElementMap = new SocketElementMap();
 	amongusUsername: string;
 	currenGameCode: string;
+	public connectionState = ConnectionState.disconnected;
 	gamecode: string;
-	public joined: boolean;
 	localPLayer: Player;
 	deviceID: string;
 
@@ -49,6 +55,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string) {
+		this.connectionState = ConnectionState.connecting;
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
@@ -58,11 +65,11 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	disconnect() {
+		this.connectionState = ConnectionState.disconnected;
 		this.gamecode = '';
 		this.amongusUsername = '';
 		this.socketIOClient.emit('leave');
 		this.socketIOClient.disconnect();
-		this.joined = false;
 		this.disconnectSockets();
 		audioController.disconnect(this.socketElements);
 	}
@@ -116,7 +123,6 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		return peer;
 	}
 
-
 	private onGameStateChange(amongUsState: AmongUsState) {
 		this.currentGameState = amongUsState;
 		this.localPLayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
@@ -124,14 +130,14 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			return;
 		}
 
-		if (!this.joined || this.currenGameCode !== this.gamecode) {
+		if (this.connectionState === ConnectionState.connecting || this.currenGameCode !== this.gamecode) {
 			this.currenGameCode = this.gamecode;
 			console.log(this.localPLayer);
 			this.startAudio().then(() => {
 				this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
 				this.socketIOClient.emit('join', this.gamecode, this.localPLayer.id, this.localPLayer.clientId);
 			});
-			this.joined = true;
+			this.connectionState = ConnectionState.conencted;
 		}
 
 		this.socketElements.forEach((value) => {
@@ -172,7 +178,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
 			if (data.hasOwnProperty('gameState')) {
 				console.log('gamestateupdate?');
-				this.onGameStateChange(data  as AmongUsState);
+				this.onGameStateChange(data as AmongUsState);
 				return;
 			}
 

@@ -1,6 +1,6 @@
 {
   "name": "better-crewlink-mobile",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -22,6 +22,7 @@
     "@angular/router": "~10.0.0",
     "@capacitor/android": "^2.4.5",
     "@capacitor/core": "2.4.5",
+    "@ionic-native/android-permissions": "^5.30.0",
     "@ionic-native/background-mode": "^5.30.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/splash-screen": "^5.0.0",
@@ -29,6 +30,7 @@
     "@ionic-native/user-agent": "^5.30.0",
     "@ionic/angular": "^5.0.0",
     "@ionic/storage": "^2.3.1",
+    "cordova-plugin-android-permissions": "^1.1.2",
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-useragent": "^1.0.6",
