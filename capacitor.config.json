@@ -10,9 +10,5 @@
     }
   },
   "overrideUserAgent": "CrewLink/1.2.1 (win32)",
-  "cordova": {},
-  "server": {
-    "url": "https://192.168.1.236:8100",
-    "cleartext": true
-  }
+  "cordova": {}
 }
