@@ -86,6 +86,7 @@ export class MainPage implements OnInit {
 
 	disconnect() {
 		connectionController.disconnect();
+		document.getElementById("Menu").style.visibility = "hidden";
 	}
 
 	onSettingsChange() {
