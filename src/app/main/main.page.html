@@ -17,7 +17,7 @@
 				<ion-input
 					[(ngModel)]="settings.voiceServer"
 					(ionChange)="onSettingsChange()"
-					placeholder="Voice server"
+					placeholder="Voice server URL"
 				></ion-input>
 			</ion-item>
 			<ion-item>
@@ -25,12 +25,12 @@
 				<ion-input
 					[(ngModel)]="settings.username"
 					(ionChange)="onSettingsChange()"
-					placeholder="ingamename"
+					placeholder="'Coochie Man'"
 				></ion-input>
 			</ion-item>
 			<ion-item>
 				<ion-label>Lobby code</ion-label>
-				<ion-input [(ngModel)]="settings.gamecode" (ionChange)="onSettingsChange()" placeholder="lobbycode"></ion-input>
+				<ion-input [(ngModel)]="settings.gamecode" (ngModelChange)="settings.gamecode = $event.toLocaleUpperCase()" (ionChange)="onSettingsChange()" maxlength="6" placeholder="'ABCDEF'"></ion-input>
 			</ion-item>
 			<ion-item>
 				<ion-label>Microphone</ion-label>
