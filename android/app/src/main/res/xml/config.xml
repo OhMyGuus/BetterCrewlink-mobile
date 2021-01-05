@@ -2,6 +2,10 @@
 <widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <access origin="*" />
   
+  <feature name="Permissions">
+    <param name="android-package" value="com.android.plugins.Permissions"/>
+  </feature>
+
   <feature name="BackgroundMode">
     <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode"/>
   </feature>

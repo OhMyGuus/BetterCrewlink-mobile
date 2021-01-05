@@ -7,59 +7,70 @@
 	</ion-toolbar>
 </ion-header>
 <ion-content>
-	<div *ngIf="!cManager.joined; else connected">
-		<ion-list lines="full" class="ion-no-margin">
-			<ion-list-header lines="full">
-				<ion-label fixed class="fixedLabel"> Connection information </ion-label>
-			</ion-list-header>
-			<ion-item>
-				<ion-label>Voice server</ion-label>
-				<ion-input
-					[(ngModel)]="settings.voiceServer"
-					(ionChange)="onSettingsChange()"
-					placeholder="Voice server"
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-label>Ingame name</ion-label>
-				<ion-input
-					[(ngModel)]="settings.username"
-					(ionChange)="onSettingsChange()"
-					placeholder="ingamename"
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-label>Lobby code</ion-label>
-				<ion-input [(ngModel)]="settings.gamecode" (ionChange)="onSettingsChange()" placeholder="lobbycode"></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-label>Microphone</ion-label>
-				<ion-select
-					[(ngModel)]="settings.selectedMicrophone"
-					[compareWith]="compareFn"
-					(ionChange)="onSettingsChange()"
-				>
-					<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.deviceId"
-						>{{microphone.label}}</ion-select-option
+	<ng-container [ngSwitch]="cManager.connectionState">
+		<ng-container *ngSwitchDefault>
+			<ion-list lines="full" class="ion-no-margin">
+				<ion-list-header lines="full">
+					<ion-label fixed class="fixedLabel"> Connection information </ion-label>
+				</ion-list-header>
+				<ion-item>
+					<ion-label>Voice server</ion-label>
+					<ion-input
+						[(ngModel)]="settings.voiceServer"
+						(ionChange)="onSettingsChange()"
+						placeholder="Voice server"
+					></ion-input>
+				</ion-item>
+				<ion-item>
+					<ion-label>Ingame name</ion-label>
+					<ion-input
+						[(ngModel)]="settings.username"
+						(ionChange)="onSettingsChange()"
+						placeholder="ingamename"
+					></ion-input>
+				</ion-item>
+				<ion-item>
+					<ion-label>Lobby code</ion-label>
+					<ion-input
+						style="text-transform: uppercase"
+						[(ngModel)]="settings.gamecode"
+						(ionChange)="onSettingsChange()"
+						placeholder="lobbycode"
+					></ion-input>
+				</ion-item>
+				<ion-item>
+					<ion-label>Microphone</ion-label>
+					<ion-select
+						[(ngModel)]="settings.selectedMicrophone"
+						[compareWith]="compareFn"
+						(ionChange)="onSettingsChange()"
 					>
-				</ion-select>
-			</ion-item>
-			<hr />
-			<ion-item>
-				<ion-button (click)="connect()">Connect</ion-button>
-			</ion-item>
-		</ion-list>
-	</div>
-	<ng-template #connected>
-		<ion-list lines="full" class="ion-no-margin">
-			<ion-list-header lines="full">
-				<ion-label>Connected players </ion-label>
-			</ion-list-header>
-			<ion-item *ngFor="let item of cManager.currentGameState.players;">
-				<ion-label position="fixed">{{item.name}}</ion-label>
-			</ion-item>
-		</ion-list>
+						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.deviceId"
+							>{{microphone.label}}</ion-select-option
+						>
+					</ion-select>
+				</ion-item>
+				<hr />
+				<ion-item>
+					<ion-button (click)="connect()">Connect</ion-button>
+				</ion-item>
+			</ion-list>
+		</ng-container>
+		<ng-container *ngSwitchCase="1">
+			<p><b>Waiting for you to join or a player with "Mobile host" enabled in bettercrewlink...</b></p>
+			<ion-button (click)="disconnect()">disconnect</ion-button>
+		</ng-container>
+		<ng-container *ngSwitchCase="2">
+			<ion-list lines="full" class="ion-no-margin">
+				<ion-list-header lines="full">
+					<ion-label>Connected players </ion-label>
+				</ion-list-header>
+				<ion-item *ngFor="let item of cManager.currentGameState.players;">
+					<ion-label position="fixed">{{item.name}}</ion-label>
+				</ion-item>
+			</ion-list>
 
-		<ion-button (click)="disconnect()">disconnect</ion-button>
-	</ng-template>
+			<ion-button (click)="disconnect()">disconnect</ion-button>
+		</ng-container>
+	</ng-container>
 </ion-content>
