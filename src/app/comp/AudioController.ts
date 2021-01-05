@@ -1,8 +1,7 @@
 import { EventEmitter as EventEmitterO } from 'events';
-import Peer from 'simple-peer';
 import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
-import { SocketElementMap, SocketElement, Client, AudioElement, SocketClientMap, IDeviceInfo } from './smallInterfaces';
+import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
 
 export default class AudioController extends EventEmitterO {
 	audioDeviceId = 'default';
@@ -125,19 +124,28 @@ export default class AudioController extends EventEmitterO {
 		socketElementmap.forEach((value) => this.disconnectElement(value));
 	}
 
-	disconnectElement(element: SocketElement) {
-		element?.audioElement?.compressor?.disconnect();
-		element?.audioElement?.pan?.disconnect();
-		element?.audioElement?.gain?.disconnect();
-		element?.audioElement?.mediaStreamAudioSource?.disconnect();
-		element?.audioElement?.audioContext?.close();
-		element?.audioElement?.htmlAudioElement.remove();
+	disconnectElement(socketElement: SocketElement) {
+		if (!socketElement.audioElement) {
+			return;
+		}
+		socketElement?.audioElement?.compressor?.disconnect();
+		socketElement?.audioElement?.pan?.disconnect();
+		socketElement?.audioElement?.gain?.disconnect();
+		socketElement?.audioElement?.mediaStreamAudioSource?.disconnect();
+		socketElement?.audioElement?.audioContext
+			?.close()
+			.then(() => {})
+			.catch(() => {});
+		socketElement?.audioElement?.htmlAudioElement.remove();
+		socketElement.peer?.destroy();
+		socketElement.audioElement = undefined;
+		socketElement.peer = undefined;
 	}
 
 	async getDevices(): Promise<IDeviceInfo[]> {
 		let deviceId = 0;
 		return (await navigator.mediaDevices.enumerateDevices())
-			.filter((o) => o.kind === 'audioinput')
+			.filter((o) => o.kind === 'audiooutput')
 			.map((o) => {
 				return {
 					label: o.label || `Microphone ${deviceId++}`,

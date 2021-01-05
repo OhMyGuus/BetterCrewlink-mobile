@@ -35,7 +35,7 @@
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-useragent": "^1.0.6",
     "rxjs": "~6.5.5",
-    "simple-peer": "^9.9.3",
+    "simple-peer": "git+https://github.com/vrnagy/simple-peer.git",
     "socket.io-client": "^2.3.1",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
