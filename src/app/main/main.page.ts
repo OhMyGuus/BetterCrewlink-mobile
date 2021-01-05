@@ -60,7 +60,6 @@ export class MainPage implements OnInit {
 
 	async requestPermissions(): Promise<boolean> {
 		if (this.platform.is('cordova')) {
-			alert('asking for permissions');
 			const PERMISSIONS_NEEDED = [
 				'android.permission.FOREGROUND_SERVICE',
 				this.androidPermissions.PERMISSION.BLUETOOTH,
