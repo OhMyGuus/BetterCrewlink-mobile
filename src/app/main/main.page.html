@@ -1,7 +1,7 @@
 <ion-header>
 	<ion-toolbar color="primary">
 		<ion-buttons slot="start">
-			<ion-menu-button></ion-menu-button>
+			<!-- <ion-menu-button></ion-menu-button> -->
 		</ion-buttons>
 		<ion-title>Better Crewlink Mobile v0.0.3</ion-title>
 	</ion-toolbar>
@@ -9,7 +9,7 @@
 <ion-content color="secondary">
 	<ng-container [ngSwitch]="cManager.connectionState">
 		<ng-container *ngSwitchDefault>
-			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
+			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
 				<ion-list-header lines="full" color="secondary">
 					<ion-label fixed class="fixedLabel"> Connection Settings: </ion-label>
 				</ion-list-header>
@@ -32,8 +32,9 @@
 				<ion-item color="secondary">
 					<ion-label>Lobby code</ion-label>
 					<ion-input
+						style="text-transform: uppercase"
+						pattern="[A-Za-z]{6}"
 						[(ngModel)]="settings.gamecode"
-						(ngModelChange)="settings.gamecode = $event.toLocaleUpperCase()"
 						(ionChange)="onSettingsChange()"
 						placeholder="'ABCDEF'"
 						maxlength="6"
@@ -60,13 +61,13 @@
 			</ion-list>
 		</ng-container>
 		<ng-container *ngSwitchCase="1">
-			<ion-spinner name="dots" style="float: left; margin-top: 10px;" color="light"></ion-spinner>
-			<p style="float: inline-end;"><b>Waiting for you to join</b></p>
-			<p>**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink**</p>
+			<ion-spinner name="dots" style="float: left; margin-top: 10px" color="light"></ion-spinner>
+			<p style="float: inline-end"><b>Waiting for you to join</b></p>
+			<p><i>**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink**</i></p>
 			<ion-button (click)="disconnect()">disconnect</ion-button>
 		</ng-container>
 		<ng-container *ngSwitchCase="2">
-			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
+			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
 				<ion-list-header lines="full" color="secondary">
 					<ion-label>Connected Players:</ion-label>
 				</ion-list-header>

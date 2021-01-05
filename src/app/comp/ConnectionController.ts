@@ -58,7 +58,6 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
-		console.log('deviceID: ', deviceID);
 		this.initialize(voiceserver);
 		this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
 	}

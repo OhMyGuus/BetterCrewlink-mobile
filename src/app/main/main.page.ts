@@ -42,8 +42,6 @@ export class MainPage implements OnInit {
 	}
 
 	connect() {
-		alert('testing..');
-
 		this.requestPermissions().then((haspermissions) => {
 			if (haspermissions) {
 				connectionController.connect(
@@ -98,6 +96,7 @@ export class MainPage implements OnInit {
 
 	ngOnInit() {
 		audioController.getDevices().then((o) => {
+			this.settings.selectedMicrophone = o[0]?.deviceId ?? 'default';
 			this.microphones = o;
 		});
 	}
