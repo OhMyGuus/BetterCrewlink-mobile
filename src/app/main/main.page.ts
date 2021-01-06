@@ -45,10 +45,6 @@ export class MainPage implements OnInit {
 		});
 	}
 
-	connect() {
-		this.navCtrl;
-	}
-
 	async requestPermissions(): Promise<boolean> {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
