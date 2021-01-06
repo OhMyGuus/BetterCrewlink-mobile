@@ -55,8 +55,6 @@ export class MainPage implements OnInit {
 				this.settings.username,
 				this.settings.selectedMicrophone
 			);
-      
-			document.getElementById("Menu").style.visibility = "visible";
 		});
 	}
 
@@ -87,7 +85,6 @@ export class MainPage implements OnInit {
 
 	disconnect() {
 		connectionController.disconnect();
-		document.getElementById("Menu").style.visibility = "hidden";
 	}
 
 	onSettingsChange() {

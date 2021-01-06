@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content color="secondary">
 	<ng-container>
-		<ng-container>
+		<ng-container [ngSwitch]="cManager.connectionState">
 			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
 				<ion-list-header lines="full" color="secondary">
 					<ion-label fixed class="fixedLabel"> Connection Settings: </ion-label>
@@ -55,12 +55,12 @@
 				</ion-item>
 				-->
 				<hr />
-			<ng-container [ngSwitch]="">
+			<ng-container *ngSwitchDefault>
 				<ion-item color="secondary">
 					<ion-button (click)="connect()">Connect</ion-button>
 				</ion-item>
 			</ng-container>
-			<ng-container [ngSwitch]="">
+			<ng-container *ngSwitchCase="1||2">
 				<ion-item color="secondary">
 					<ion-button (click)="disconnect()">Disconnect</ion-button>
 				</ion-item>
