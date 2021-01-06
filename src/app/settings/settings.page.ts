@@ -13,13 +13,13 @@ import { async } from '@angular/core/testing';
 import { Platform } from '@ionic/angular';
 
 @Component({
-	selector: 'app-main',
-	templateUrl: './main.page.html',
-	styleUrls: ['./main.page.scss'],
+	selector: 'app-settings',
+	templateUrl: './settings.page.html',
+	styleUrls: ['./settings.page.scss'],
 })
 
 
-export class MainPage implements OnInit {
+export class SettingsPage implements OnInit {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
@@ -55,8 +55,6 @@ export class MainPage implements OnInit {
 				this.settings.username,
 				this.settings.selectedMicrophone
 			);
-      
-			document.getElementById("Menu").style.visibility = "visible";
 		});
 	}
 
@@ -87,7 +85,6 @@ export class MainPage implements OnInit {
 
 	disconnect() {
 		connectionController.disconnect();
-		document.getElementById("Menu").style.visibility = "hidden";
 	}
 
 	onSettingsChange() {
