@@ -11,6 +11,7 @@ import { audioController } from '../comp/AudioController';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { async } from '@angular/core/testing';
 import { Platform } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 
 @Component({
 	selector: 'app-main',
@@ -25,6 +26,7 @@ export class MainPage implements OnInit {
 	cManager: IConnectionController;
 	gameState: AmongUsState;
 	microphones: IDeviceInfo[] = [];
+	navCtrl: NavController;
 	settings: ISettings = {
 		gamecode: '',
 		voiceServer: 'https://crewl.ink',
@@ -44,18 +46,7 @@ export class MainPage implements OnInit {
 	}
 
 	connect() {
-		this.requestPermissions().then((haspermissions) => {
-			if (!haspermissions) {
-				console.log('permissions failed');
-			}
-      
-			connectionController.connect(
-				this.settings.voiceServer,
-				this.settings.gamecode.toUpperCase(),
-				this.settings.username,
-				this.settings.selectedMicrophone
-			);
-		});
+		this.navCtrl;
 	}
 
 	async requestPermissions(): Promise<boolean> {
