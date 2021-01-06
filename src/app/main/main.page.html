@@ -61,10 +61,12 @@
 			</ion-list>
 		</ng-container>
 		<ng-container id="connectPg" *ngSwitchCase="1">
-			<ion-spinner name="dots" style="float: left; margin-top: 10px;" color="light"></ion-spinner>
-			<p style="float: inline-end;"><b>Waiting for you to join</b></p>
-			<p>**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink**</p>
-			<ion-button (click)="disconnect()">disconnect</ion-button>
+			<ion-spinner style="left: 49%;" color="light"></ion-spinner>
+			<p style="text-align: center;"><b>Waiting for you to join</b></p>
+			<p style="text-align: center;">**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**</p>
+			<div style="padding-left: 45%;">
+				<ion-button (click)="disconnect()">disconnect</ion-button>
+			</div>
 		</ng-container>
 		<ng-container id="connectedPg" *ngSwitchCase="2">
 			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
