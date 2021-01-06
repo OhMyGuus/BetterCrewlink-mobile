@@ -42,7 +42,7 @@ export default class AudioController extends EventEmitterO {
 		source.connect(pan);
 		pan.connect(gain);
 		gain.connect(compressor);
-		gain.gain.value = 1;
+		gain.gain.value = 0;
 		htmlAudioElement.volume = 1;
 		const audioContext = pan.context;
 		const panPos = [3, 0];
@@ -63,11 +63,11 @@ export default class AudioController extends EventEmitterO {
 
 	// move to different controller
 	updateAudioLocation(currentGameState: AmongUsState, element: SocketElement, localPLayer: Player) {
-		console.log('updateAudioLocation ->', { element });
+		//		console.log('updateAudioLocation ->', { element });
 		if (!element.audioElement || !element.client) {
 			return;
 		}
-		console.log('[updateAudioLocation]');
+		//	console.log('[updateAudioLocation]');
 		const pan = element.audioElement.pan;
 		const gain = element.audioElement.gain;
 		const audioContext = pan.context;

@@ -43,27 +43,27 @@ export class MainPage implements OnInit {
 
 	connect() {
 		this.requestPermissions().then((haspermissions) => {
-			if (haspermissions) {
-				connectionController.connect(
-					this.settings.voiceServer,
-					this.settings.gamecode.toUpperCase(),
-					this.settings.username,
-					this.settings.selectedMicrophone
-				);
-			} else {
-				alert('Cannot access Microphone or network');
+			if (!haspermissions) {
+				console.log('permissions failed');
 			}
+
+			connectionController.connect(
+				this.settings.voiceServer,
+				this.settings.gamecode.toUpperCase(),
+				this.settings.username,
+				this.settings.selectedMicrophone
+			);
 		});
 	}
 
 	async requestPermissions(): Promise<boolean> {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
-				'android.permission.FOREGROUND_SERVICE',
 				this.androidPermissions.PERMISSION.BLUETOOTH,
 				this.androidPermissions.PERMISSION.INTERNET,
 				this.androidPermissions.PERMISSION.RECORD_AUDIO,
 				this.androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
+				'android.permission.FOREGROUND_SERVICE',
 			];
 
 			try {
