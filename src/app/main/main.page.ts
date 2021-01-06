@@ -89,6 +89,29 @@ export class MainPage implements OnInit {
 		document.getElementById("Menu").style.visibility = "hidden";
 	}
 
+	settingsToggle(state) {
+		let setting = document.getElementById("settingPg");
+		let connection = document.getElementById("connectPg");
+		let connected = document.getElementById("connectedPg");
+		if (state == "show") {
+			console.log("showing settings")
+			connection.style.visibility = "hidden";
+			connected.style.visibility = "hidden";
+			setting.style.visibility = "visible";
+		} else if (state == "hide") {
+			setting.style.visibility = "hidden";
+			if (this.cManager.connectionState == 1) {
+				connected.style.visibility = "hidden";
+				connection.style.visibility = "visible";
+			} else if (this.cManager.connectionState == 2) {
+				connected.style.visibility = "visible";
+				connection.style.visibility = "hidden";
+			};
+		} else {
+			console.log("Invalid State")
+		};
+	};
+
 	onSettingsChange() {
 		console.log('onsettingschange');
 		this.storage.set('settings', this.settings);
