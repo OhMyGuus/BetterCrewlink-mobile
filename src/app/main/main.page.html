@@ -32,8 +32,9 @@
 				<ion-item color="secondary">
 					<ion-label>Lobby code</ion-label>
 					<ion-input
+						style="text-transform: uppercase"
+						pattern="[A-Za-z]{6}"
 						[(ngModel)]="settings.gamecode"
-						(ngModelChange)="settings.gamecode = $event.toLocaleUpperCase()"
 						(ionChange)="onSettingsChange()"
 						placeholder="'ABCDEF'"
 						maxlength="6"
@@ -74,7 +75,6 @@
 					<ion-label position="fixed">{{item.name}}</ion-label>
 				</ion-item>
 			</ion-list>
-
 			<ion-button (click)="disconnect()">disconnect</ion-button>
 		</ng-container>
 	</ng-container>

@@ -16,7 +16,6 @@
   "dependencies": {
     "@angular/common": "~10.0.0",
     "@angular/core": "~10.0.0",
-    "@angular/devkit": "~10.0.0",
     "@angular/forms": "~10.0.0",
     "@angular/platform-browser": "~10.0.0",
     "@angular/platform-browser-dynamic": "~10.0.0",
@@ -36,9 +35,10 @@
     "cordova-plugin-android-permissions": "^1.1.2",
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-useragent": "^1.0.6",
     "rxjs": "~6.5.5",
-    "simple-peer": "^9.9.3",
+    "simple-peer": "git+https://github.com/vrnagy/simple-peer.git",
     "socket.io-client": "^2.3.1",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
