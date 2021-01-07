@@ -17,6 +17,9 @@ import { Platform } from '@ionic/angular';
 	templateUrl: './settings.page.html',
 	styleUrls: ['./settings.page.scss'],
 })
+
+
+
 export class SettingsPage implements OnInit {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
@@ -46,7 +49,6 @@ export class SettingsPage implements OnInit {
 			if (!haspermissions) {
 				console.log('permissions failed');
 			}
-
 			connectionController.connect(
 				this.settings.voiceServer,
 				this.settings.gamecode.toUpperCase(),

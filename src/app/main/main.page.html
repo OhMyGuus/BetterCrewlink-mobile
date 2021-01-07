@@ -3,49 +3,43 @@
 		<ion-buttons slot="start" id="Menu">
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
-		<ion-title style="padding-left: 38%;">Better-Crewlink Mobile v0.0.3</ion-title>
+		<div>
+			<ion-title class="ion-text-center" style="margin-left: -48px;">Better-Crewlink Mobile v0.0.3</ion-title>
+		</div>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
 	<ion-grid>
-		<ng-container [ngSwitch]=''>
-		<ion-row>
-			<ion-col className="ion-align-items-center">
-				<ng-container *ngSwitchDefault>
+		<ng-container [ngSwitch]="cManager.connectionState">
+			<ng-container *ngSwitchDefault>
+				<ion-row class="ion-justify-content-center">
 					<p style="text-align: center;"><b>Please go to the settings page to setup Crewlink</b></p>
-					<ion-item color="secondary" lines="none">
-						<ion-button [routerLink]="['/settings']">Settings</ion-button>
-					</ion-item>
-				</ng-container>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col className="ion-align-items-center">
-				<ng-container id="connectPg" *ngSwitchCase="1">
+				</ion-row>
+				<ion-row class="ion-justify-content-center">
+					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+				</ion-row>
+			</ng-container>
+			<ng-container id="connectPg" *ngSwitchCase="1">
+				<ion-row class="ion-justify-content-center">
 					<ion-spinner color="light"></ion-spinner>
-					<p style="text-align: center;"><b>Waiting for you to join</b></p>
-					<p style="text-align: center;">**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**</p>
-					<div>
-						<ion-button (click)="disconnect()">disconnect</ion-button>
-					</div>
-				</ng-container>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col>
-				<ng-container id="connectedPg" *ngSwitchCase="2">
-					<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
-						<ion-list-header lines="full" color="secondary">
-							<ion-label>Connected Players:</ion-label>
-						</ion-list-header>
-						<ion-item *ngFor="let item of cManager.currentGameState.players;" color="secondary">
-							<ion-label position="fixed">{{item.name}}</ion-label>
-						</ion-item>
-					</ion-list>
-					<ion-button (click)="disconnect()">disconnect</ion-button>
-				</ng-container>
-			</ion-col>
-		</ion-row>
+				</ion-row>
+				<p style="text-align: center;"><b>Waiting for you to join</b></p>
+				<p style="text-align: center;">**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**</p>
+				<ion-row class="ion-justify-content-center">
+					<ion-button (click)="disconnect()" [routerLink]="['/settings']">disconnect</ion-button>
+				</ion-row>
+			</ng-container>
+			<ng-container id="connectedPg" *ngSwitchCase="2">
+				<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
+					<ion-list-header lines="full" color="secondary">
+						<ion-label>Connected Players:</ion-label>
+					</ion-list-header>
+					<ion-item *ngFor="let item of cManager.currentGameState.players;" color="secondary">
+						<ion-label position="fixed">{{item.name}}</ion-label>
+					</ion-item>
+				</ion-list>
+				<ion-button (click)="disconnect()">disconnect</ion-button>
+			</ng-container>
 		</ng-container>
 	</ion-grid>
 </ion-content>

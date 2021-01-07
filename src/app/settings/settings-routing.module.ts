@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
+import { MainPage } from '../main/main.page';
 import { SettingsPage } from './settings.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: SettingsPage
+    component: SettingsPage,
+  },
+  {
+    path: 'main',
+    component: MainPage,
   }
 ];
 

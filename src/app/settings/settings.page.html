@@ -1,9 +1,11 @@
 <ion-header>
 	<ion-toolbar color="primary">
-		<ion-buttons slot="start">
+		<ion-buttons slot="start" id="Menu">
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
-		<ion-title>Better Crewlink Mobile v0.0.3</ion-title>
+		<div>
+			<ion-title class="ion-text-center" style="margin-left: -48px;">Better-Crewlink Mobile v0.0.3</ion-title>
+		</div>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
@@ -50,11 +52,19 @@
           >{{microphone.label}}</ion-select-option
         >
       </ion-select>
-    </ion-item>
-    -->
+    </ion-item>-->
     <hr />
-    <ion-item color="secondary">
-      <ion-button (click)="connect()">Connect</ion-button>
-    </ion-item>
+    <ng-container [ngSwitch]="cManager.connectionState">
+      <ng-container *ngSwitchDefault>
+        <ion-item color="secondary">
+          <ion-button (click)="connect()" [routerLink]="['/main']">Connect</ion-button>
+        </ion-item>
+      </ng-container>
+      <ng-container *ngSwitchCase="1||2">
+        <ion-item color="secondary">
+          <ion-button (click)="disconnect()">Disconnect</ion-button>
+        </ion-item>
+      </ng-container>
+    </ng-container>
   </ion-list>
 </ion-content>
