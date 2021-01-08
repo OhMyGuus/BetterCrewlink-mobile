@@ -13,19 +13,6 @@ import {
 } from './smallInterfaces';
 import { audioController } from './AudioController';
 
-const DEFAULT_ICE_CONFIG: RTCConfiguration = {
-	iceServers: [
-		{
-			urls: 'turn:crewlink.guus.info:3478',
-			username: 'M9DRVaByiujoXeuYAAAG',
-			credential: 'TpHR9HQNZ8taxjb3',
-		},
-		{
-			urls: 'stun:stun.l.google.com:19302',
-		}
-	],
-};
-
 export enum ConnectionState {
 	disconnected = 0,
 	connecting = 1,
@@ -53,7 +40,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	localPLayer: Player;
 	deviceID: string;
 	public lobbySettings: ILobbySettings = DEFAULT_LOBBYSETTINGS;
-
+	natFix = false;
 	private getSocketElement(socketId: string): SocketElement {
 		if (!this.socketElements.has(socketId)) {
 			this.socketElements.set(socketId, new SocketElement(socketId));
@@ -66,12 +53,13 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		return this.currentGameState.players.find((o) => o.clientId === clientId);
 	}
 
-	connect(voiceserver: string, gamecode: string, username: string, deviceID: string) {
+	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean) {
 		this.lobbySettings = DEFAULT_LOBBYSETTINGS;
 		this.connectionState = ConnectionState.connecting;
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
+		this.natFix = natFix;
 		this.initialize(voiceserver);
 		audioController.startAudio().then(() => {
 			this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
@@ -126,7 +114,7 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		const peer: Peer = new Peer({
 			stream,
 			initiator, // @ts-ignore-line
-			config: DEFAULT_ICE_CONFIG,
+			config: this.natFix ? DEFAULT_ICE_CONFIG_TURN : DEFAULT_ICE_CONFIG,
 			objectMode: true,
 		});
 		peer.on('connect', () => {});

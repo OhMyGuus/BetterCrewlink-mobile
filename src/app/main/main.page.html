@@ -6,7 +6,7 @@
 		<ion-buttons slot="end">
 			<ion-button right *ngIf="cManager.connectionState !== 0" (click)="disconnect()">disconnect</ion-button>
 		</ion-buttons>
-		<ion-title>BetterCrewlink Mobile v0.0.6</ion-title>
+		<ion-title>BetterCrewlink Mobile v0.0.6-d</ion-title>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
@@ -43,20 +43,28 @@
 						maxlength="6"
 					></ion-input>
 				</ion-item>
-				<!-- Mic debugging
-				<ion-item>
-					<ion-label>Microphone</ion-label>
+				<ion-item color="secondary">
+					<ion-label>NAT FIX</ion-label>
+					<ion-checkbox
+						[(ngModel)]="settings.natFix"
+						(ionChange)="onSettingsChange()"
+					></ion-checkbox>
+				</ion-item>
+
+				<!-- Mic debugging-->
+				<ion-item color="secondary">
+					<ion-label>Microphone debug</ion-label>
 					<ion-select
 						[(ngModel)]="settings.selectedMicrophone"
 						[compareWith]="compareFn"
 						(ionChange)="onSettingsChange()"
 					>
-						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.name"
-							>{{microphone.label}}</ion-select-option
+						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone"
+							>{{microphone.label}} - {{microphone.deviceId}}</ion-select-option
 						>
 					</ion-select>
 				</ion-item>
-				-->
+				
 				<hr />
 				<ion-item color="secondary">
 					<ion-button (click)="connect()">Connect</ion-button>

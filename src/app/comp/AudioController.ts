@@ -157,10 +157,12 @@ export default class AudioController extends EventEmitterO {
 	async getDevices(): Promise<IDeviceInfo[]> {
 		let deviceId = 0;
 		return (await navigator.mediaDevices.enumerateDevices())
-			.filter((o) => o.kind === 'audiooutput')
+			.filter((o) => o.kind === 'audiooutput' || o.kind === 'audioinput' )
+			.sort((a, b) => b.kind.localeCompare(a.kind))
 			.map((o) => {
 				return {
-					label: o.label || `Microphone ${deviceId++}`,
+					kind: o.kind,
+					label: o.label || `mic ${o.kind.charAt(5)} ${deviceId++}`,
 					deviceId: o.deviceId,
 				};
 			});

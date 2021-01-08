@@ -28,9 +28,10 @@ export class MainPage implements OnInit {
 	microphones: IDeviceInfo[] = [];
 	settings: ISettings = {
 		gamecode: '',
-		voiceServer: 'https://crewl.ink',
+		voiceServer: 'https://bettercrewl.ink',
 		username: '',
-		selectedMicrophone: 'default',
+		selectedMicrophone: {label: 'default' , deviceId: 'default', kind: 'audioinput'},
+		natFix: false,
 	};
 
 	constructor(
@@ -53,7 +54,7 @@ export class MainPage implements OnInit {
 		this.localNotifications.schedule({
 			id: 1,
 			title: 'Refresh BetterCrewlink',
-			launch: false
+			launch: false,
 		});
 	}
 
@@ -67,7 +68,8 @@ export class MainPage implements OnInit {
 				this.settings.voiceServer,
 				this.settings.gamecode.toUpperCase(),
 				this.settings.username,
-				this.settings.selectedMicrophone
+				this.settings.selectedMicrophone.deviceId,
+				this.settings.natFix
 			);
 			this.showNotification();
 		});
@@ -77,10 +79,8 @@ export class MainPage implements OnInit {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
 				this.androidPermissions.PERMISSION.BLUETOOTH,
-				this.androidPermissions.PERMISSION.INTERNET,
 				this.androidPermissions.PERMISSION.RECORD_AUDIO,
-				this.androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
-				'android.permission.FOREGROUND_SERVICE',
+				this.androidPermissions.PERMISSION.INTERNET,
 			];
 
 			try {
@@ -108,18 +108,22 @@ export class MainPage implements OnInit {
 	}
 
 	onSettingsChange() {
-		console.log('onsettingschange');
+		console.log('onsettingschange', this.settings);
 		this.storage.set('settings', this.settings);
 	}
 
-	compareFn(e1: string, e2: string): boolean {
-		return e1 && e2 ? e1 === e2 : false;
+	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
+		return e1 && e2 ? e1.deviceId === e2.deviceId && e1.kind === e2.kind  : false;
 	}
 
 	ngOnInit() {
-		audioController.getDevices().then((o) => {
-			this.settings.selectedMicrophone = o[0]?.deviceId ?? 'default';
-			this.microphones = o;
+		this.requestPermissions().then(() => {
+			audioController.getDevices().then((devices) => {
+				this.microphones = devices;
+				if (!this.microphones.some((o) => o.deviceId === this.settings.selectedMicrophone.deviceId)) {
+					this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {label: 'default' , deviceId: 'default', kind: 'audioinput'};
+				}
+			});
 		});
 
 		this.localNotifications.on('yes').subscribe((notification) => {
