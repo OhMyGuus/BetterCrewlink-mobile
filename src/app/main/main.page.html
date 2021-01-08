@@ -3,9 +3,10 @@
 		<ion-buttons slot="start" id="Menu">
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
-		<div>
-			<ion-title class="ion-text-center" style="margin-left: -48px;">Better-Crewlink Mobile v0.0.3</ion-title>
-		</div>
+		<ion-buttons slot="end">
+			<ion-button right *ngIf="cManager.connectionState !== 0" (click)="disconnect()">disconnect</ion-button>
+		</ion-buttons>
+		<ion-title class="ion-text-center" style="margin-left: -48px;">BetterCrewlink Mobile v0.0.6</ion-title>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
