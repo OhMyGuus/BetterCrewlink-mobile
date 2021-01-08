@@ -1,3 +1,10 @@
+import { ILobbySettings } from './smallInterfaces';
+
+export interface MobileData {
+	gameState: AmongUsState;
+	lobbySettings: ILobbySettings;
+}
+
 export interface AmongUsState {
 	gameState: GameState;
 	oldGameState: GameState;
@@ -6,6 +13,8 @@ export interface AmongUsState {
 	isHost: boolean;
 	clientId: number;
 	hostId: number;
+	comsSabotaged: boolean;
+
 }
 
 export interface Player {

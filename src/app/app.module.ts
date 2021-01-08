@@ -12,6 +12,7 @@ import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { IonicStorageModule } from '@ionic/storage';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 @NgModule({
 	declarations: [AppComponent],
@@ -24,6 +25,7 @@ import { Platform } from '@ionic/angular';
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		AndroidPermissions,
 		Platform,
+		LocalNotifications
 	],
 	bootstrap: [AppComponent],
 })
