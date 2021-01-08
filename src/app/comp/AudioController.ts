@@ -90,6 +90,11 @@ export default class AudioController extends EventEmitterO {
 			case GameState.TASKS:
 				gain.gain.value = 1;
 
+
+				if (!localPLayer.isDead && connectionController.lobbySettings.commsDisabled && currentGameState.comsSabotaged) {
+					gain.gain.value = 0;
+				}
+
 				// Mute other players which are in a vent
 				if (other.inVent) {
 					gain.gain.value = localPLayer.inVent && connectionController.lobbySettings.ventTalk ? 1 : 0;
