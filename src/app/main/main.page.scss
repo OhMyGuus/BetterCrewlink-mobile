@@ -1,3 +1,10 @@
 .masters {
     background-color: #25232a;
 }
+.round {
+    width: 80px;
+    height: 80px;
+    justify-self: center !important;
+    --border-radius: 40px;
+    --vertical-align: middle;
+}
