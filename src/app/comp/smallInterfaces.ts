@@ -37,6 +37,20 @@ export interface AudioElement {
 	compressor: DynamicsCompressorNode;
 }
 
+export interface ILobbySettings {
+	maxDistance: number;
+	haunting: boolean;
+	ventTalk: boolean;
+	commsDisabled: boolean;
+}
+
+export const DEFAULT_LOBBYSETTINGS: ILobbySettings = {
+	maxDistance: 5.6,
+	haunting: false,
+	ventTalk: false,
+	commsDisabled: false,
+};
+
 export class SocketElement {
 	socketId: string;
 	peer?: Peer;

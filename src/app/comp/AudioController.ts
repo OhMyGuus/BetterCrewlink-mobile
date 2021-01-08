@@ -2,12 +2,17 @@ import { EventEmitter as EventEmitterO } from 'events';
 import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
+import { connectionController } from './ConnectionController';
 
 export default class AudioController extends EventEmitterO {
 	audioDeviceId = 'default';
 	stream: MediaStream;
 
 	async startAudio() {
+		if (this.stream) {
+			return;
+		}
+
 		const audio: MediaTrackConstraintSet = {
 			deviceId: this.audioDeviceId,
 			autoGainControl: false,
@@ -15,7 +20,6 @@ export default class AudioController extends EventEmitterO {
 			latency: 0,
 			noiseSuppression: true,
 		};
-
 		this.stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
 
 		console.log('connected to microphone');
@@ -36,7 +40,7 @@ export default class AudioController extends EventEmitterO {
 		pan.refDistance = 0.1;
 		pan.panningModel = 'equalpower';
 		pan.distanceModel = 'linear';
-		pan.maxDistance = 5;
+		pan.maxDistance = connectionController.lobbySettings.maxDistance;
 		pan.rolloffFactor = 1;
 
 		source.connect(pan);
@@ -64,7 +68,7 @@ export default class AudioController extends EventEmitterO {
 	// move to different controller
 	updateAudioLocation(currentGameState: AmongUsState, element: SocketElement, localPLayer: Player) {
 		//		console.log('updateAudioLocation ->', { element });
-		if (!element.audioElement || !element.client) {
+		if (!element.audioElement || !element.client || !element.player || !localPLayer) {
 			return;
 		}
 		//	console.log('[updateAudioLocation]');
@@ -86,14 +90,22 @@ export default class AudioController extends EventEmitterO {
 			case GameState.TASKS:
 				gain.gain.value = 1;
 
-				// Mute other players which are in a vent
-				if (other.inVent) {
+
+				if (!localPLayer.isDead && connectionController.lobbySettings.commsDisabled && currentGameState.comsSabotaged) {
 					gain.gain.value = 0;
 				}
 
-				// Mute dead players for still living players
-				if (!localPLayer.isDead && other.isDead) {
-					gain.gain.value = 0;
+				// Mute other players which are in a vent
+				if (other.inVent) {
+					gain.gain.value = localPLayer.inVent && connectionController.lobbySettings.ventTalk ? 1 : 0;
+				}
+
+				if (!localPLayer.isDead && other.isDead && localPLayer.isImpostor && connectionController.lobbySettings.haunting) {
+					gain.gain.value = gain.gain.value * 0.02; //0.005;
+				} else {
+					if (!localPLayer.isDead && (other.isDead || currentGameState.comsSabotaged)) {
+						gain.gain.value = 0;
+					}
 				}
 
 				break;
@@ -119,9 +131,9 @@ export default class AudioController extends EventEmitterO {
 		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
 	}
 
-	disconnect(socketElementmap: SocketElementMap) {
+	disconnect() {
 		this.stream.getTracks().forEach((track) => track.stop());
-		socketElementmap.forEach((value) => this.disconnectElement(value));
+		this.stream = undefined;
 	}
 
 	disconnectElement(socketElement: SocketElement) {

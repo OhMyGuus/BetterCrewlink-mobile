@@ -11,7 +11,9 @@ import { audioController } from '../comp/AudioController';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { async } from '@angular/core/testing';
 import { Platform } from '@ionic/angular';
-import { NavController } from '@ionic/angular';
+import { Observable } from 'rxjs';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { nextTick } from 'process';
 
 @Component({
 	selector: 'app-main',
@@ -26,7 +28,6 @@ export class MainPage implements OnInit {
 	cManager: IConnectionController;
 	gameState: AmongUsState;
 	microphones: IDeviceInfo[] = [];
-	navCtrl: NavController;
 	settings: ISettings = {
 		gamecode: '',
 		voiceServer: 'https://crewl.ink',
@@ -34,7 +35,12 @@ export class MainPage implements OnInit {
 		selectedMicrophone: 'default',
 	};
 
-	constructor(private storage: Storage, private androidPermissions: AndroidPermissions, public platform: Platform) {
+	constructor(
+		private storage: Storage,
+		private androidPermissions: AndroidPermissions,
+		public platform: Platform,
+		private localNotifications: LocalNotifications
+	) {
 		connectionController.on('gamestateChange', (gamestate: AmongUsState) => {});
 		this.cManager = connectionController;
 		storage.get('settings').then((val) => {
@@ -42,6 +48,30 @@ export class MainPage implements OnInit {
 			if (val && val !== null) {
 				this.settings = val;
 			}
+		});
+	}
+
+	showNotification() {
+		this.localNotifications.schedule({
+			id: 1,
+			title: 'Refresh BetterCrewlink',
+			launch: false
+		});
+	}
+
+	connect() {
+		this.requestPermissions().then((haspermissions) => {
+			if (!haspermissions) {
+				console.log('permissions failed');
+			}
+
+			connectionController.connect(
+				this.settings.voiceServer,
+				this.settings.gamecode.toUpperCase(),
+				this.settings.username,
+				this.settings.selectedMicrophone
+			);
+			this.showNotification();
 		});
 	}
 
@@ -71,7 +101,12 @@ export class MainPage implements OnInit {
 	}
 
 	disconnect() {
-		connectionController.disconnect();
+		connectionController.disconnect(true);
+	}
+
+	reconnect() {
+		connectionController.disconnect(false);
+		this.connect();
 	}
 
 	onSettingsChange() {
@@ -87,6 +122,16 @@ export class MainPage implements OnInit {
 		audioController.getDevices().then((o) => {
 			this.settings.selectedMicrophone = o[0]?.deviceId ?? 'default';
 			this.microphones = o;
+		});
+
+		this.localNotifications.on('yes').subscribe((notification) => {
+			this.reconnect();
+			this.showNotification();
+		});
+
+		this.localNotifications.on('click').subscribe((notification) => {
+			this.reconnect();
+			this.showNotification();
 		});
 	}
 };

@@ -10,6 +10,7 @@ import { Storage } from '@ionic/storage';
 import { audioController } from '../comp/AudioController';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { async } from '@angular/core/testing';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { Platform } from '@ionic/angular';
 
 @Component({
@@ -26,6 +27,7 @@ export class SettingsPage implements OnInit {
 	cManager: IConnectionController;
 	gameState: AmongUsState;
 	microphones: IDeviceInfo[] = [];
+	localNotifications: LocalNotifications;
 	settings: ISettings = {
 		gamecode: '',
 		voiceServer: 'https://crewl.ink',
@@ -44,17 +46,27 @@ export class SettingsPage implements OnInit {
 		});
 	}
 
+	showNotification() {
+		this.localNotifications.schedule({
+			id: 1,
+			title: 'Refresh BetterCrewlink',
+			launch: false
+		});
+	}
+
 	connect() {
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
 				console.log('permissions failed');
 			}
+
 			connectionController.connect(
 				this.settings.voiceServer,
 				this.settings.gamecode.toUpperCase(),
 				this.settings.username,
 				this.settings.selectedMicrophone
 			);
+			this.showNotification();
 		});
 	}
 
@@ -84,7 +96,12 @@ export class SettingsPage implements OnInit {
 	}
 
 	disconnect() {
-		connectionController.disconnect();
+		connectionController.disconnect(true);
+	}
+
+	reconnect() {
+		connectionController.disconnect(false);
+		this.connect();
 	}
 
 	onSettingsChange() {
