@@ -169,7 +169,6 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			}
 		});
 		if (changed) {
-			console.log('onLobbySettingsChange', this.lobbySettings);
 			this.socketElements.forEach((value) => {
 				if (value.audioElement?.pan?.maxDistance) {
 					value.audioElement.pan.maxDistance = this.lobbySettings.maxDistance;
