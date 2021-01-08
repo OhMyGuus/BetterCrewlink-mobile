@@ -1,15 +1,28 @@
 import { EventEmitter as EventEmitterO } from 'events';
 import Peer from 'simple-peer';
 import * as io from 'socket.io-client';
-import { AmongUsState, GameState, Player } from './AmongUsState';
-import { SocketElementMap, SocketElement, Client, AudioElement, SocketClientMap } from './smallInterfaces';
+import { AmongUsState, GameState, Player, MobileData } from './AmongUsState';
+import {
+	SocketElementMap,
+	SocketElement,
+	Client,
+	AudioElement,
+	SocketClientMap,
+	ILobbySettings,
+	DEFAULT_LOBBYSETTINGS,
+} from './smallInterfaces';
 import { audioController } from './AudioController';
 
 const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 	iceServers: [
 		{
-			urls: 'stun:stun.l.google.com:19302',
+			urls: 'turn:crewlink.guus.info:3478',
+			username: 'M9DRVaByiujoXeuYAAAG',
+			credential: 'TpHR9HQNZ8taxjb3',
 		},
+		{
+			urls: 'stun:stun.l.google.com:19302',
+		}
 	],
 };
 
@@ -39,12 +52,12 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	gamecode: string;
 	localPLayer: Player;
 	deviceID: string;
+	public lobbySettings: ILobbySettings = DEFAULT_LOBBYSETTINGS;
 
 	private getSocketElement(socketId: string): SocketElement {
 		if (!this.socketElements.has(socketId)) {
 			this.socketElements.set(socketId, new SocketElement(socketId));
 		}
-
 		return this.socketElements.get(socketId);
 	}
 
@@ -54,21 +67,27 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string) {
+		this.lobbySettings = DEFAULT_LOBBYSETTINGS;
 		this.connectionState = ConnectionState.connecting;
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
 		this.initialize(voiceserver);
-		this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
+		audioController.startAudio().then(() => {
+			this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
+		});
 	}
 
-	disconnect() {
+	disconnect(disconnectAudio: boolean) {
 		this.connectionState = ConnectionState.disconnected;
 		this.gamecode = '';
 		this.amongusUsername = '';
 		this.socketIOClient.emit('leave');
 		this.socketIOClient.disconnect();
 		this.disconnectSockets();
+		if (disconnectAudio) {
+			audioController.disconnect();
+		}
 	}
 
 	private disconnectElement(element: SocketElement) {
@@ -88,8 +107,6 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 
 	// move to different controller
 	private async startAudio() {
-		await audioController.startAudio();
-
 		this.socketIOClient.on('join', async (peerId: string, client: Client) => {
 			console.log('[client.join]', { peerId, client });
 			const element = this.getSocketElement(peerId);
@@ -105,13 +122,14 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	private createPeerConnection(socketId: string, stream: MediaStream, initiator): Peer {
-		console.log('[createPeerConnection], ', { peerId: socketId });
+		console.log('[createPeerConnection1], ', { peerId: socketId });
 		const peer: Peer = new Peer({
 			stream,
 			initiator, // @ts-ignore-line
-			iceRestartEnabled: false,
 			config: DEFAULT_ICE_CONFIG,
+			objectMode: true,
 		});
+		peer.on('connect', () => {});
 
 		peer.on('stream', (recievedDtream: MediaStream) => {
 			this.emit('onstream', recievedDtream);
@@ -137,18 +155,50 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			console.log('PEER ON error? : ', err);
 		});
 
+		console.log(peer);
 		console.log('peerConnections', this.socketElements);
 		return peer;
 	}
 
+	private onLobbySettingsChange(settings: ILobbySettings) {
+		let changed = false;
+
+		Object.keys(this.lobbySettings).forEach((field: string) => {
+			if (field in settings) {
+				if (this.lobbySettings[field] !== settings[field]) {
+					changed = true;
+					this.lobbySettings[field] = settings[field];
+				}
+			}
+		});
+		if (changed) {
+			this.socketElements.forEach((value) => {
+				if (value.audioElement?.pan?.maxDistance) {
+					value.audioElement.pan.maxDistance = this.lobbySettings.maxDistance;
+				}
+			});
+		}
+	}
 	private onGameStateChange(amongUsState: AmongUsState) {
+		// console.log('[onGamestatechange] ', amongUsState);
 		this.currentGameState = amongUsState;
-		this.localPLayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
-		if (!this.localPLayer) {
+		const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
+		if (!newLocalplayer) {
 			return;
 		}
+		if (
+			this.connectionState === ConnectionState.conencted &&
+			this.localPLayer &&
+			(this.localPLayer.id !== newLocalplayer.id || this.localPLayer.clientId !== newLocalplayer.clientId)
+		) {
+			this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
+		}
+		this.localPLayer = newLocalplayer;
+		// console.log("[onGamestatechange1] ", this.connectionState, this.currenGameCode, this.gamecode );
 
 		if (this.connectionState === ConnectionState.connecting || this.currenGameCode !== this.gamecode) {
+			// console.log("[onGamestatechange2] ", amongUsState);
+
 			this.currenGameCode = this.gamecode;
 			console.log(this.localPLayer);
 			this.startAudio().then(() => {
@@ -195,8 +245,9 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 
 		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
 			if (data.hasOwnProperty('gameState')) {
-				//	console.log('gamestateupdate?');
-				this.onGameStateChange(data as AmongUsState);
+				let mobiledata = data as MobileData;
+				this.onGameStateChange(mobiledata.gameState);
+				this.onLobbySettingsChange(mobiledata.lobbySettings);
 				return;
 			}
 

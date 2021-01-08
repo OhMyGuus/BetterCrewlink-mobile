@@ -10,9 +10,10 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
 
-
+    implementation "com.android.support:support-v4:26.+"
 }
-
+apply from: "../../node_modules/cordova-plugin-badge/src/android/badge.gradle"
+apply from: "../../node_modules/cordova-plugin-local-notification/src/android/build/localnotification.gradle"
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

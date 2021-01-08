@@ -4,9 +4,22 @@
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
 		<ion-buttons slot="end">
-			<ion-button right *ngIf="cManager.connectionState !== 0" (click)="disconnect()">disconnect</ion-button>
+			<ion-button
+				right
+				*ngIf="cManager.connectionState !== 0"
+				[routerLink]="['/settings']"
+				(click)="disconnect()">Disconnect</ion-button>
 		</ion-buttons>
-		<ion-title class="ion-text-center" style="margin-left: -48px;">BetterCrewlink Mobile v0.0.6</ion-title>
+    <ion-title
+      *ngIf="cManager.connectionState !== 0"
+      class="ion-text-center"
+      style="margin-left: -48px; margin-right: -120.96px;"
+      >BetterCrewlink Mobile v0.0.6</ion-title>
+    <ion-title
+      *ngIf="cManager.connectionState == 0"
+      class="ion-text-center"
+      style="margin-left: -48px;"
+      >BetterCrewlink Mobile v0.0.6</ion-title>
 	</ion-toolbar>
 </ion-header>
 <ion-content color="secondary">
@@ -22,12 +35,12 @@
 			</ng-container>
 			<ng-container id="connectPg" *ngSwitchCase="1">
 				<ion-row class="ion-justify-content-center">
-					<ion-spinner color="light"></ion-spinner>
+					<ion-spinner paused="false" id="spinnyBoi" color="light"></ion-spinner>
 				</ion-row>
 				<p style="text-align: center;"><b>Waiting for you to join</b></p>
 				<p style="text-align: center;">**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**</p>
 				<ion-row class="ion-justify-content-center">
-					<ion-button (click)="disconnect()" [routerLink]="['/settings']">disconnect</ion-button>
+					<ion-button (click)="reconnect()">refresh</ion-button>
 				</ion-row>
 			</ng-container>
 			<ng-container id="connectedPg" *ngSwitchCase="2">
@@ -39,7 +52,7 @@
 						<ion-label position="fixed">{{item.name}}</ion-label>
 					</ion-item>
 				</ion-list>
-				<ion-button (click)="disconnect()">disconnect</ion-button>
+				<ion-button (click)="reconnect()">Refresh</ion-button>
 			</ng-container>
 		</ng-container>
 	</ion-grid>
