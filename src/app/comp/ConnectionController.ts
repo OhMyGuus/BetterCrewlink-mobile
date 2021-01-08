@@ -20,6 +20,9 @@ const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 			username: 'M9DRVaByiujoXeuYAAAG',
 			credential: 'TpHR9HQNZ8taxjb3',
 		},
+		{
+			urls: 'stun:stun.l.google.com:19302',
+		}
 	],
 };
 
