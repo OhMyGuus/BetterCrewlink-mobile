@@ -12,6 +12,7 @@ import {
 	DEFAULT_LOBBYSETTINGS,
 } from './smallInterfaces';
 import { audioController } from './AudioController';
+import { DEFAULT_ICE_CONFIG, DEFAULT_ICE_CONFIG_TURN } from './turnServers';
 
 export enum ConnectionState {
 	disconnected = 0,

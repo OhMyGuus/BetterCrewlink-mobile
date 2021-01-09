@@ -30,7 +30,7 @@ export class MainPage implements OnInit {
 		gamecode: '',
 		voiceServer: 'https://bettercrewl.ink',
 		username: '',
-		selectedMicrophone: {label: 'default' , deviceId: 'default', kind: 'audioinput'},
+		selectedMicrophone: { id: 0, label: 'default', deviceId: 'default', kind: 'audioinput' },
 		natFix: false,
 	};
 
@@ -47,6 +47,21 @@ export class MainPage implements OnInit {
 			if (val && val !== null) {
 				this.settings = val;
 			}
+			this.requestPermissions().then(() => {
+				audioController.getDevices().then((devices) => {
+					this.microphones = devices;
+					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone.id)) {
+						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
+							id: 0,
+							label: 'default',
+							deviceId: 'default',
+							kind: 'audioinput',
+						};
+					}else{
+						this.settings.selectedMicrophone = this.microphones.find(o => o.id === this.settings.selectedMicrophone.id);
+					}
+				});
+			});
 		});
 	}
 
@@ -113,19 +128,10 @@ export class MainPage implements OnInit {
 	}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
-		return e1 && e2 ? e1.deviceId === e2.deviceId && e1.kind === e2.kind  : false;
+		return e1 && e2 ? e1.id === e2.id : false;
 	}
 
 	ngOnInit() {
-		this.requestPermissions().then(() => {
-			audioController.getDevices().then((devices) => {
-				this.microphones = devices;
-				if (!this.microphones.some((o) => o.deviceId === this.settings.selectedMicrophone.deviceId)) {
-					this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {label: 'default' , deviceId: 'default', kind: 'audioinput'};
-				}
-			});
-		});
-
 		this.localNotifications.on('yes').subscribe((notification) => {
 			this.reconnect();
 			this.showNotification();

@@ -28,6 +28,7 @@ export interface IDeviceInfo {
 	kind: string;
 	label: string;
 	deviceId: string;
+	id: number;
 }
 
 export interface AudioElement {

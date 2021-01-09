@@ -3,6 +3,7 @@ import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
 import { connectionController } from './ConnectionController';
+import { element } from 'protractor';
 
 export default class AudioController extends EventEmitterO {
 	audioDeviceId = 'default';
@@ -69,6 +70,7 @@ export default class AudioController extends EventEmitterO {
 	updateAudioLocation(currentGameState: AmongUsState, element: SocketElement, localPLayer: Player) {
 		//		console.log('updateAudioLocation ->', { element });
 		if (!element.audioElement || !element.client || !element.player || !localPLayer) {
+			if (element?.audioElement?.gain?.gain) {element.audioElement.gain.gain.value = 0; }
 			return;
 		}
 		//	console.log('[updateAudioLocation]');
@@ -90,7 +92,6 @@ export default class AudioController extends EventEmitterO {
 			case GameState.TASKS:
 				gain.gain.value = 1;
 
-
 				if (!localPLayer.isDead && connectionController.lobbySettings.commsDisabled && currentGameState.comsSabotaged) {
 					gain.gain.value = 0;
 				}
@@ -100,7 +101,12 @@ export default class AudioController extends EventEmitterO {
 					gain.gain.value = localPLayer.inVent && connectionController.lobbySettings.ventTalk ? 1 : 0;
 				}
 
-				if (!localPLayer.isDead && other.isDead && localPLayer.isImpostor && connectionController.lobbySettings.haunting) {
+				if (
+					!localPLayer.isDead &&
+					other.isDead &&
+					localPLayer.isImpostor &&
+					connectionController.lobbySettings.haunting
+				) {
 					gain.gain.value = gain.gain.value * 0.02; //0.005;
 				} else {
 					if (!localPLayer.isDead && (other.isDead || currentGameState.comsSabotaged)) {
@@ -157,10 +163,11 @@ export default class AudioController extends EventEmitterO {
 	async getDevices(): Promise<IDeviceInfo[]> {
 		let deviceId = 0;
 		return (await navigator.mediaDevices.enumerateDevices())
-			.filter((o) => o.kind === 'audiooutput' || o.kind === 'audioinput' )
+			.filter((o) => o.kind === 'audiooutput' || o.kind === 'audioinput')
 			.sort((a, b) => b.kind.localeCompare(a.kind))
 			.map((o) => {
 				return {
+					id: deviceId,
 					kind: o.kind,
 					label: o.label || `mic ${o.kind.charAt(5)} ${deviceId++}`,
 					deviceId: o.deviceId,

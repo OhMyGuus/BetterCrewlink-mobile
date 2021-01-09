@@ -1,5 +1,5 @@
 
-const DEFAULT_ICE_CONFIG: RTCConfiguration = {
+export const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 	iceTransportPolicy: 'all',
 	iceServers: [
 		{
@@ -9,7 +9,7 @@ const DEFAULT_ICE_CONFIG: RTCConfiguration = {
 };
 
 
-const DEFAULT_ICE_CONFIG_TURN: RTCConfiguration = {
+export const DEFAULT_ICE_CONFIG_TURN: RTCConfiguration = {
 	iceTransportPolicy: 'relay',
 	iceServers: [
 		{
