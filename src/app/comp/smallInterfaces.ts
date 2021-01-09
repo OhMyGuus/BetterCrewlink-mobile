@@ -6,7 +6,8 @@ export interface ISettings {
 	voiceServer: string;
 	username: string;
 	gamecode: string;
-	selectedMicrophone: string;
+	selectedMicrophone: IDeviceInfo;
+	natFix: boolean;
 }
 
 export interface Client {
@@ -24,8 +25,10 @@ export interface SocketClientMap {
 }
 
 export interface IDeviceInfo {
+	kind: string;
 	label: string;
 	deviceId: string;
+	id: number;
 }
 
 export interface AudioElement {
