@@ -32,7 +32,9 @@ export default class AudioController extends EventEmitterO {
 		document.body.appendChild(htmlAudioElement);
 		htmlAudioElement.srcObject = stream;
 
+		const AudioContext = window.webkitAudioContext || window.AudioContext;
 		const context = new AudioContext();
+
 		const source = context.createMediaStreamSource(stream);
 		const gain = context.createGain();
 		const pan = context.createPanner();
@@ -44,9 +46,14 @@ export default class AudioController extends EventEmitterO {
 		pan.maxDistance = connectionController.lobbySettings.maxDistance;
 		pan.rolloffFactor = 1;
 
+		const muffle = context.createBiquadFilter();
+		muffle.type = 'lowpass';
+
 		source.connect(pan);
-		pan.connect(gain);
+		pan.connect(muffle);
+		muffle.connect(gain);
 		gain.connect(compressor);
+
 		gain.gain.value = 0;
 		htmlAudioElement.volume = 1;
 		const audioContext = pan.context;
@@ -55,6 +62,8 @@ export default class AudioController extends EventEmitterO {
 		pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
 		pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
 		compressor.connect(context.destination);
+		htmlAudioElement.autoplay = true;
+		htmlAudioElement.play();
 
 		return {
 			htmlAudioElement,
@@ -63,19 +72,23 @@ export default class AudioController extends EventEmitterO {
 			gain,
 			pan,
 			compressor,
+			muffle
 		};
 	}
 
 	// move to different controller
 	updateAudioLocation(currentGameState: AmongUsState, element: SocketElement, localPLayer: Player) {
-		//		console.log('updateAudioLocation ->', { element });
+		// console.log('updateAudioLocation ->', { element });
 		if (!element.audioElement || !element.client || !element.player || !localPLayer) {
-			if (element?.audioElement?.gain?.gain) {element.audioElement.gain.gain.value = 0; }
+			if (element?.audioElement?.gain?.gain) {
+				element.audioElement.gain.gain.value = 0;
+			}
 			return;
 		}
-		//	console.log('[updateAudioLocation]');
+		// console.log('[updateAudioLocation]');
 		const pan = element.audioElement.pan;
 		const gain = element.audioElement.gain;
+		const muffle = element.audioElement.muffle;
 		const audioContext = pan.context;
 
 		const other = element.player; // this.getPlayer(element.client?.clientId);
@@ -92,13 +105,25 @@ export default class AudioController extends EventEmitterO {
 			case GameState.TASKS:
 				gain.gain.value = 1;
 
-				if (!localPLayer.isDead && connectionController.lobbySettings.commsDisabled && currentGameState.comsSabotaged) {
+				if (!localPLayer.isDead && connectionController.lobbySettings.commsSabotage && currentGameState.comsSabotaged) {
 					gain.gain.value = 0;
 				}
 
 				// Mute other players which are in a vent
-				if (other.inVent) {
-					gain.gain.value = localPLayer.inVent && connectionController.lobbySettings.ventTalk ? 1 : 0;
+				if (other.inVent && !connectionController.lobbySettings.hearImpostorsInVents) {
+					gain.gain.value = 0;
+				}
+
+				if (muffle) {
+					// Muffling in vents
+					if (localPLayer.inVent || other.inVent) {
+						muffle.frequency.value = 1200;
+						muffle.Q.value = 20;
+						if (gain.gain.value === 1) gain.gain.value = 0.7; // Too loud at 1
+					} else {
+						muffle.frequency.value = 20000;
+						muffle.Q.value = 0;
+					}
 				}
 
 				if (
@@ -166,10 +191,11 @@ export default class AudioController extends EventEmitterO {
 			.filter((o) => o.kind === 'audiooutput' || o.kind === 'audioinput')
 			.sort((a, b) => b.kind.localeCompare(a.kind))
 			.map((o) => {
+				const id = deviceId++;
 				return {
-					id: deviceId,
+					id,
 					kind: o.kind,
-					label: o.label || `mic ${o.kind.charAt(5)} ${deviceId++}`,
+					label: o.label || `mic ${o.kind.charAt(5)} ${id}`,
 					deviceId: o.deviceId,
 				};
 			});
