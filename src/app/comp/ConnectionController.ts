@@ -123,8 +123,11 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		peer.on('stream', (recievedDtream: MediaStream) => {
 			this.emit('onstream', recievedDtream);
 			console.log('stream recieved', { recievedDtream });
-			this.getSocketElement(socketId).audioElement = audioController.createAudioElement(recievedDtream);
-			console.log(this.getSocketElement(socketId).audioElement);
+			const socketElement = this.getSocketElement(socketId);
+			const audioElement = audioController.createAudioElement(recievedDtream);
+
+			socketElement.audioElement = audioElement;
+			console.log('ONSTREAM, ', socketElement, audioElement);
 		});
 
 		peer.on('signal', (data) => {
@@ -191,8 +194,8 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			this.currenGameCode = this.gamecode;
 			console.log(this.localPLayer);
 			this.startAudio().then(() => {
-				this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
 				this.socketIOClient.emit('join', this.gamecode, this.localPLayer.id, this.localPLayer.clientId);
+				this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
 			});
 			this.connectionState = ConnectionState.conencted;
 		}

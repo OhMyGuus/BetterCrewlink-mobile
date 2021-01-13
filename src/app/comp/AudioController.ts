@@ -8,7 +8,12 @@ import { element } from 'protractor';
 export default class AudioController extends EventEmitterO {
 	audioDeviceId = 'default';
 	stream: MediaStream;
+	audioElementsCotainer: HTMLElement;
 
+	constructor() {
+		super();
+		this.audioElementsCotainer = document.getElementById('AudioElements');
+	}
 	async startAudio() {
 		if (this.stream) {
 			return;
@@ -29,7 +34,10 @@ export default class AudioController extends EventEmitterO {
 	createAudioElement(stream: MediaStream): AudioElement {
 		console.log('[createAudioElement]');
 		const htmlAudioElement = document.createElement('audio');
-		document.body.appendChild(htmlAudioElement);
+		htmlAudioElement.setAttribute('playsinline', 'true');
+		htmlAudioElement.setAttribute('controls', 'true');
+
+		this.audioElementsCotainer.appendChild(htmlAudioElement);
 		htmlAudioElement.srcObject = stream;
 
 		const AudioContext = window.webkitAudioContext || window.AudioContext;
@@ -45,25 +53,32 @@ export default class AudioController extends EventEmitterO {
 		pan.distanceModel = 'linear';
 		pan.maxDistance = connectionController.lobbySettings.maxDistance;
 		pan.rolloffFactor = 1;
+		gain.gain.value = 0;
+		htmlAudioElement.volume = 1;
 
 		const muffle = context.createBiquadFilter();
 		muffle.type = 'lowpass';
+		muffle.Q.value = 0;
 
 		source.connect(pan);
 		pan.connect(muffle);
 		muffle.connect(gain);
 		gain.connect(compressor);
 
-		gain.gain.value = 0;
-		htmlAudioElement.volume = 1;
+
+
+
 		const audioContext = pan.context;
 		const panPos = [3, 0];
-		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
-		pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
-		pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
+
+		if (pan.positionZ) {
+			pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
+			pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
+			pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
+		} else {
+			pan.setPosition(panPos[0], panPos[1], -0.5);
+		}
 		compressor.connect(context.destination);
-		htmlAudioElement.autoplay = true;
-		htmlAudioElement.play();
 
 		return {
 			htmlAudioElement,
@@ -72,8 +87,8 @@ export default class AudioController extends EventEmitterO {
 			gain,
 			pan,
 			compressor,
-			muffle
-		};
+			muffle,
+		} as AudioElement;
 	}
 
 	// move to different controller
@@ -114,18 +129,6 @@ export default class AudioController extends EventEmitterO {
 					gain.gain.value = 0;
 				}
 
-				if (muffle) {
-					// Muffling in vents
-					if (localPLayer.inVent || other.inVent) {
-						muffle.frequency.value = 1200;
-						muffle.Q.value = 20;
-						if (gain.gain.value === 1) gain.gain.value = 0.7; // Too loud at 1
-					} else {
-						muffle.frequency.value = 20000;
-						muffle.Q.value = 0;
-					}
-				}
-
 				if (
 					!localPLayer.isDead &&
 					other.isDead &&
@@ -157,9 +160,23 @@ export default class AudioController extends EventEmitterO {
 				break;
 		}
 
-		pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
-		pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
-		pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
+		// Muffling in vents
+		if (localPLayer.inVent || other.inVent) {
+			muffle.frequency.value = 1200;
+			muffle.Q.value = 20;
+			if (gain.gain.value === 1) gain.gain.value = 0.7; // Too loud at 1
+		} else {
+			muffle.frequency.value = 20000;
+			muffle.Q.value = 0;
+		}
+
+		if (pan.positionZ) {
+			pan.positionZ.setValueAtTime(-0.5, audioContext.currentTime);
+			pan.positionX.setValueAtTime(panPos[0], audioContext.currentTime);
+			pan.positionY.setValueAtTime(panPos[1], audioContext.currentTime);
+		} else {
+			pan.setPosition(panPos[0], panPos[1], -0.5);
+		}
 	}
 
 	disconnect() {
@@ -168,9 +185,15 @@ export default class AudioController extends EventEmitterO {
 	}
 
 	disconnectElement(socketElement: SocketElement) {
+		console.log('disconnectElement');
+
 		if (!socketElement.audioElement) {
+			console.log('disconnectElement -> !socketElement.audioElement -> ', socketElement);
+
 			return;
 		}
+		console.log('disconnectElement -> !uff?');
+
 		socketElement?.audioElement?.compressor?.disconnect();
 		socketElement?.audioElement?.pan?.disconnect();
 		socketElement?.audioElement?.gain?.disconnect();
@@ -179,7 +202,13 @@ export default class AudioController extends EventEmitterO {
 			?.close()
 			.then(() => {})
 			.catch(() => {});
-		socketElement?.audioElement?.htmlAudioElement.remove();
+
+		console.log('socketElement?.audioElement?.htmlAudioElement');
+
+		if (socketElement?.audioElement?.htmlAudioElement) {
+			console.log('remove_element');
+			socketElement?.audioElement?.htmlAudioElement.remove();
+		}
 		socketElement.peer?.destroy();
 		socketElement.audioElement = undefined;
 		socketElement.peer = undefined;

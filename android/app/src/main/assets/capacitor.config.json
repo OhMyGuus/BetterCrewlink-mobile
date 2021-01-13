@@ -9,6 +9,6 @@
       "launchShowDuration": 0
     }
   },
-  "overrideUserAgent": "CrewLink/1.2.1 (win32)",
+  "overrideUserAgent": "CrewLink/2.0.1 (win32)",
   "cordova": {}
 }

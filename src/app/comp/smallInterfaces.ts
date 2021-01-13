@@ -15,10 +15,6 @@ export interface Client {
 	clientId: number;
 }
 
-export interface SocketObject {
-	htmlElement: HTMLAudioElement;
-	client: Client;
-}
 
 export interface SocketClientMap {
 	[socketId: string]: Client;
