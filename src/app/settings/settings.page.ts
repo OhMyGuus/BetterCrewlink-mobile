@@ -21,7 +21,7 @@ import { Platform } from '@ionic/angular';
 
 
 
-export class MainPage implements OnInit {
+export class SettingsPage implements OnInit {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
