@@ -21,21 +21,26 @@ import { Platform } from '@ionic/angular';
 
 
 
-export class SettingsPage implements OnInit {
+export class MainPage implements OnInit {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
 	gameState: AmongUsState;
 	microphones: IDeviceInfo[] = [];
-	localNotifications: LocalNotifications;
 	settings: ISettings = {
 		gamecode: '',
-		voiceServer: 'https://crewl.ink',
+		voiceServer: 'https://bettercrewl.ink',
 		username: '',
-		selectedMicrophone: 'default',
+		selectedMicrophone: { id: 0, label: 'default', deviceId: 'default', kind: 'audioinput' },
+		natFix: false,
 	};
 
-	constructor(private storage: Storage, private androidPermissions: AndroidPermissions, public platform: Platform) {
+	constructor(
+		private storage: Storage,
+		private androidPermissions: AndroidPermissions,
+		public platform: Platform,
+		private localNotifications: LocalNotifications
+	) {
 		connectionController.on('gamestateChange', (gamestate: AmongUsState) => {});
 		this.cManager = connectionController;
 		storage.get('settings').then((val) => {
@@ -43,6 +48,21 @@ export class SettingsPage implements OnInit {
 			if (val && val !== null) {
 				this.settings = val;
 			}
+			this.requestPermissions().then(() => {
+				audioController.getDevices().then((devices) => {
+					this.microphones = devices;
+					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone.id)) {
+						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
+							id: 0,
+							label: 'default',
+							deviceId: 'default',
+							kind: 'audioinput',
+						};
+					}else{
+						this.settings.selectedMicrophone = this.microphones.find(o => o.id === this.settings.selectedMicrophone.id);
+					}
+				});
+			});
 		});
 	}
 
@@ -50,7 +70,7 @@ export class SettingsPage implements OnInit {
 		this.localNotifications.schedule({
 			id: 1,
 			title: 'Refresh BetterCrewlink',
-			launch: false
+			launch: false,
 		});
 	}
 
@@ -64,7 +84,8 @@ export class SettingsPage implements OnInit {
 				this.settings.voiceServer,
 				this.settings.gamecode.toUpperCase(),
 				this.settings.username,
-				this.settings.selectedMicrophone
+				this.settings.selectedMicrophone.deviceId,
+				this.settings.natFix
 			);
 			this.showNotification();
 		});
@@ -114,9 +135,14 @@ export class SettingsPage implements OnInit {
 	}
 
 	ngOnInit() {
-		audioController.getDevices().then((o) => {
-			this.settings.selectedMicrophone = o[0]?.deviceId ?? 'default';
-			this.microphones = o;
+		this.localNotifications.on('yes').subscribe((notification) => {
+			this.reconnect();
+			this.showNotification();
+		});
+
+		this.localNotifications.on('click').subscribe((notification) => {
+			this.reconnect();
+			this.showNotification();
 		});
 	}
 }
