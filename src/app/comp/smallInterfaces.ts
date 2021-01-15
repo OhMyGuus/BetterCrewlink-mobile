@@ -34,7 +34,6 @@ export interface AudioElement {
 	gain: GainNode;
 	pan: PannerNode;
 	muffle: BiquadFilterNode;
-	compressor: DynamicsCompressorNode;
 }
 
 

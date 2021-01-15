@@ -42,11 +42,16 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	deviceID: string;
 	public lobbySettings: ILobbySettings = DEFAULT_LOBBYSETTINGS;
 	natFix = false;
+
 	private getSocketElement(socketId: string): SocketElement {
 		if (!this.socketElements.has(socketId)) {
 			this.socketElements.set(socketId, new SocketElement(socketId));
 		}
 		return this.socketElements.get(socketId);
+	}
+
+	private getSocketElementByClientID(clientId: number): SocketElement | undefined {
+		return Array.from(this.socketElements.values()).find((o) => o.client?.clientId === clientId);
 	}
 
 	getPlayer(clientId: number): Player {
@@ -225,19 +230,27 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 
 		this.socketIOClient.on('setClient', (socketId: string, client: Client) => {
 			console.log('[client.setClient]', { socketId, client });
+			const socketElement = this.getSocketElementByClientID(client.clientId);
+			if (socketElement && socketElement.socketId !== socketId) {
+				this.disconnectElement(socketElement);
+			}
 			this.getSocketElement(socketId).client = client;
 		});
 
 		this.socketIOClient.on('setClients', (clients: SocketClientMap) => {
 			console.log('[client.setClients]', { clients });
 			for (const socketId of Object.keys(clients)) {
+				const socketElement = this.getSocketElementByClientID(clients[socketId].clientId);
+				if (socketElement && socketElement.socketId !== socketId) {
+					this.disconnectElement(socketElement);
+				}
 				this.getSocketElement(socketId).client = clients[socketId];
 			}
 		});
 
 		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
 			if (data.hasOwnProperty('gameState')) {
-				let mobiledata = data as MobileData;
+				const mobiledata = data as MobileData;
 				this.onGameStateChange(mobiledata.gameState);
 				this.onLobbySettingsChange(mobiledata.lobbySettings);
 				return;
