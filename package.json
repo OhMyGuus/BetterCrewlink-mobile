@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "dev": "ionic serve --external --ssl",
-    "build" : "ionic capacitor build android --prod"
+    "build": "ionic capacitor build android --prod"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~10.0.0",
     "@angular/platform-browser-dynamic": "~10.0.0",
     "@angular/router": "~10.0.0",
+    "@angular/service-worker": "~10.0.0",
     "@capacitor/android": "^2.4.5",
     "@capacitor/core": "2.4.5",
     "@ionic-native/android-permissions": "^5.30.0",

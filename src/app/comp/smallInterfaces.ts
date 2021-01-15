@@ -15,10 +15,6 @@ export interface Client {
 	clientId: number;
 }
 
-export interface SocketObject {
-	htmlElement: HTMLAudioElement;
-	client: Client;
-}
 
 export interface SocketClientMap {
 	[socketId: string]: Client;
@@ -37,21 +33,24 @@ export interface AudioElement {
 	mediaStreamAudioSource: MediaStreamAudioSourceNode;
 	gain: GainNode;
 	pan: PannerNode;
+	muffle: BiquadFilterNode;
 	compressor: DynamicsCompressorNode;
 }
+
 
 export interface ILobbySettings {
 	maxDistance: number;
 	haunting: boolean;
-	ventTalk: boolean;
-	commsDisabled: boolean;
+	hearImpostorsInVents: boolean;
+	commsSabotage: boolean;
 }
+
 
 export const DEFAULT_LOBBYSETTINGS: ILobbySettings = {
 	maxDistance: 5.6,
 	haunting: false,
-	ventTalk: false,
-	commsDisabled: false,
+	hearImpostorsInVents: false,
+	commsSabotage: false,
 };
 
 export class SocketElement {
