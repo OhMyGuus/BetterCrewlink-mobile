@@ -8,21 +8,17 @@ const routes: Routes = [
 		pathMatch: 'full',
 	},
 	{
-		path: 'main',
-		loadChildren: () =>
-			import('./main/main.module').then((m) => m.MainPageModule),
+		path: 'game',
+		loadChildren: () => import('./pages/game/game.module').then((m) => m.GamePageModule),
 	},
 	{
 		path: 'settings',
-		loadChildren: () =>
-			import('./settings/settings.module').then((m) => m.SettingsPageModule),
+		loadChildren: () => import('./pages/settings/settings.module').then((m) => m.SettingsPageModule),
 	},
 ];
 
 @NgModule({
-	imports: [
-		RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
-	],
+	imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
 	exports: [RouterModule],
 })
 export class AppRoutingModule {}

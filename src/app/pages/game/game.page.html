@@ -3,7 +3,7 @@
 </ion-header>
 <ion-content color="secondary">
 	<ion-grid>
-		<ng-container [ngSwitch]="cManager.connectionState">
+		<ng-container [ngSwitch]="gameHelper.cManager.connectionState">
 			<ng-container *ngSwitchDefault>
 				<ion-row class="ion-justify-content-center">
 					<p style="text-align: center;"><b>Please go to the settings page to setup Crewlink</b></p>

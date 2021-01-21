@@ -7,18 +7,12 @@ import { IonicModule } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
+import { GlobalHeaderComponent } from '../../global-header/global-header.component';
+import { GlobalFooterComponent } from '../../global-footer/global-footer.component';
 
-import { GlobalHeaderComponent } from '../global-header/global-header.component'
-
-import { GlobalFooterComponent } from '../global-footer/global-footer.component'
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    SettingsPageRoutingModule
-  ],
-  declarations: [SettingsPage, GlobalHeaderComponent, GlobalFooterComponent]
+	imports: [CommonModule, FormsModule, IonicModule, SettingsPageRoutingModule],
+	declarations: [SettingsPage, GlobalHeaderComponent, GlobalFooterComponent],
 })
 export class SettingsPageModule {}

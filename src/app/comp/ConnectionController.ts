@@ -177,7 +177,6 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 		}
 	}
 	private onGameStateChange(amongUsState: AmongUsState) {
-		// console.log('[onGamestatechange] ', amongUsState);
 		this.currentGameState = amongUsState;
 		const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
 		if (!newLocalplayer) {
@@ -188,14 +187,12 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 			this.localPLayer &&
 			(this.localPLayer.id !== newLocalplayer.id || this.localPLayer.clientId !== newLocalplayer.clientId)
 		) {
-			this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
+			this.socketIOClient.emit('id', newLocalplayer.id, newLocalplayer.clientId);
 		}
+
 		this.localPLayer = newLocalplayer;
-		// console.log("[onGamestatechange1] ", this.connectionState, this.currenGameCode, this.gamecode );
 
 		if (this.connectionState === ConnectionState.connecting || this.currenGameCode !== this.gamecode) {
-			// console.log("[onGamestatechange2] ", amongUsState);
-
 			this.currenGameCode = this.gamecode;
 			console.log(this.localPLayer);
 			this.startAudio().then(() => {

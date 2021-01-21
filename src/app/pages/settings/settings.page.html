@@ -1,0 +1,61 @@
+<ion-header>
+	<app-header></app-header>
+</ion-header>
+<ion-content color="secondary">
+	<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
+		<ion-list-header lines="full" color="secondary">
+			<ion-label fixed class="fixedLabel"> Connection Settings: </ion-label>
+		</ion-list-header>
+		<ion-item color="secondary">
+			<ion-label>Voice server</ion-label>
+			<ion-input
+				[(ngModel)]="gameHelper.settings.voiceServer"
+				(ionChange)="onSettingsChange()"
+				placeholder="Voice server URL"
+			></ion-input>
+		</ion-item>
+		<ion-item color="secondary">
+			<ion-label>Ingame name</ion-label>
+			<ion-input
+				[(ngModel)]="gameHelper.settings.username"
+				(ionChange)="onSettingsChange()"
+				placeholder="'Coochie Man'"
+			></ion-input>
+		</ion-item>
+		<ion-item color="secondary">
+			<ion-label>Lobby code</ion-label>
+			<ion-input
+				style="text-transform: uppercase"
+				pattern="[A-Za-z]{6}"
+				[(ngModel)]="gameHelper.settings.gamecode"
+				(ionChange)="onSettingsChange()"
+				placeholder="'ABCDEF'"
+				maxlength="6"
+			></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Microphone</ion-label>
+			<ion-select [(ngModel)]="gameHelper.settings.selectedMicrophone" [compareWith]="compareFn" (ionChange)="onSettingsChange()">
+				<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.name"
+					>{{microphone.label}}</ion-select-option
+				>
+			</ion-select>
+		</ion-item>
+		<hr />
+		<ng-container [ngSwitch]="gameHelper.cManager.connectionState">
+			<ng-container *ngSwitchDefault>
+				<ion-item color="secondary">
+					<ion-button (click)="connect()" [routerLink]="['/game']">Connect</ion-button>
+				</ion-item>
+			</ng-container>
+			<ng-container *ngSwitchCase="1||2">
+				<ion-item color="secondary">
+					<ion-button (click)="reconnect()">Refresh</ion-button>
+				</ion-item>
+			</ng-container>
+		</ng-container>
+	</ion-list>
+</ion-content>
+<ion-footer>
+	<app-footer></app-footer>
+</ion-footer>

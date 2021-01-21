@@ -1,21 +1,21 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MainPage } from '../main/main.page';
 import { SettingsPage } from './settings.page';
+import { GamePage } from '../pages/game/game.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: SettingsPage,
-  },
-  {
-    path: 'main',
-    component: MainPage,
-  }
+	{
+		path: '',
+		component: SettingsPage,
+	},
+	{
+		path: 'game',
+		component: GamePage,
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class SettingsPageRoutingModule {}
