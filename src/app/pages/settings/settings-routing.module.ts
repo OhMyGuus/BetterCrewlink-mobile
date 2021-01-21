@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { SettingsPage } from './settings.page';
-import { GamePage } from '../pages/game/game.page';
+import { GamePage } from '../game/game.page';
 
 const routes: Routes = [
 	{

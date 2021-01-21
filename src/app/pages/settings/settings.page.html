@@ -36,7 +36,7 @@
 		<ion-item>
 			<ion-label>Microphone</ion-label>
 			<ion-select [(ngModel)]="gameHelper.settings.selectedMicrophone" [compareWith]="compareFn" (ionChange)="onSettingsChange()">
-				<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone.name"
+				<ion-select-option *ngFor="let microphone of gameHelper.microphones;" [value]="microphone.name"
 					>{{microphone.label}}</ion-select-option
 				>
 			</ion-select>
