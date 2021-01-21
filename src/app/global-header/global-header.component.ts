@@ -10,20 +10,16 @@ import { Storage } from '@ionic/storage';
 import { audioController } from '../comp/AudioController';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { async } from '@angular/core/testing';
-import { Platform } from '@ionic/angular';
-import { Observable } from 'rxjs';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { nextTick } from 'process';
+import { Platform } from '@ionic/angular';
 
 @Component({
-	selector: 'app-main',
-	templateUrl: './main.page.html',
-	styleUrls: ['./main.page.scss'],
+  selector: 'app-header',
+  templateUrl: './global-header.component.html',
+  styleUrls: ['./global-header.component.scss'],
 })
-
-
-export class MainPage implements OnInit {
-	client: SocketIOClient.Socket;
+export class GlobalHeaderComponent implements OnInit {
+  client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
 	gameState: AmongUsState;
@@ -96,8 +92,10 @@ export class MainPage implements OnInit {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
 				this.androidPermissions.PERMISSION.BLUETOOTH,
-				this.androidPermissions.PERMISSION.RECORD_AUDIO,
 				this.androidPermissions.PERMISSION.INTERNET,
+				this.androidPermissions.PERMISSION.RECORD_AUDIO,
+				this.androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
+				'android.permission.FOREGROUND_SERVICE',
 			];
 
 			try {
@@ -125,12 +123,12 @@ export class MainPage implements OnInit {
 	}
 
 	onSettingsChange() {
-		console.log('onsettingschange', this.settings);
+		console.log('onsettingschange');
 		this.storage.set('settings', this.settings);
 	}
 
-	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
-		return e1 && e2 ? e1.id === e2.id : false;
+	compareFn(e1: string, e2: string): boolean {
+		return e1 && e2 ? e1 === e2 : false;
 	}
 
 	ngOnInit() {
@@ -144,4 +142,4 @@ export class MainPage implements OnInit {
 			this.showNotification();
 		});
 	}
-};
+}

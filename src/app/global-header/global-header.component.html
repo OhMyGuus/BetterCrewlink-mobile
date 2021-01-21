@@ -1,0 +1,24 @@
+<ng-container>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" id="Menu">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button
+        right
+        *ngIf="cManager.connectionState !== 0"
+        [routerLink]="['/settings']"
+        (click)="disconnect()">Disconnect</ion-button>
+    </ion-buttons>
+    <ion-title
+      *ngIf="cManager.connectionState !== 0"
+      class="ion-text-center"
+      style="margin-left: -48px; margin-right: -120.96px;"
+      >BetterCrewlink Mobile v0.0.7</ion-title>
+    <ion-title
+      *ngIf="cManager.connectionState == 0"
+      class="ion-text-center"
+      style="margin-left: -48px;"
+      >BetterCrewlink Mobile v0.0.7</ion-title>
+  </ion-toolbar>
+</ng-container>

@@ -1,91 +1,41 @@
 <ion-header>
-	<ion-toolbar color="primary">
-		<ion-buttons slot="start">
-			<!-- <ion-menu-button></ion-menu-button> -->
-		</ion-buttons>
-		<ion-buttons slot="end">
-			<ion-button right *ngIf="cManager.connectionState !== 0" (click)="disconnect()">disconnect</ion-button>
-		</ion-buttons>
-		<ion-title>BetterCrewlink Mobile v0.0.7</ion-title>
-	</ion-toolbar>
+	<app-header></app-header>
 </ion-header>
 <ion-content color="secondary">
-	<ng-container [ngSwitch]="cManager.connectionState">
-		<ng-container *ngSwitchDefault>
-			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
-				<ion-list-header lines="full" color="secondary">
-					<ion-label fixed class="fixedLabel"> Connection Settings: </ion-label>
-				</ion-list-header>
-				<ion-item color="secondary">
-					<ion-label>Voice server</ion-label>
-					<ion-input
-						[(ngModel)]="settings.voiceServer"
-						(ionChange)="onSettingsChange()"
-						placeholder="Voice server URL"
-					></ion-input>
-				</ion-item>
-				<ion-item color="secondary">
-					<ion-label>Ingame name</ion-label>
-					<ion-input
-						[(ngModel)]="settings.username"
-						(ionChange)="onSettingsChange()"
-						placeholder="'Coochie Man'"
-					></ion-input>
-				</ion-item>
-				<ion-item color="secondary">
-					<ion-label>Lobby code</ion-label>
-					<ion-input
-						style="text-transform: uppercase"
-						pattern="[A-Za-z]{6}"
-						[(ngModel)]="settings.gamecode"
-						(ionChange)="onSettingsChange()"
-						placeholder="'ABCDEF'"
-						maxlength="6"
-					></ion-input>
-				</ion-item>
-				<ion-item color="secondary">
-					<ion-label>NAT FIX</ion-label>
-					<ion-checkbox
-						[(ngModel)]="settings.natFix"
-						(ionChange)="onSettingsChange()"
-					></ion-checkbox>
-				</ion-item>
-
-				<!-- Mic debugging-->
-				<ion-item color="secondary">
-					<ion-label>Microphone debug</ion-label>
-					<ion-select
-						[(ngModel)]="settings.selectedMicrophone"
-						[compareWith]="compareFn"
-						(ionChange)="onSettingsChange()"
-					>
-						<ion-select-option *ngFor="let microphone of microphones;" [value]="microphone"
-							>{{microphone.label}} - {{microphone.deviceId}}</ion-select-option
-						>
-					</ion-select>
-				</ion-item>
-				
-				<hr />
-				<ion-item color="secondary">
-					<ion-button (click)="connect()">Connect</ion-button>
-				</ion-item>
-			</ion-list>
+	<ion-grid>
+		<ng-container [ngSwitch]="cManager.connectionState">
+			<ng-container *ngSwitchDefault>
+				<ion-row class="ion-justify-content-center">
+					<p style="text-align: center;"><b>Please go to the settings page to setup Crewlink</b></p>
+				</ion-row>
+				<ion-row class="ion-justify-content-center">
+					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+				</ion-row>
+			</ng-container>
+			<ng-container id="connectPg" *ngSwitchCase="1">
+				<ion-row class="ion-justify-content-center">
+					<ion-spinner paused="false" id="spinnyBoi" color="light"></ion-spinner>
+				</ion-row>
+				<p style="text-align: center;"><b>Waiting for you to join</b></p>
+				<p style="text-align: center;">**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**</p>
+				<ion-row class="ion-justify-content-center">
+					<ion-button (click)="reconnect()">refresh</ion-button>
+				</ion-row>
+			</ng-container>
+			<ng-container id="connectedPg" *ngSwitchCase="2">
+				<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a;">
+					<ion-list-header lines="full" color="secondary">
+						<ion-label>Connected Players:</ion-label>
+					</ion-list-header>
+					<ion-item *ngFor="let item of cManager.currentGameState.players;" color="secondary">
+						<ion-label position="fixed">{{item.name}}</ion-label>
+					</ion-item>
+				</ion-list>
+				<ion-button (click)="reconnect()">Refresh</ion-button>
+			</ng-container>
 		</ng-container>
-		<ng-container *ngSwitchCase="1">
-			<ion-spinner name="dots" style="float: left; margin-top: 10px" color="light"></ion-spinner>
-			<p style="float: inline-end"><b>Waiting for you to join</b></p>
-			<p><i>**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink**</i></p>
-			<ion-button (click)="disconnect()">disconnect</ion-button>
-		</ng-container>
-		<ng-container *ngSwitchCase="2">
-			<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
-				<ion-list-header lines="full" color="secondary">
-					<ion-label>Connected Players:</ion-label>
-				</ion-list-header>
-				<ion-item *ngFor="let item of cManager.currentGameState.players;" color="secondary">
-					<ion-label position="fixed">{{item.name}}</ion-label>
-				</ion-item>
-			</ion-list>
-		</ng-container>
-	</ng-container>
+	</ion-grid>
 </ion-content>
+<ion-footer>
+	<app-footer></app-footer>
+  </ion-footer>

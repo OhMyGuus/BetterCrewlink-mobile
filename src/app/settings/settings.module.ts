@@ -4,16 +4,21 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MainPageRoutingModule } from './main-routing.module';
+import { SettingsPageRoutingModule } from './settings-routing.module';
 
-import { MainPage } from './main.page';
+import { SettingsPage } from './settings.page';
 
 import { GlobalHeaderComponent } from '../global-header/global-header.component'
 
 import { GlobalFooterComponent } from '../global-footer/global-footer.component'
 
 @NgModule({
-	imports: [CommonModule, FormsModule, IonicModule, MainPageRoutingModule],
-	declarations: [MainPage, GlobalHeaderComponent, GlobalFooterComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    SettingsPageRoutingModule
+  ],
+  declarations: [SettingsPage, GlobalHeaderComponent, GlobalFooterComponent]
 })
-export class MainPageModule {}
+export class SettingsPageModule {}
