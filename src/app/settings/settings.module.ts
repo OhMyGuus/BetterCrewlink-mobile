@@ -8,6 +8,10 @@ import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
 
+import { GlobalHeaderComponent } from '../global-header/global-header.component'
+
+import { GlobalFooterComponent } from '../global-footer/global-footer.component'
+
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +19,6 @@ import { SettingsPage } from './settings.page';
     IonicModule,
     SettingsPageRoutingModule
   ],
-  declarations: [SettingsPage]
+  declarations: [SettingsPage, GlobalHeaderComponent, GlobalFooterComponent]
 })
 export class SettingsPageModule {}

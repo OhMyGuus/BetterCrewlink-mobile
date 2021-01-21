@@ -1,26 +1,5 @@
 <ion-header>
-	<ion-toolbar color="primary">
-		<ion-buttons slot="start" id="Menu">
-			<ion-menu-button></ion-menu-button>
-		</ion-buttons>
-		<ion-buttons slot="end">
-			<ion-button
-				right
-				*ngIf="cManager.connectionState !== 0"
-				[routerLink]="['/settings']"
-				(click)="disconnect()">Disconnect</ion-button>
-		</ion-buttons>
-    <ion-title
-      *ngIf="cManager.connectionState !== 0"
-      class="ion-text-center"
-      style="margin-left: -48px; margin-right: -120.96px;"
-      >BetterCrewlink Mobile v0.0.7</ion-title>
-    <ion-title
-      *ngIf="cManager.connectionState == 0"
-      class="ion-text-center"
-      style="margin-left: -48px;"
-      >BetterCrewlink Mobile v0.0.7</ion-title>
-	</ion-toolbar>
+	<app-header></app-header>
 </ion-header>
 <ion-content color="secondary">
 	<ion-grid>
@@ -58,30 +37,5 @@
 	</ion-grid>
 </ion-content>
 <ion-footer>
-	<ion-toolbar color="primary">
-	  <ion-row class="ion-justify-content-center">
-		<ion-col>
-		  <ion-row class="ion-justify-content-center">
-			<ion-button class="round" href="https://discord.gg/qDqTzvj4SH">
-			  <img 
-				src="../../assets/icon/discordicon.png"
-				width="40"
-				height="40"
-			  />
-			</ion-button>
-		  </ion-row>
-		</ion-col>
-		<ion-col>
-		  <ion-row class="ion-justify-content-center">
-			<ion-button class="round" href="https://github.com/OhMyGuus/better-crewlink-mobile">
-			  <img
-				src="../../assets/icon/giticon.png"
-				width="40"
-				height="40"
-			  />
-			</ion-button>
-		  </ion-row>
-		</ion-col>
-	  </ion-row>
-	</ion-toolbar>
+	<app-footer></app-footer>
   </ion-footer>

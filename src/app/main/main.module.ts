@@ -8,8 +8,12 @@ import { MainPageRoutingModule } from './main-routing.module';
 
 import { MainPage } from './main.page';
 
+import { GlobalHeaderComponent } from '../global-header/global-header.component'
+
+import { GlobalFooterComponent } from '../global-footer/global-footer.component'
+
 @NgModule({
 	imports: [CommonModule, FormsModule, IonicModule, MainPageRoutingModule],
-	declarations: [MainPage],
+	declarations: [MainPage, GlobalHeaderComponent, GlobalFooterComponent],
 })
 export class MainPageModule {}
