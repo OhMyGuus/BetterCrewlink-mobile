@@ -15,11 +15,24 @@ import { Platform } from '@ionic/angular';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { GlobalFooterComponent } from './global-footer/global-footer.component';
+import { GlobalHeaderComponent } from './global-header/global-header.component';
+import { ISettings } from './comp/smallInterfaces';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { GameComponent } from './pages/game/game.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-	declarations: [AppComponent],
+	declarations: [AppComponent, GlobalFooterComponent, GlobalHeaderComponent, SettingsComponent, GameComponent],
 	entryComponents: [],
-	imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, IonicStorageModule.forRoot(), ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })],
+	imports: [
+		BrowserModule,
+		IonicModule.forRoot(),
+		AppRoutingModule,
+		IonicStorageModule.forRoot(),
+		ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+		FormsModule
+	],
 	providers: [
 		StatusBar,
 		SplashScreen,

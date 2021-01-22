@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { GameComponent } from './pages/game/game.component';
 
 const routes: Routes = [
 	{
@@ -9,16 +11,16 @@ const routes: Routes = [
 	},
 	{
 		path: 'game',
-		loadChildren: () => import('./pages/game/game.module').then((m) => m.GamePageModule),
+		component: GameComponent
 	},
 	{
 		path: 'settings',
-		loadChildren: () => import('./pages/settings/settings.module').then((m) => m.SettingsPageModule),
+		component: SettingsComponent
 	},
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
+	imports: [RouterModule.forRoot(routes)],
 	exports: [RouterModule],
 })
 export class AppRoutingModule {}

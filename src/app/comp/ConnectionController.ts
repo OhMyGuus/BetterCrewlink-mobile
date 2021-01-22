@@ -73,6 +73,9 @@ class ConnectionController extends EventEmitterO implements IConnectionControlle
 	}
 
 	disconnect(disconnectAudio: boolean) {
+		if (this.connectionState === ConnectionState.disconnected) {
+			return;
+		}
 		this.connectionState = ConnectionState.disconnected;
 		this.gamecode = '';
 		this.amongusUsername = '';

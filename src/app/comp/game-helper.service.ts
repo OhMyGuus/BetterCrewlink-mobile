@@ -5,6 +5,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
 import { audioController } from './AudioController';
 import { Storage } from '@ionic/storage';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 @Injectable({
 	providedIn: 'root',
@@ -20,37 +21,48 @@ export class GameHelperService {
 		natFix: false,
 	};
 
-	constructor(private storage: Storage, private androidPermissions: AndroidPermissions, public platform: Platform) {
+	constructor(
+		private storage: Storage,
+		private androidPermissions: AndroidPermissions,
+		public platform: Platform,
+		private localNotifications: LocalNotifications
+	) {
 		this.cManager = connectionController;
-		storage.get('settings').then((val) => {
-			console.log('gotsettings', val);
-			if (val && val !== null) {
-				this.settings = val;
+		this.load();
+	}
+
+	saveSettings() {
+		this.storage.set('settings', this.settings);
+	}
+
+	connect() {
+		this.disconnect();
+		this.requestPermissions().then((haspermissions) => {
+			if (!haspermissions) {
+				console.log('permissions failed');
 			}
 
-			this.requestPermissions().then(() => {
-				audioController.getDevices().then((devices) => {
-					this.microphones = devices;
-					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone?.id)) {
-						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
-							id: 0,
-							label: 'default',
-							deviceId: 'default',
-							kind: 'audioinput',
-						};
-					} else {
-						this.settings.selectedMicrophone = this.microphones.find(
-							(o) => o.id === this.settings.selectedMicrophone.id
-						);
-					}
-				});
-			});
+			connectionController.connect(
+				this.settings.voiceServer,
+				this.settings.gamecode.toUpperCase(),
+				this.settings.username,
+				this.settings.selectedMicrophone.deviceId,
+				this.settings.natFix
+			);
+			this.showNotification();
 		});
 	}
 
-	onSettingsChange() {
-		console.log('onsettingschange');
-		this.storage.set('settings', this.settings);
+	disconnect() {
+		connectionController.disconnect(true);
+	}
+
+	showNotification() {
+		this.localNotifications.schedule({
+			id: 1,
+			title: 'Refresh BetterCrewlink',
+			launch: false,
+		});
 	}
 
 	async requestPermissions(): Promise<boolean> {
@@ -76,14 +88,40 @@ export class GameHelperService {
 		return true;
 	}
 
-	ngOnInit() {
-		// this.localNotifications.on('yes').subscribe((notification) => {
-		// 	this.reconnect();
-		// 	this.showNotification();
-		// });
-		// this.localNotifications.on('click').subscribe((notification) => {
-		// 	this.reconnect();
-		// 	this.showNotification();
-		// });
+	load() {
+		this.storage.get('settings').then((val) => {
+			console.log('gotsettings', val);
+			if (val && val !== null) {
+				this.settings = val;
+			}
+
+			this.requestPermissions().then(() => {
+				audioController.getDevices().then((devices) => {
+					this.microphones = devices;
+					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone?.id)) {
+						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
+							id: 0,
+							label: 'default',
+							deviceId: 'default',
+							kind: 'audioinput',
+						};
+					} else {
+						this.settings.selectedMicrophone = this.microphones.find(
+							(o) => o.id === this.settings.selectedMicrophone.id
+						);
+					}
+				});
+			});
+		});
+
+		this.localNotifications.on('yes').subscribe((notification) => {
+			this.connect();
+			this.showNotification();
+		});
+
+		this.localNotifications.on('click').subscribe((notification) => {
+			this.connect();
+			this.showNotification();
+		});
 	}
 }

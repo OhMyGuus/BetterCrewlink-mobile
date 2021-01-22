@@ -1,6 +1,3 @@
-<ion-header>
-	<app-header></app-header>
-</ion-header>
 <ion-content color="secondary">
 	<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
 		<ion-list-header lines="full" color="secondary">
@@ -35,9 +32,13 @@
 		</ion-item>
 		<ion-item>
 			<ion-label>Microphone</ion-label>
-			<ion-select [(ngModel)]="gameHelper.settings.selectedMicrophone" [compareWith]="compareFn" (ionChange)="onSettingsChange()">
-				<ion-select-option *ngFor="let microphone of gameHelper.microphones;" [value]="microphone.name"
-					>{{microphone.label}}</ion-select-option
+			<ion-select
+				[(ngModel)]="gameHelper.settings.selectedMicrophone"
+				[compareWith]="compareFn"
+				(ionChange)="onSettingsChange()"
+			>
+				<ion-select-option *ngFor="let microphone of gameHelper.microphones" [value]="microphone">
+					{{ microphone.label }}</ion-select-option
 				>
 			</ion-select>
 		</ion-item>
@@ -45,17 +46,15 @@
 		<ng-container [ngSwitch]="gameHelper.cManager.connectionState">
 			<ng-container *ngSwitchDefault>
 				<ion-item color="secondary">
-					<ion-button (click)="connect()" [routerLink]="['/game']">Connect</ion-button>
+					<ion-button (click)="gameHelper.connect()" [routerLink]="['/game']">Connect</ion-button>
 				</ion-item>
 			</ng-container>
-			<ng-container *ngSwitchCase="1||2">
+			<ng-container *ngSwitchCase="1 || 2">
 				<ion-item color="secondary">
-					<ion-button (click)="reconnect()">Refresh</ion-button>
+					<ion-button (click)="gameHelper.reconnect()">Refresh</ion-button>
+					<ion-button (click)="gameHelper.disconnect()">disconnect</ion-button>
 				</ion-item>
 			</ng-container>
 		</ng-container>
 	</ion-list>
 </ion-content>
-<ion-footer>
-	<app-footer></app-footer>
-</ion-footer>
