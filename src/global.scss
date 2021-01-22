@@ -10,30 +10,42 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "~@ionic/angular/css/core.css";
+@import '~@ionic/angular/css/core.css';
 
 /* Basic CSS for apps built with Ionic */
-@import "~@ionic/angular/css/normalize.css";
-@import "~@ionic/angular/css/structure.css";
-@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/normalize.css';
+@import '~@ionic/angular/css/structure.css';
+@import '~@ionic/angular/css/typography.css';
 @import '~@ionic/angular/css/display.css';
 
 /* Optional CSS utils that can be commented out */
-@import "~@ionic/angular/css/padding.css";
-@import "~@ionic/angular/css/float-elements.css";
-@import "~@ionic/angular/css/text-alignment.css";
-@import "~@ionic/angular/css/text-transformation.css";
-@import "~@ionic/angular/css/flex-utils.css";
+@import '~@ionic/angular/css/padding.css';
+@import '~@ionic/angular/css/float-elements.css';
+@import '~@ionic/angular/css/text-alignment.css';
+@import '~@ionic/angular/css/text-transformation.css';
+@import '~@ionic/angular/css/flex-utils.css';
 
 :root {
-    --ion-color-primary: #1d1a23;
-    --ion-color-primary-contrast: #ba68c8;
-    --ion-color-secondary: #25232a;
-    --ion-color-secondary-contrast: #ffffff;
-    --ion-color-secondary-shade: #121114;
-    --ion-color-secondary-tint: #464250;
-    --ion-color-light: #dfdfdf;
-  }
+	--ion-item-color: #ffffff;
+	--ion-item-background: #25232a;
+	--ion-color-primary: #1d1a23;
+	--ion-color-primary-contrast: #ba68c8;
+	--ion-color-secondary: #25232a;
+	--ion-color-secondary-contrast: #ffffff;
+	--ion-color-secondary-shade: #121114;
+	--ion-color-secondary-tint: #464250;
+	--ion-color-light: #dfdfdf;
+}
 .masters {
-    background-color: #25232a;
+	background-color: #25232a;
+}
+
+.alert-wrapper {
+	width: 20% !important;
+	max-width: 80% !important;
+}
+
+.ion-page > ion-content
+{
+   top: 56px;//your headers height
 }

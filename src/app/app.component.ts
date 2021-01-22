@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 	public appPages = [
 		{
 			title: 'game',
-			url: '/main',
+			url: '/game',
 			icon: 'home',
 		},
 		{

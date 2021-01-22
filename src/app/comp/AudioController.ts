@@ -4,16 +4,18 @@ import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
 import { connectionController } from './ConnectionController';
 import { element } from 'protractor';
+import { async } from '@angular/core/testing';
 
 export default class AudioController extends EventEmitterO {
-	audioDeviceId = 'default';
-	stream: MediaStream;
-	audioElementsCotainer: HTMLElement;
-
 	constructor() {
 		super();
 		this.audioElementsCotainer = document.getElementById('AudioElements');
 	}
+	audioDeviceId = 'default';
+	stream: MediaStream;
+	audioElementsCotainer: HTMLElement;
+
+	permissionRequested: boolean;
 	async startAudio() {
 		if (this.stream) {
 			return;
@@ -46,7 +48,6 @@ export default class AudioController extends EventEmitterO {
 		const source = context.createMediaStreamSource(stream);
 		const gain = context.createGain();
 		const pan = context.createPanner();
-		const compressor = context.createDynamicsCompressor();
 
 		pan.refDistance = 0.1;
 		pan.panningModel = 'equalpower';
@@ -63,10 +64,6 @@ export default class AudioController extends EventEmitterO {
 		source.connect(pan);
 		pan.connect(muffle);
 		muffle.connect(gain);
-		gain.connect(compressor);
-
-
-
 
 		const audioContext = pan.context;
 		const panPos = [3, 0];
@@ -78,7 +75,7 @@ export default class AudioController extends EventEmitterO {
 		} else {
 			pan.setPosition(panPos[0], panPos[1], -0.5);
 		}
-		compressor.connect(context.destination);
+		gain.connect(context.destination);
 
 		return {
 			htmlAudioElement,
@@ -86,7 +83,6 @@ export default class AudioController extends EventEmitterO {
 			mediaStreamAudioSource: source,
 			gain,
 			pan,
-			compressor,
 			muffle,
 		} as AudioElement;
 	}
@@ -193,8 +189,7 @@ export default class AudioController extends EventEmitterO {
 			return;
 		}
 		console.log('disconnectElement -> !uff?');
-
-		socketElement?.audioElement?.compressor?.disconnect();
+		socketElement?.audioElement?.muffle?.disconnect();
 		socketElement?.audioElement?.pan?.disconnect();
 		socketElement?.audioElement?.gain?.disconnect();
 		socketElement?.audioElement?.mediaStreamAudioSource?.disconnect();
@@ -214,7 +209,18 @@ export default class AudioController extends EventEmitterO {
 		socketElement.peer = undefined;
 	}
 
+	async requestPermissions() {
+		if (!this.permissionRequested) {
+			const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+			stream.getTracks().forEach((track) => {
+				track.stop();
+			});
+			this.permissionRequested = true;
+		}
+	}
+
 	async getDevices(): Promise<IDeviceInfo[]> {
+		await this.requestPermissions();
 		let deviceId = 0;
 		return (await navigator.mediaDevices.enumerateDevices())
 			.filter((o) => o.kind === 'audiooutput' || o.kind === 'audioinput')
