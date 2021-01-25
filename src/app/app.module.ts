@@ -21,6 +21,8 @@ import { ISettings } from './comp/smallInterfaces';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { GameComponent } from './pages/game/game.component';
 import { FormsModule } from '@angular/forms';
+import { AppCenterCrashes } from '@ionic-native/app-center-crashes/ngx';
+import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 
 @NgModule({
 	declarations: [AppComponent, GlobalFooterComponent, GlobalHeaderComponent, SettingsComponent, GameComponent],
@@ -37,6 +39,8 @@ import { FormsModule } from '@angular/forms';
 		StatusBar,
 		SplashScreen,
 		BackgroundMode,
+		AppCenterCrashes,
+		AppCenterAnalytics,
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		AndroidPermissions,
 		Platform,

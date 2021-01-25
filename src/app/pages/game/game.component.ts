@@ -18,7 +18,7 @@ export class GameComponent implements OnInit {
 	peerConnections: Array<Peer> = [];
 	cManager: IConnectionController;
 
-	constructor(private gameHelper: GameHelperService) {
+	constructor(public gameHelper: GameHelperService) {
 	}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {

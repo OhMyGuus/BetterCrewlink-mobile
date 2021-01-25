@@ -68,9 +68,9 @@ export class GameHelperService {
 	async requestPermissions(): Promise<boolean> {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
-				this.androidPermissions.PERMISSION.BLUETOOTH,
-				this.androidPermissions.PERMISSION.RECORD_AUDIO,
-				this.androidPermissions.PERMISSION.INTERNET,
+				this.androidPermissions.PERMISSION.BLUETOOT,
+				// this.androidPermissions.PERMISSION.RECORD_AUDIO,
+				// this.androidPermissions.PERMISSION.INTERNET,
 			];
 
 			try {
