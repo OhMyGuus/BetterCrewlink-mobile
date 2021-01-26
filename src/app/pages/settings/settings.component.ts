@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { GameHelperService } from '../../comp/game-helper.service';
 import { IDeviceInfo, ISettings } from '../../comp/smallInterfaces';
 
@@ -8,7 +8,7 @@ import { IDeviceInfo, ISettings } from '../../comp/smallInterfaces';
 	styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-	constructor(public gameHelper: GameHelperService) {}
+	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
 
 	onSettingsChange() {
 		this.gameHelper.saveSettings();
@@ -18,5 +18,9 @@ export class SettingsComponent implements OnInit {
 		return e1 && e2 ? e1.id === e2.id : false;
 	}
 
-	ngOnInit() {}
+	ngOnInit() {
+		this.gameHelper.on('onConnect', () => {
+			this.changeDetectorRef.detectChanges();
+		});
+	}
 }

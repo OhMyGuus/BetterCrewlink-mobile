@@ -1,7 +1,6 @@
 import Peer from 'simple-peer';
 import { Player } from './AmongUsState';
-import { connectionController } from './ConnectionController';
-
+import { ConnectionController } from './ConnectionController.service';
 export interface ISettings {
 	voiceServer: string;
 	username: string;
@@ -67,7 +66,7 @@ export class SocketElement {
 		this.player = player;
 	}
 
-	updatePLayer() {
+	updatePLayer(connectionController: ConnectionController) {
 		this.player = this.client ? connectionController.getPlayer(this.client?.clientId) : undefined;
 	}
 }

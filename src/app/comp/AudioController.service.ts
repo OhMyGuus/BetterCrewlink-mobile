@@ -2,12 +2,13 @@ import { EventEmitter as EventEmitterO } from 'events';
 import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
-import { connectionController } from './ConnectionController';
 import { element } from 'protractor';
 import { async } from '@angular/core/testing';
+import { ConnectionController } from './ConnectionController.service';
+import { Injectable } from '@angular/core';
 
 export default class AudioController extends EventEmitterO {
-	constructor() {
+	constructor(private connectionController: ConnectionController) {
 		super();
 		this.audioElementsCotainer = document.getElementById('AudioElements');
 	}
@@ -52,7 +53,7 @@ export default class AudioController extends EventEmitterO {
 		pan.refDistance = 0.1;
 		pan.panningModel = 'equalpower';
 		pan.distanceModel = 'linear';
-		pan.maxDistance = connectionController.lobbySettings.maxDistance;
+		pan.maxDistance = this.connectionController.lobbySettings.maxDistance;
 		pan.rolloffFactor = 1;
 		gain.gain.value = 0;
 		htmlAudioElement.volume = 1;
@@ -116,12 +117,16 @@ export default class AudioController extends EventEmitterO {
 			case GameState.TASKS:
 				gain.gain.value = 1;
 
-				if (!localPLayer.isDead && connectionController.lobbySettings.commsSabotage && currentGameState.comsSabotaged) {
+				if (
+					!localPLayer.isDead &&
+					this.connectionController.lobbySettings.commsSabotage &&
+					currentGameState.comsSabotaged
+				) {
 					gain.gain.value = 0;
 				}
 
 				// Mute other players which are in a vent
-				if (other.inVent && !connectionController.lobbySettings.hearImpostorsInVents) {
+				if (other.inVent && !this.connectionController.lobbySettings.hearImpostorsInVents) {
 					gain.gain.value = 0;
 				}
 
@@ -129,7 +134,7 @@ export default class AudioController extends EventEmitterO {
 					!localPLayer.isDead &&
 					other.isDead &&
 					localPLayer.isImpostor &&
-					connectionController.lobbySettings.haunting
+					this.connectionController.lobbySettings.haunting
 				) {
 					gain.gain.value = gain.gain.value * 0.02; //0.005;
 				} else {
@@ -236,5 +241,3 @@ export default class AudioController extends EventEmitterO {
 			});
 	}
 }
-
-export const audioController = new AudioController();

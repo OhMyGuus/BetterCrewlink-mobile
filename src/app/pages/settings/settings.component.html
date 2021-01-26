@@ -31,6 +31,14 @@
 			></ion-input>
 		</ion-item>
 		<ion-item>
+			<ion-label>NAT FIX</ion-label>
+			<ion-checkbox 
+				[(ngModel)]="gameHelper.settings.natFix"
+				(ionChange)="onSettingsChange()"
+				placeholder="NAT FIX"
+			></ion-checkbox >
+		</ion-item>
+		<ion-item>
 			<ion-label>Microphone</ion-label>
 			<ion-select
 				[(ngModel)]="gameHelper.settings.selectedMicrophone"

@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Peer from 'simple-peer';
-import { IConnectionController } from 'src/app/comp/ConnectionController';
+import { IConnectionController } from 'src/app/comp/ConnectionController.service';
 import { AmongUsState } from '../../comp/AmongUsState';
 import { IDeviceInfo, ISettings } from '../../comp/smallInterfaces';
 import { GameHelperService } from '../../comp/game-helper.service';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { connectionController } from '../../comp/ConnectionController';
 import { Storage } from '@ionic/storage';
 
 @Component({
@@ -16,10 +14,8 @@ import { Storage } from '@ionic/storage';
 export class GameComponent implements OnInit {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
-	cManager: IConnectionController;
 
-	constructor(public gameHelper: GameHelperService) {
-	}
+	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
 		return e1 && e2 ? e1.id === e2.id : false;
@@ -27,5 +23,8 @@ export class GameComponent implements OnInit {
 
 	ngOnInit() {
 		console.log('ngOninit');
+		this.gameHelper.on('onConnect', () => {
+			this.changeDetectorRef.detectChanges();
+		});
 	}
 }
