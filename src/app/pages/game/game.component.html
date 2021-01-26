@@ -1,6 +1,5 @@
 <ion-content color="secondary">
 	<ion-grid>
-		{{gameHelper.cManager.connectionState}}
 		<ng-container [ngSwitch]="gameHelper.cManager.connectionState">
 			<ng-container *ngSwitchDefault>
 				<ion-row class="ion-justify-content-center">

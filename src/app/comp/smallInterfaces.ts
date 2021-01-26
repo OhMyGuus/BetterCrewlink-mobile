@@ -33,6 +33,10 @@ export interface AudioElement {
 	gain: GainNode;
 	pan: PannerNode;
 	muffle: BiquadFilterNode;
+	// reverb: ConvolverNode;
+	destination: AudioNode;
+	// reverbConnected: boolean;
+	muffleConnected: boolean;
 }
 
 
@@ -40,15 +44,25 @@ export interface ILobbySettings {
 	maxDistance: number;
 	haunting: boolean;
 	hearImpostorsInVents: boolean;
+	impostersHearImpostersInvent: boolean;
 	commsSabotage: boolean;
+	deadOnly: boolean;
+	meetingGhostOnly: boolean;
+	hearThroughCameras: boolean;
+	wallsBlockAudio: boolean;
 }
 
 
 export const DEFAULT_LOBBYSETTINGS: ILobbySettings = {
-	maxDistance: 5.6,
+	maxDistance: 5.32,
 	haunting: false,
 	hearImpostorsInVents: false,
+	impostersHearImpostersInvent: false,
 	commsSabotage: false,
+	deadOnly: false,
+	hearThroughCameras: false,
+	wallsBlockAudio: false,
+	meetingGhostOnly: false,
 };
 
 export class SocketElement {

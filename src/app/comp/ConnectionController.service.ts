@@ -27,7 +27,6 @@ export declare interface IConnectionController {
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean);
 }
 
-
 @Injectable({
 	providedIn: 'root',
 })
@@ -211,8 +210,12 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		}
 
 		this.socketElements.forEach((value) => {
-			console.log(JSON.stringify(value));
-			this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+			value.updatePLayer(this);
+			if (value?.audioElement?.gain) {
+				const endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+				console.log(endGain);
+				value.audioElement.gain.gain.value = endGain;
+			}
 		});
 	}
 
