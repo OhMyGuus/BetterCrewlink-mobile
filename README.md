@@ -4,7 +4,7 @@
 <br />
 <p align="center">
   <a>
-    <img src="resources/logo.png" alt="Logo" width="80" height="80">
+    <img src="logo.png" alt="Logo" width="80" height="80">
   </a>
   <h3 align="center">BetterCrewLink Mobile is here!</h3>
 
