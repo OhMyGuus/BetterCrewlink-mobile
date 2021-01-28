@@ -50,11 +50,13 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project implements proximity voice chat in Among Us. Everyone in an Among Us lobby with this program running will be able to communicate over voice in-game, with no third-party programs required. Spatial audio ensures that you can only hear people close to you.
+This project implements proximity voice chat for mobile users in Among Us. As long as there is a PC user with 'Mobile Host' enabled in your lobby, you will be able to hear people near you.
 
 ## Installation
 
 Download the latest version from [releases](https://github.com/OhMyGuus/better-crewlink-mobile/releases) and run the `Bettercrewlink-v-X-X-X-a.apk` file on your phone. You may have to allow chrome to install apps on your phone.
+
+You can also use the web version in your browser [here](https://web.bettercrewl.ink/).
 
 If you can, you should use a private server by deploying [this repository](https://github.com/OhMyGuus/BetterCrewLink-server).
 
