@@ -98,6 +98,8 @@ cd better-crewlink-mobile
 2. Install Ionic packages
 ```sh
 npm install @ionic/angular@latest --save
+ionic cordova plugin add cordova-plugin-appcenter-analytics
+npm install @ionic-native/app-center-analytics
 ```
 3. Run the project
 ```JS
