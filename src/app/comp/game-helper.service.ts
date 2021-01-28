@@ -1,17 +1,25 @@
-import { Injectable } from '@angular/core';
-import { connectionController, IConnectionController } from './ConnectionController';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { ISettings, IDeviceInfo } from './smallInterfaces';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
-import { audioController } from './AudioController';
 import { Storage } from '@ionic/storage';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { title } from 'process';
+import { LocalNotification, Plugins } from '@capacitor/core';
+import AudioController from './AudioController.service';
+import { ConnectionController } from './ConnectionController.service';
+import { EventEmitter as EventEmitterO } from 'events';
+
+const { LocalNotifications } = Plugins;
+
+
+export declare interface IGameHelperService {
+	on(event: 'onConnect', listener: () => void): this;
+}
 
 @Injectable({
 	providedIn: 'root',
 })
-export class GameHelperService {
-	cManager: IConnectionController;
+export class GameHelperService extends EventEmitterO  implements IGameHelperService{
 	microphones: IDeviceInfo[] = [];
 	settings: ISettings = {
 		gamecode: '',
@@ -25,9 +33,9 @@ export class GameHelperService {
 		private storage: Storage,
 		private androidPermissions: AndroidPermissions,
 		public platform: Platform,
-		private localNotifications: LocalNotifications
+		public cManager: ConnectionController
 	) {
-		this.cManager = connectionController;
+		super();
 		this.load();
 	}
 
@@ -37,12 +45,13 @@ export class GameHelperService {
 
 	connect() {
 		this.disconnect();
+
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
 				console.log('permissions failed');
 			}
-
-			connectionController.connect(
+			console.log('CALL CONNECT');
+			this.cManager.connect(
 				this.settings.voiceServer,
 				this.settings.gamecode.toUpperCase(),
 				this.settings.username,
@@ -51,26 +60,43 @@ export class GameHelperService {
 			);
 			this.showNotification();
 		});
+		setTimeout(() => {
+			this.emit('onConnect');
+		}, 1500);
 	}
 
 	disconnect() {
-		connectionController.disconnect(true);
+		this.cManager.disconnect(true);
 	}
 
-	showNotification() {
-		this.localNotifications.schedule({
-			id: 1,
-			title: 'Refresh BetterCrewlink',
-			launch: false,
+	async showNotification() {
+		await LocalNotifications.requestPermission();
+		const notifs = await LocalNotifications.schedule({
+			notifications: [
+				{
+					title: 'Refresh BetterCrewlink',
+					body: 'click',
+					id: 1,
+					sound: null,
+					attachments: null,
+					extra: null,
+				},
+			],
 		});
+		// this.localNotifications.schedule({
+		// 	id: 1,
+		// 	title: 'Refresh BetterCrewlink',
+		// 	launch: false,
+		// 	smallIcon: 'res://mipmap-xxxhdpi/ic_stat_zin.png',
+		// });
 	}
 
 	async requestPermissions(): Promise<boolean> {
 		if (this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile')) {
 			const PERMISSIONS_NEEDED = [
-				this.androidPermissions.PERMISSION.BLUETOOTH,
-				this.androidPermissions.PERMISSION.RECORD_AUDIO,
-				this.androidPermissions.PERMISSION.INTERNET,
+				'android.permission.BLUETOOTH',
+				// this.androidPermissions.PERMISSION.RECORD_AUDIO,
+				// this.androidPermissions.PERMISSION.INTERNET,
 			];
 
 			try {
@@ -96,7 +122,7 @@ export class GameHelperService {
 			}
 
 			this.requestPermissions().then(() => {
-				audioController.getDevices().then((devices) => {
+				this.cManager.audioController.getDevices().then((devices) => {
 					this.microphones = devices;
 					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone?.id)) {
 						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
@@ -113,15 +139,18 @@ export class GameHelperService {
 				});
 			});
 		});
-
-		this.localNotifications.on('yes').subscribe((notification) => {
+		LocalNotifications.addListener('localNotificationActionPerformed', () => {
+			console.log('Action performed..');
 			this.connect();
-			this.showNotification();
 		});
+		// LocalNotifications.on('yes').subscribe((notification) => {
+		// 	this.connect();
+		// 	this.showNotification();
+		// });
 
-		this.localNotifications.on('click').subscribe((notification) => {
-			this.connect();
-			this.showNotification();
-		});
+		// LocalNotifications.on('click').subscribe((notification) => {
+		// 	this.connect();
+		// 	this.showNotification();
+		// });
 	}
 }

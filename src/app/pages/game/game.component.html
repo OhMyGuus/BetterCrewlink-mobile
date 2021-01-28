@@ -28,7 +28,7 @@
 					<ion-list-header lines="full" color="secondary">
 						<ion-label>Connected Players:</ion-label>
 					</ion-list-header>
-					<ion-item *ngFor="let item of cManager.currentGameState.players" color="secondary">
+					<ion-item *ngFor="let item of gameHelper.cManager.currentGameState.players" color="secondary">
 						<ion-label position="fixed">{{ item.name }}</ion-label>
 					</ion-item>
 				</ion-list>

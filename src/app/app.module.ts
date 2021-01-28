@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ChangeDetectorRef, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -12,7 +12,6 @@ import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { IonicStorageModule } from '@ionic/storage';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { GlobalFooterComponent } from './global-footer/global-footer.component';
@@ -21,6 +20,8 @@ import { ISettings } from './comp/smallInterfaces';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { GameComponent } from './pages/game/game.component';
 import { FormsModule } from '@angular/forms';
+import { AppCenterCrashes } from '@ionic-native/app-center-crashes/ngx';
+import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 
 @NgModule({
 	declarations: [AppComponent, GlobalFooterComponent, GlobalHeaderComponent, SettingsComponent, GameComponent],
@@ -37,10 +38,11 @@ import { FormsModule } from '@angular/forms';
 		StatusBar,
 		SplashScreen,
 		BackgroundMode,
+		AppCenterCrashes,
+		AppCenterAnalytics,
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		AndroidPermissions,
-		Platform,
-		LocalNotifications
+		Platform
 	],
 	bootstrap: [AppComponent],
 })

@@ -7,7 +7,7 @@ import { GameHelperService } from '../comp/game-helper.service';
 	styleUrls: ['./global-header.component.scss'],
 })
 export class GlobalHeaderComponent implements OnInit {
-	constructor(private gameHelper: GameHelperService) {}
+	constructor(public gameHelper: GameHelperService) {}
 	ngOnInit(): void {
 	}
 }
