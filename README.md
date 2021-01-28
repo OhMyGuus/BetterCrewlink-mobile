@@ -1,10 +1,10 @@
 # better-crewlink-mobile
-[![GPL-3.0 License][license-shield]][license-url] [![Donate][paypal-shield]](paypal-url)
+[![Donate][paypal-shield]](paypal-url)
 
 <br />
 <p align="center">
   <a>
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="resources/logo.png" alt="Logo" width="80" height="80">
   </a>
   <h3 align="center">BetterCrewLink Mobile is here!</h3>
 
