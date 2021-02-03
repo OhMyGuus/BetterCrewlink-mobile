@@ -22,15 +22,15 @@ public class MainActivity extends BridgeActivity {
       // Ex: add(TotallyAwesomePlugin.class);
     }});
 
-     if (BuildConfig.DEBUG) {
-        this.bridge.getWebView().setWebViewClient(new BridgeWebViewClient(this.bridge) {
-            @Override
-            public void onReceivedSslError(android.webkit.WebView view, SslErrorHandler handler,
-                                           SslError error) {
-                handler.proceed();
-            }
-        });
-    }
+   //  if (BuildConfig.DEBUG) {
+     //   this.bridge.getWebView().setWebViewClient(new BridgeWebViewClient(this.bridge) {
+       //     @Override
+         //   public void onReceivedSslError(android.webkit.WebView view, SslErrorHandler handler,
+           //                                SslError error) {
+             //   handler.proceed();
+            //}
+       // });
+   // }
     
   }
 }

@@ -20,6 +20,12 @@ export enum ConnectionState {
 	connecting = 1,
 	conencted = 2,
 }
+interface mobileHostInfo {
+	mobileHostInfo: {
+		isHostingMobile: boolean;
+		isGameHost: boolean;
+	};
+}
 
 export declare interface IConnectionController {
 	currentGameState: AmongUsState;
@@ -38,14 +44,42 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	currenGameCode: string;
 	connectionState = ConnectionState.disconnected;
 	gamecode: string;
+	lastPing: number = -1;
 	localPLayer: Player;
 	deviceID: string;
 	public lobbySettings: ILobbySettings = DEFAULT_LOBBYSETTINGS;
-	natFix = false;
+	natFix: boolean = false;
 	public audioController: AudioController;
+	public mobileHosts: Map<string, mobileHostInfo> = new Map<string, mobileHostInfo>();
+	private currentHost: string;
+	private triedGameHost: boolean;
+	private lastHostIndex = -1;
 	constructor() {
 		super();
 		this.audioController = new AudioController(this);
+		this.ConnectionCheck();
+	}
+
+	private ConnectionCheck() {
+		const recievedDataLength = Date.now() - this.lastPing;
+		if (this.connectionState !== ConnectionState.disconnected && this.lastPing !== -1 && recievedDataLength > 1000) {
+			let index = 0;
+			const nextIndex = this.mobileHosts.size > this.lastHostIndex ? this.lastHostIndex + 1 : 0;
+			this.mobileHosts.forEach((mobiledata, from) => {
+				if (mobiledata.mobileHostInfo.isGameHost || (this.triedGameHost && index++ === nextIndex)) {
+					this.currentHost = from;
+					this.lastHostIndex = this.triedGameHost ? nextIndex : -1;
+					this.socketIOClient?.emit('signal', {
+						to: from,
+						data: { mobilePlayerInfo: { code: this.gamecode, askingForHost: true } },
+					});
+				}
+			});
+			this.triedGameHost = true;
+		} else {
+			this.triedGameHost = false;
+		}
+		setTimeout(() => this.ConnectionCheck(), 8000);
 	}
 	private getSocketElement(socketId: string): SocketElement {
 		if (!this.socketElements.has(socketId)) {
@@ -65,6 +99,8 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean) {
 		this.lobbySettings = DEFAULT_LOBBYSETTINGS;
+		this.lastPing = Date.now();
+		this.lastHostIndex = -1;
 		this.connectionState = ConnectionState.connecting;
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
@@ -257,7 +293,16 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		});
 
 		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
+			console.log('recieved signaldata: ', data, data.hasOwnProperty('mobileHostInfo'));
+			if (data.hasOwnProperty('mobileHostInfo')) {
+				const mobiledata = data as mobileHostInfo;
+				this.mobileHosts.set(from, mobiledata);
+
+				return;
+			}
+
 			if (data.hasOwnProperty('gameState')) {
+				this.lastPing = Date.now();
 				const mobiledata = data as MobileData;
 				this.onLobbySettingsChange(mobiledata.lobbySettings);
 				this.onGameStateChange(mobiledata.gameState);

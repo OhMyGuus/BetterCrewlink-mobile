@@ -7,6 +7,8 @@
 				</ion-row>
 				<ion-row class="ion-justify-content-center">
 					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+					<ion-button (click)="gameHelper.connect()">Reconnect</ion-button>
+
 				</ion-row>
 			</ng-container>
 			<ng-container id="connectPg" *ngSwitchCase="1">
