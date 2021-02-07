@@ -30,8 +30,8 @@
 					<ion-list-header lines="full" color="secondary">
 						<ion-label>Connected Players:</ion-label>
 					</ion-list-header>
-					<ion-item *ngFor="let item of gameHelper.cManager.currentGameState.players" color="secondary">
-						<ion-label position="fixed">{{ item.name }}</ion-label>
+					<ion-item *ngFor="let item of getValues(gameHelper.cManager.socketElements)" color="{{item.talking? 'primary' : 'secondary'}}"  >
+						<ion-label >{{ item?.player?.name }} - {{item.talking}} - {{ item?.player?.colorId }} - {{ item?.audioElement?.gain?.gain.value }}</ion-label>
 					</ion-item>
 				</ion-list>
         <ion-button (click)="gameHelper.connect()">Refresh</ion-button>

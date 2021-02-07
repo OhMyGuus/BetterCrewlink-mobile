@@ -21,6 +21,10 @@ export class GameComponent implements OnInit {
 		return e1 && e2 ? e1.id === e2.id : false;
 	}
 
+	getValues(map) {
+		return Array.from(map.values());
+	}
+
 	ngOnInit() {
 		console.log('ngOninit');
 		this.gameHelper.on('onConnect', () => {

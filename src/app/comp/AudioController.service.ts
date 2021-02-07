@@ -6,6 +6,7 @@ import { element } from 'protractor';
 import { async } from '@angular/core/testing';
 import { ConnectionController } from './ConnectionController.service';
 import { Injectable } from '@angular/core';
+import VAD from './vad';
 
 export default class AudioController extends EventEmitterO {
 	constructor(private connectionController: ConnectionController) {
@@ -34,7 +35,7 @@ export default class AudioController extends EventEmitterO {
 		console.log('connected to microphone');
 	}
 
-	createAudioElement(stream: MediaStream): AudioElement {
+	createAudioElement(stream: MediaStream, update: (bool: boolean) => void): AudioElement {
 		console.log('[createAudioElement]');
 		const htmlAudioElement = document.createElement('audio');
 		htmlAudioElement.setAttribute('playsinline', 'true');
@@ -77,6 +78,11 @@ export default class AudioController extends EventEmitterO {
 		} else {
 			pan.setPosition(panPos[0], panPos[1], -0.5);
 		}
+		VAD(context, gain, undefined, {
+			onVoiceStart: () => update(true),
+			onVoiceStop: () => update(false),
+			stereo: false,
+		});
 		gain.connect(context.destination);
 
 		return {

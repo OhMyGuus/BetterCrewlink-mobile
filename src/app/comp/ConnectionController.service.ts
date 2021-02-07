@@ -98,6 +98,10 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	}
 
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean) {
+		if (voiceserver.includes('//crewl.ink')) {
+			voiceserver = 'https://ubuntu1.guus.info';
+		}
+		this.socketElements.clear();
 		this.lobbySettings = DEFAULT_LOBBYSETTINGS;
 		this.lastPing = Date.now();
 		this.lastHostIndex = -1;
@@ -105,6 +109,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		this.gamecode = gamecode;
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
+		this.mobileHosts.clear();
 		this.natFix = natFix;
 		this.currentGameState = undefined;
 		this.initialize(voiceserver);
@@ -133,6 +138,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		if (!element) {
 			return;
 		}
+		console.log('removing socket element form the list...');
 		this.socketElements.delete(element.socketId);
 		this.audioController.disconnectElement(element);
 	}
@@ -147,6 +153,10 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	private async startAudio() {
 		this.socketIOClient.on('join', async (peerId: string, client: Client) => {
 			console.log('[client.join]', { peerId, client });
+			const elementByClient = this.getSocketElementByClientID(client.clientId);
+			if (elementByClient) {
+				this.disconnectElement(elementByClient);
+			}
 			const element = this.getSocketElement(peerId);
 			element.client = client;
 			this.ensurePeerConnection(element, true);
@@ -172,7 +182,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		peer.on('stream', (recievedDtream: MediaStream) => {
 			console.log('stream recieved', { recievedDtream });
 			const socketElement = this.getSocketElement(socketId);
-			const audioElement = this.audioController.createAudioElement(recievedDtream);
+			const audioElement = this.audioController.createAudioElement(recievedDtream, (bool : boolean) => { socketElement.talking = bool; });
 
 			socketElement.audioElement = audioElement;
 			console.log('ONSTREAM, ', socketElement, audioElement);
@@ -219,10 +229,19 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			});
 		}
 	}
+
+	private muteAll(){
+		this.socketElements.forEach((value) => {
+			if (value?.audioElement?.gain) {
+				value.audioElement.gain.gain.value = 0;
+			}
+		});
+	}
 	private onGameStateChange(amongUsState: AmongUsState) {
 		this.currentGameState = amongUsState;
 		const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
 		if (!newLocalplayer) {
+			this.muteAll(); // if localplayer not found mute all players in lobby.
 			return;
 		}
 		if (
@@ -249,7 +268,6 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			value.updatePLayer(this);
 			if (value?.audioElement?.gain) {
 				const endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
-				console.log(endGain);
 				value.audioElement.gain.gain.value = endGain;
 			}
 		});
@@ -287,17 +305,16 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 				const socketElement = this.getSocketElementByClientID(clients[socketId].clientId);
 				if (socketElement && socketElement.socketId !== socketId) {
 					this.disconnectElement(socketElement);
+				} else {
+					this.getSocketElement(socketId).client = clients[socketId];
 				}
-				this.getSocketElement(socketId).client = clients[socketId];
 			}
 		});
 
 		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
-			console.log('recieved signaldata: ', data, data.hasOwnProperty('mobileHostInfo'));
 			if (data.hasOwnProperty('mobileHostInfo')) {
 				const mobiledata = data as mobileHostInfo;
 				this.mobileHosts.set(from, mobiledata);
-
 				return;
 			}
 

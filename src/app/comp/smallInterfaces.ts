@@ -71,6 +71,7 @@ export class SocketElement {
 	client?: Client;
 	audioElement?: AudioElement;
 	player?: Player;
+	talking: boolean = false;
 
 	constructor(socketId: string, peer?: Peer, client?: Client, audioElement?: AudioElement, player?: Player) {
 		this.socketId = socketId;

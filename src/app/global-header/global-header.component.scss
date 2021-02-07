@@ -1,0 +1,10 @@
+.small-title {
+    font-size: 25px;
+    font-size: 4vw;
+}
+
+@media screen and (min-width: 1200px) {
+    .small-title {
+       font-size: 25px;
+    }
+  } 

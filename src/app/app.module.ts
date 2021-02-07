@@ -22,6 +22,7 @@ import { GameComponent } from './pages/game/game.component';
 import { FormsModule } from '@angular/forms';
 import { AppCenterCrashes } from '@ionic-native/app-center-crashes/ngx';
 import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 @NgModule({
 	declarations: [AppComponent, GlobalFooterComponent, GlobalHeaderComponent, SettingsComponent, GameComponent],
@@ -37,6 +38,7 @@ import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 	providers: [
 		StatusBar,
 		SplashScreen,
+		LocalNotifications,
 		BackgroundMode,
 		AppCenterCrashes,
 		AppCenterAnalytics,
