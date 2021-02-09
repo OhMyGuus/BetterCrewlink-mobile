@@ -9,6 +9,7 @@ public class BetterCrewlinkNativeService extends IntentService {
     public static final String REFRESH = "REFRESH";
     public static final String MUTEAUDIO = "MUTEAUDIO";
     public static final String MUTEMICROPHONE = "MUTEMICROPHONE";
+    public static final String DISCONNECT = "DISCONNECT";
 
 //    public static final String ACTION2 = "ACTION2";
 
@@ -31,7 +32,8 @@ public class BetterCrewlinkNativeService extends IntentService {
             BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'MUTEAUDIO' }");
         } else  if (MUTEMICROPHONE.equals(action)) {
             BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'MUTEMICROPHONE' }");
+        } else  if (DISCONNECT.equals(action)) {
+            BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'DISCONNECT' }");
         }
-
     }
 }

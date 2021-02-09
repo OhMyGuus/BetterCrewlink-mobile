@@ -21,6 +21,7 @@ import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 import { GlobalFooterComponent } from './compontents/global-footer/global-footer.component';
 import { GlobalHeaderComponent } from './compontents/global-header/global-header.component';
 import { AvatarComponent } from './compontents/avatar/avatar.component';
+import {Ng2FittextModule} from "ng2-fittext";
 
 @NgModule({
 	declarations: [
@@ -33,6 +34,7 @@ import { AvatarComponent } from './compontents/avatar/avatar.component';
 	],
 	entryComponents: [],
 	imports: [
+		Ng2FittextModule,
 		BrowserModule,
 		IonicModule.forRoot(),
 		AppRoutingModule,

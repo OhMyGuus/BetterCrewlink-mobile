@@ -31,6 +31,8 @@ public class BetterCrewlinkNativePlugin extends Plugin {
     static Bridge bridgeP;
     private Boolean audionMuted = false;
     private boolean micMuted = false;
+    private boolean timmerRunning = false;
+    private boolean running = false;
 
     @PluginMethod()
     public void showNotification(PluginCall call) {
@@ -44,17 +46,33 @@ public class BetterCrewlinkNativePlugin extends Plugin {
         ret.put("result", "ok");
         CreateNotification();
         call.success(ret);
+        CreateTimer();
+        running = true;
+    }
 
-        Timer t = new Timer( );
+    @PluginMethod()
+    public void disconnect(PluginCall call) {
+        running = false;
+    }
+
+    private void CreateTimer() {
+        if (timmerRunning) {
+            return;
+        }
+        timmerRunning = true;
+        Timer t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {
-
             @Override
             public void run() {
-                CreateNotification();
-
+                OnTimerTick();
             }
-        }, 1000,5000);
+        }, 1000, 5000);
+    }
 
+
+    private void OnTimerTick() {
+        if (running)
+            CreateNotification();
     }
 
     boolean NotifactionChannelCreated = false;
@@ -90,7 +108,7 @@ public class BetterCrewlinkNativePlugin extends Plugin {
     int notificationCount = 0;
 
     public void CreateNotification() {
-        createNotificationChannel();
+        //   createNotificationChannel();
         bridgeP = bridge;
         BetterCrewlinkNativeService service = getSystemService(this.getContext(), BetterCrewlinkNativeService.class);
         PendingIntent refreshAction = createAction(BetterCrewlinkNativeService.REFRESH);
@@ -102,14 +120,12 @@ public class BetterCrewlinkNativePlugin extends Plugin {
                 .setContentIntent(refreshAction)
                 .setContentTitle("BetterCrewlink")
                 .setContentText("Click to refresh or expand for more")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(spannableString).setBigContentTitle("BetterCrewlink"))
-
+                // .setStyle(new NotificationCompat.BigTextStyle().bigText(spannableString).setBigContentTitle("BetterCrewlink"))
                 .addAction(0, "refresh", refreshAction)
                 .addAction(0, this.micMuted ? "unmute" : "mute", createAction(BetterCrewlinkNativeService.MUTEMICROPHONE))
                 .addAction(0, this.audionMuted ? "undeafen" : "deafen", createAction(BetterCrewlinkNativeService.MUTEAUDIO))
                 .setAutoCancel(false)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
 
 
 //        Notification Noti = new Notification.Builder(this.getContext())

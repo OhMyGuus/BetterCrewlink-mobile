@@ -88,6 +88,7 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	disconnect(disableBackgroundMode = true) {
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
+			BetterCrewlinkNativePlugin.disconnect();
 		}
 		this.cManager.disconnect(true);
 	}
@@ -181,6 +182,10 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 				}
 				case 'MUTEMICROPHONE': {
 					this.muteMicrophone();
+					break;
+				}
+				case 'DISCONNECT': {
+					this.disconnect(true);
 					break;
 				}
 				default: {
