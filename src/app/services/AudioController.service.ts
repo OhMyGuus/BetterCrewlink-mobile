@@ -3,7 +3,7 @@ import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
 import { element } from 'protractor';
-import { async } from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 import { ConnectionController } from './ConnectionController.service';
 import { Injectable } from '@angular/core';
 import VAD from './vad';

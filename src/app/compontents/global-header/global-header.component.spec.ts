@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { GlobalHeaderComponent } from './global-header.component';
@@ -7,7 +7,7 @@ describe('GlobalHeaderComponent', () => {
 	let component: GlobalHeaderComponent;
 	let fixture: ComponentFixture<GlobalHeaderComponent>;
 
-	beforeEach(async(() => {
+	beforeEach(waitForAsync(() => {
 		TestBed.configureTestingModule({
 			declarations: [GlobalHeaderComponent],
 			imports: [IonicModule.forRoot()],
