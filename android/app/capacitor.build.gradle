@@ -14,7 +14,7 @@ dependencies {
     implementation "com.microsoft.appcenter:appcenter:2.4.1"
     implementation "com.microsoft.appcenter:appcenter-analytics:2.4.1"
 }
-apply from: "../../node_modules/cordova-plugin-badge/src/android/badge.gradle"
+
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

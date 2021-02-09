@@ -95,11 +95,10 @@ npm install -g ionic cordova
 git clone https://github.com/OhMyGuus/better-crewlink-mobile.git
 cd better-crewlink-mobile
 ```
-2. Install Ionic packages
+2. Install packages and sync
 ```sh
-npm install @ionic/angular@latest --save
-ionic cordova plugin add cordova-plugin-appcenter-analytics
-npm install @ionic-native/app-center-analytics
+npm install 
+npx cap sync
 ```
 3. Run the project
 ```JS
