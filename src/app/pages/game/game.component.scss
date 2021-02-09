@@ -1,8 +1,79 @@
 .masters {
-    background-color: #25232a;
+	background-color: #25232a;
 }
 
 .fixedLabel {
-    min-width: 20% !important;
-    max-width: 20% !important;
+	min-width: 20% !important;
+	max-width: 20% !important;
+}
+.playerGrid {
+	max-width: 450px;
+}
+
+.playersGrid {
+	min-height: 400px;
+}
+.localPLayerRow {
+	border-bottom: solid 1px #00000041;
+}
+
+@media only screen and (max-width: 1024) {
+	.playerGrid {
+		max-width: unset !important;
+	}
+}
+
+.nameCode-code {
+	width: fit-content;
+	margin: 5px auto;
+	display: block;
+	padding: 5px;
+	font-size: 28px;
+	font-family: 'Source Code Pro', monospace;
+	border-radius: 5px;
+}
+
+.nameCode-username {
+	display: block;
+	font-size: 20px;
+	text-align: center;
+}
+
+.nameCode-Container {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.nameCode-Container1 {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.nameCode-Container {
+	float: left;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.muteIcon {
+	font-size: 200px;
+}
+
+.muteAndDeafenIcons-Container {
+	float: left;
+	width: 10px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
 }

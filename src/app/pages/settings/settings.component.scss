@@ -1,0 +1,23 @@
+ion-label {
+	max-width: 300px;
+	min-width: 100px;
+	border-right: 1px solid rgba(56, 49, 49, 0.274);
+	margin-right: 5px;
+}
+
+ion-select {
+	padding-left: 9px;
+	max-width: unset !important;
+}
+
+ion-checkbox {
+	margin-left: 9px;
+}
+
+.settingLabelCol {
+	max-width: 200px !important;
+}
+
+.settingInputCol {
+	max-width: 300px !important;
+}

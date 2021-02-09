@@ -5,7 +5,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { AppCenterCrashes } from '@ionic-native/app-center-crashes/ngx';
 import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
-
+import { Cordova } from '@ionic-native/core';
+import { title } from 'process';
+declare let cordova: any;
 @Component({
 	selector: 'app-root',
 	templateUrl: 'app.component.html',
@@ -56,9 +58,21 @@ export class AppComponent implements OnInit {
 
 				this.statusBar.styleDefault();
 				this.splashScreen.hide();
-				this.backgroundMode.enable();
+				cordova.plugins.backgroundMode.setDefaults({
+					title: 'BetterCrewlink is stil running',
+					hidden: 'true',
+					text: '',
+					color: 'F14F4D',
+					icon: 'ic_notification',
+				});
+
+				cordova.plugins.backgroundMode.configure({});
+				// cordova.plugins.backgroundMode.on('activate', function () {
+				// 	cordova.plugins.backgroundMode.disableBatteryOptimizations();
+				// });
+				cordova.plugins.backgroundMode.disableBatteryOptimizations();
+
 				//	this.backgroundMode.disableWebViewOptimizations();
-				this.backgroundMode.disableBatteryOptimizations();
 			}
 		});
 	}

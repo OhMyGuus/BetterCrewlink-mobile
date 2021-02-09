@@ -1,0 +1,17 @@
+<div class="avatarBase">
+	<div class="avatar" [class.talking]="talking">
+		<div class="avatar avatar-2">
+			<img src="assets/avatar/players/{{ player.colorId }}-alive.png" class="base" />
+			<img *ngIf="player.skinId > 0" src="assets/avatar/skins/{{ player.skinId }}.png" class="skin" />
+
+			<!-- {overflow && <img src={coloredHats[`${hat}${color}`] || hats[hat]} ref={hatImg} className={classes.hat} />} -->
+		</div>
+		<img
+			*ngIf="player.hatId > 0"
+			src="assets/avatar/hats/{{ player.hatId }}.png"
+			[style.top]="getHatY()"
+			[class]="backLayerHats.has(player.hatId) ? 'backlayerd-hat' : ''"
+			class="hat"
+		/>
+	</div>
+</div>
