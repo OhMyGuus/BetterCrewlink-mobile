@@ -9,6 +9,7 @@ import AudioController from './AudioController.service';
 import { ConnectionController } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 
 const { LocalNotifications, BetterCrewlinkNativePlugin } = Plugins;
 
@@ -39,7 +40,8 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 		private androidPermissions: AndroidPermissions,
 		public platform: Platform,
 		public cManager: ConnectionController,
-		private backgroundMode: BackgroundMode
+		private backgroundMode: BackgroundMode,
+		private appCenterAnalytics: AppCenterAnalytics
 	) {
 		super();
 		this.load();
@@ -66,6 +68,14 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	connect() {
 		this.disconnect(false);
 
+		this.appCenterAnalytics.trackEvent('connect', {
+			gameCode: this.settings.gamecode.toUpperCase(),
+			username: this.settings.username,
+			micrphone: this.settings.selectedMicrophone.deviceId,
+			natfixEnabled: this.settings.natFix ? 'true' : 'false',
+			time: new Date().toISOString(),
+		});
+
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
 				console.log('permissions failed');
@@ -91,6 +101,11 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			BetterCrewlinkNativePlugin.disconnect();
 		}
 		this.cManager.disconnect(true);
+
+		this.appCenterAnalytics.trackEvent('disconnect', {
+			disableBackgroundMode: disableBackgroundMode ? 'true' : 'false',
+			time: new Date().toISOString(),
+		});
 	}
 
 	muteMicrophone() {

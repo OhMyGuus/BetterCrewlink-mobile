@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
 					}
 
 					this.appCenterAnalytics.setEnabled(true).then(() => {
-						this.appCenterAnalytics.trackEvent('My Event', { TEST: 'HELLO_WORLD' }).then(() => {
+						this.appCenterAnalytics.trackEvent('Started app', { time: new Date().toISOString() }).then(() => {
 							console.log('Custom event tracked');
 						});
 					});
