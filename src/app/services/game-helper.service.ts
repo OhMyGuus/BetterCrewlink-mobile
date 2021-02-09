@@ -68,13 +68,14 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	connect() {
 		this.disconnect(false);
 
-		this.appCenterAnalytics.trackEvent('connect', {
-			gameCode: this.settings.gamecode.toUpperCase(),
-			username: this.settings.username,
-			micrphone: this.settings.selectedMicrophone.deviceId,
-			natfixEnabled: this.settings.natFix ? 'true' : 'false',
-			time: new Date().toISOString(),
-		});
+		this.appCenterAnalytics
+			.trackEvent('connect', {
+				gameCode: this.settings.gamecode.toUpperCase(),
+				username: this.settings.username,
+				micrphone: this.settings.selectedMicrophone.deviceId,
+				natfixEnabled: this.settings.natFix ? 'true' : 'false',
+			})
+			.then(() => {});
 
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
@@ -99,13 +100,13 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
 			BetterCrewlinkNativePlugin.disconnect();
+			this.appCenterAnalytics
+				.trackEvent('disconnect', {
+					disableBackgroundMode: disableBackgroundMode ? 'true' : 'false',
+				})
+				.then(() => {});
 		}
 		this.cManager.disconnect(true);
-
-		this.appCenterAnalytics.trackEvent('disconnect', {
-			disableBackgroundMode: disableBackgroundMode ? 'true' : 'false',
-			time: new Date().toISOString(),
-		});
 	}
 
 	muteMicrophone() {

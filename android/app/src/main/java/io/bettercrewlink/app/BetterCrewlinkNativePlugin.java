@@ -115,7 +115,7 @@ public class BetterCrewlinkNativePlugin extends Plugin {
         String body = "<b>Guus(red)</b> talking <br><b>player2(lime)</b> talking";
         SpannableString spannableString = new SpannableString(Build.VERSION.SDK_INT < Build.VERSION_CODES.N ? Html.fromHtml(body) : Html.fromHtml(body, Html.FROM_HTML_MODE_LEGACY));
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getContext(), "cordova-plugin-background-mode-id")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getContext(), "bettercrewlink-background-id")
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(refreshAction)
                 .setContentTitle("BetterCrewlink")

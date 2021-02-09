@@ -39,7 +39,7 @@
     "cordova-plugin-appcenter-analytics": "^0.5.1",
     "cordova-plugin-appcenter-crashes": "^0.5.1",
     "cordova-plugin-appcenter-shared": "^0.5.1",
-    "cordova-plugin-background-mode": "^0.7.3",
+    "cordova-plugin-background-mode": "git+https://github.com/OhMyGuus/cordova-plugin-background-mode.git",
     "cordova-plugin-device": "^2.0.3",
     "jetifier": "^1.6.6",
     "ng2-fittext": "^1.2.12",
