@@ -2,8 +2,9 @@
 <widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <access origin="*" />
   
-  <feature name="Permissions">
-    <param name="android-package" value="com.android.plugins.Permissions"/>
+  <feature name="AppCenterAnalytics">
+    <param name="onload" value="true"/>
+    <param name="android-package" value="com.microsoft.azure.mobile.cordova.AppCenterAnalyticsPlugin"/>
   </feature>
 
   <feature name="AppCenterCrashes">
@@ -25,20 +26,6 @@
 
   <feature name="Device">
     <param name="android-package" value="org.apache.cordova.device.Device"/>
-  </feature>
-
-  <feature name="File">
-    <param name="android-package" value="org.apache.cordova.file.FileUtils"/>
-    <param name="onload" value="true"/>
-  </feature>
-
-  <feature name="AppCenterAnalytics">
-    <param name="onload" value="true"/>
-    <param name="android-package" value="com.microsoft.azure.mobile.cordova.AppCenterAnalyticsPlugin"/>
-  </feature>
-
-  <feature name="Capture">
-    <param name="android-package" value="org.apache.cordova.mediacapture.Capture"/>
   </feature>
 
   
