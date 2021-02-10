@@ -55,12 +55,12 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	getVoiceServer() {
 		switch (this.settings.voiceServerOption) {
 			case VoiceServerOption.ORIGINALCREWLINK:
-				return this.IsMobile ? 'https://crewl.ink' : 'https://ubuntu1.guus.info';
+				return this.IsMobile ? 'https://crewl.ink' : 'https://proxy.bettercrewl.ink';
 			case VoiceServerOption.BETTERCREWLINK:
 				return 'https://bettercrewl.ink';
 			case VoiceServerOption.CUSTOM:
 				return !this.IsMobile && this.settings.customVoiceServer.includes('//crewl.ink')
-					? 'https://ubuntu1.guus.info'
+					? 'https://proxy.bettercrewl.ink'
 					: this.settings.customVoiceServer;
 		}
 	}
