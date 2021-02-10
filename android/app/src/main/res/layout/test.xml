@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:id="@+id/chat_head_root"
+    android:orientation="vertical">
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TableRow01">
+    <!--Profile image for the chat head.-->
+<!--    <ImageView-->
+<!--        android:id="@+id/chat_head_profile_iv"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:src="@drawable/half_player"-->
+<!--        tools:ignore="ContentDescription"/>-->
+<!--        <ImageView-->
+<!--            android:id="@+id/chat_head_profile_iv1"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:src="@drawable/half_player"-->
+<!--            tools:ignore="ContentDescription"/>-->
+    </TableRow>
+</TableLayout>

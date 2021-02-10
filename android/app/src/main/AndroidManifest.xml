@@ -13,6 +13,9 @@
         <service
             android:name="io.bettercrewlink.app.BetterCrewlinkNativeService"
             android:exported="false"/>
+        <service
+            android:name="io.bettercrewlink.app.ChatHeadService"
+            android:exported="false"/>
 
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
@@ -69,4 +72,6 @@
     <!-- Audio -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
 </manifest>

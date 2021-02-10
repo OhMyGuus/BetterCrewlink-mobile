@@ -3,11 +3,17 @@ package io.bettercrewlink.app;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -47,7 +53,13 @@ public class BetterCrewlinkNativePlugin extends Plugin {
         CreateNotification();
         call.success(ret);
         CreateTimer();
+        if(!running) {
+            Context context = this.getContext();
+            context.startService(new Intent(context, ChatHeadService.class));
+        }
+
         running = true;
+
     }
 
     @PluginMethod()
@@ -98,6 +110,7 @@ public class BetterCrewlinkNativePlugin extends Plugin {
     }
 
 
+
     public PendingIntent createAction(String action) {
         Intent intent = new Intent(this.getContext(), BetterCrewlinkNativeService.class);
         intent.setAction(action);
@@ -120,6 +133,7 @@ public class BetterCrewlinkNativePlugin extends Plugin {
                 .setContentIntent(refreshAction)
                 .setContentTitle("BetterCrewlink")
                 .setContentText("Click to refresh or expand for more")
+
                 // .setStyle(new NotificationCompat.BigTextStyle().bigText(spannableString).setBigContentTitle("BetterCrewlink"))
                 .addAction(0, "refresh", refreshAction)
                 .addAction(0, this.micMuted ? "unmute" : "mute", createAction(BetterCrewlinkNativeService.MUTEMICROPHONE))
