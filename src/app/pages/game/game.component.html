@@ -28,7 +28,7 @@
 				<ion-grid style="height: 80%">
 					<ion-row class="playerGrid localPLayerRow">
 						<ion-col size="4">
-							<app-avatar [player]="gameHelper.cManager.localPLayer"></app-avatar>
+							<app-avatar [isDead]="gameHelper.cManager.localPLayer.isDead" [player]="gameHelper.cManager.localPLayer" [talking]="gameHelper.localTalking()"></app-avatar>
 						</ion-col>
 						<ion-col size="4">
 							<div class="nameCode-Container">
@@ -62,7 +62,7 @@
 					<ion-row class="playerGrid playersGrid">
 						<ng-container *ngFor="let item of getPlayers()">
 							<ion-col *ngIf="item.player" size="4" class="testColumn">
-								<app-avatar *ngIf="item.player" [player]="item.player" [talking]="item.talking"></app-avatar
+								<app-avatar  *ngIf="item.player" [settings]="item.settings"  [isDead]="item.isDead" [player]="item.player" [talking]="item.talking"></app-avatar
 							></ion-col>
 						</ng-container>
 					</ion-row>

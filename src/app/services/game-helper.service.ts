@@ -2,16 +2,15 @@ import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { ISettings, IDeviceInfo, VoiceServerOption } from './smallInterfaces';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
-import { Storage } from '@ionic/storage';
-import { title } from 'process';
-import { LocalNotification, Plugins } from '@capacitor/core';
-import AudioController from './AudioController.service';
+import { Plugins } from '@capacitor/core';
 import { ConnectionController } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
+import { element } from 'protractor';
+import { SettingsService } from './settings.service';
 
-const { LocalNotifications, BetterCrewlinkNativePlugin } = Plugins;
+const { BetterCrewlinkNativePlugin } = Plugins;
 
 export declare interface IGameHelperService {
 	on(event: 'onConnect', listener: () => void): this;
@@ -22,47 +21,22 @@ export declare interface IGameHelperService {
 })
 export class GameHelperService extends EventEmitterO implements IGameHelperService {
 	microphones: IDeviceInfo[] = [];
-	settings: ISettings = {
-		gamecode: '',
-		voiceServerOption: 1,
-		customVoiceServer: 'https://bettercrewl.ink',
-		username: '',
-		selectedMicrophone: { id: 0, label: 'default', deviceId: 'default', kind: 'audioinput' },
-		natFix: false,
-	};
 	IsMobile: boolean = false;
 	audioMuted = () => this.cManager.audioController.audioMuted ?? false;
 	microphoneMuted = () =>
 		(this.cManager.audioController.microphoneMuted || this.cManager.audioController.audioMuted) ?? false;
-
+	localTalking = () => this.cManager?.audioController?.localTalking ?? false;
 	constructor(
-		private storage: Storage,
 		private androidPermissions: AndroidPermissions,
 		public platform: Platform,
 		public cManager: ConnectionController,
 		private backgroundMode: BackgroundMode,
-		private appCenterAnalytics: AppCenterAnalytics
+		private appCenterAnalytics: AppCenterAnalytics,
+		private settings: SettingsService
 	) {
 		super();
 		this.load();
 		this.IsMobile = this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile');
-	}
-
-	saveSettings() {
-		this.storage.set('settings', this.settings);
-	}
-
-	getVoiceServer() {
-		switch (this.settings.voiceServerOption) {
-			case VoiceServerOption.ORIGINALCREWLINK:
-				return this.IsMobile ? 'https://crewl.ink' : 'https://ubuntu1.guus.info';
-			case VoiceServerOption.BETTERCREWLINK:
-				return 'https://bettercrewl.ink';
-			case VoiceServerOption.CUSTOM:
-				return !this.IsMobile && this.settings.customVoiceServer.includes('//crewl.ink')
-					? 'https://ubuntu1.guus.info'
-					: this.settings.customVoiceServer;
-		}
 	}
 
 	connect() {
@@ -70,10 +44,10 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 
 		this.appCenterAnalytics
 			.trackEvent('connect', {
-				gameCode: this.settings.gamecode.toUpperCase(),
-				username: this.settings.username,
-				micrphone: this.settings.selectedMicrophone.deviceId,
-				natfixEnabled: this.settings.natFix ? 'true' : 'false',
+				gameCode: this.settings.get().gamecode.toUpperCase(),
+				username: this.settings.get().username,
+				micrphone: this.settings.get().selectedMicrophone.deviceId,
+				natfixEnabled: this.settings.get().natFix ? 'true' : 'false',
 			})
 			.then(() => {});
 
@@ -83,11 +57,11 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			}
 			this.backgroundMode.enable();
 			this.cManager.connect(
-				this.getVoiceServer(),
-				this.settings.gamecode.toUpperCase(),
-				this.settings.username,
-				this.settings.selectedMicrophone.deviceId,
-				this.settings.natFix
+				this.settings.getVoiceServer(),
+				this.settings.get().gamecode.toUpperCase(),
+				this.settings.get().username,
+				this.settings.get().selectedMicrophone.deviceId,
+				this.settings.get().natFix
 			);
 			this.showNotification();
 		});
@@ -154,41 +128,36 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 
 	load() {
 		console.log('load??');
-		this.storage.get('settings').then((val) => {
-			console.log('gotsettings', val);
-			if (val && val !== null) {
-				this.settings = val;
-			}
-			this.requestPermissions().then(() => {
-				this.cManager.audioController.getDevices(this.IsMobile).then((devices) => {
-					this.microphones = devices;
-					if (!this.microphones.some((o) => o.id === this.settings.selectedMicrophone?.id)) {
-						this.settings.selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
-							id: 0,
-							label: 'default',
-							deviceId: 'default',
-							kind: 'audioinput',
-						};
-					} else {
-						this.settings.selectedMicrophone = this.microphones.find(
-							(o) => o.id === this.settings.selectedMicrophone.id
-						);
-					}
-				});
+
+		this.requestPermissions().then(() => {
+			this.cManager.audioController.getDevices(this.IsMobile).then((devices) => {
+				this.microphones = devices;
+				if (!this.microphones.some((o) => o.id === this.settings.get().selectedMicrophone?.id)) {
+					this.settings.get().selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
+						id: 0,
+						label: 'default',
+						deviceId: 'default',
+						kind: 'audioinput',
+					};
+				} else {
+					this.settings.get().selectedMicrophone = this.microphones.find(
+						(o) => o.id === this.settings.get().selectedMicrophone.id
+					);
+				}
 			});
-			// this.connect();
 		});
+		// this.connect();
 
 		window.addEventListener('bettercrewlink_notification', (info: any) => {
 			switch (info.action) {
 				case 'REFRESH': {
 					this.cManager.disconnect(false);
 					this.cManager.connect(
-						this.getVoiceServer(),
-						this.settings.gamecode.toUpperCase(),
-						this.settings.username,
-						this.settings.selectedMicrophone.deviceId,
-						this.settings.natFix
+						this.settings.getVoiceServer(),
+						this.settings.get().gamecode.toUpperCase(),
+						this.settings.get().username,
+						this.settings.get().selectedMicrophone.deviceId,
+						this.settings.get().natFix
 					);
 					break;
 				}
@@ -210,6 +179,34 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 				}
 			}
 			console.log('Notification action done');
+		});
+		this.cManager.on('player_talk', async (clientId: number, talking: boolean) => {
+			setTimeout(
+				() => {
+					const sElement = this.cManager.getSocketElementByClientID(clientId);
+					if (sElement && sElement.player && sElement.talking === talking) {
+						BetterCrewlinkNativePlugin.showTalking({
+							color: sElement.player?.colorId,
+							talking,
+						});
+					}
+				},
+				talking ? 0 : 2000
+			);
+		});
+
+		this.cManager.audioController.on('local_talk', async (talking: boolean) => {
+			setTimeout(
+				() => {
+					if (talking === this.localTalking() && this.cManager.localPLayer) {
+						BetterCrewlinkNativePlugin.showTalking({
+							color: this.cManager.localPLayer.colorId,
+							talking,
+						});
+					}
+				},
+				talking ? 0 : 2000
+			);
 		});
 		// LocalNotifications.on('yes').subscribe((notification) => {
 		// 	this.connect();

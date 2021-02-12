@@ -14,7 +14,7 @@
             android:name="io.bettercrewlink.app.BetterCrewlinkNativeService"
             android:exported="false"/>
         <service
-            android:name="io.bettercrewlink.app.ChatHeadService"
+            android:name="io.bettercrewlink.app.OverlayService"
             android:exported="false"/>
 
         <activity

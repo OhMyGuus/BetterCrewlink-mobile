@@ -14,6 +14,7 @@ import {
 import { DEFAULT_ICE_CONFIG, DEFAULT_ICE_CONFIG_TURN } from './turnServers';
 import { Injectable } from '@angular/core';
 import AudioController from './AudioController.service';
+import { SettingsService } from './settings.service';
 
 export enum ConnectionState {
 	disconnected = 0,
@@ -39,6 +40,8 @@ export declare interface IConnectionController {
 export class ConnectionController extends EventEmitterO implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;
+	public oldGameState: AmongUsState;
+
 	socketElements: SocketElementMap = new SocketElementMap();
 	amongusUsername: string;
 	currentGameCode: string;
@@ -54,7 +57,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	private currentHost: string;
 	private triedGameHost: boolean;
 	private lastHostIndex = -1;
-	constructor() {
+	constructor(private settingsService: SettingsService) {
 		super();
 		this.audioController = new AudioController(this);
 		this.ConnectionCheck();
@@ -88,7 +91,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		return this.socketElements.get(socketId);
 	}
 
-	private getSocketElementByClientID(clientId: number): SocketElement | undefined {
+	public getSocketElementByClientID(clientId: number): SocketElement | undefined {
 		return Array.from(this.socketElements.values()).find((o) => o.client?.clientId === clientId);
 	}
 
@@ -110,6 +113,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		this.mobileHosts.clear();
 		this.natFix = natFix;
 		this.currentGameState = undefined;
+		this.oldGameState = undefined;
 		this.initialize(voiceserver);
 		this.audioController.startAudio().then(() => {
 			this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
@@ -182,6 +186,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			const socketElement = this.getSocketElement(socketId);
 			const audioElement = this.audioController.createAudioElement(recievedDtream, (bool: boolean) => {
 				socketElement.talking = bool;
+				this.emit('player_talk', socketElement.client?.clientId ?? -1, bool)
 			});
 
 			socketElement.audioElement = audioElement;
@@ -238,6 +243,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		});
 	}
 	private onGameStateChange(amongUsState: AmongUsState) {
+		this.oldGameState = this.currentGameState;
 		this.currentGameState = amongUsState;
 		const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
 		if (!newLocalplayer) {
@@ -268,9 +274,20 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			if (value.client?.clientId === this.localPLayer?.clientId) {
 				return;
 			}
+		
 			value.updatePLayer(this);
+			if (value.player) {
+				value.player.isbetter = this.mobileHosts.has(value.socketId);
+			}
+			if (!value.settings && value.player) {
+				value.settings = this.settingsService.getPlayerSettings(value.player?.nameHash);
+			}
+
 			if (value?.audioElement?.gain) {
-				const endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+				let endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+				if (value.settings && endGain > 0) {
+					endGain *= value.settings.volume / 100;
+				}
 				value.audioElement.gain.gain.value = endGain;
 			}
 		});

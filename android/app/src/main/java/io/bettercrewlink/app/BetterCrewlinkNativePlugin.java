@@ -5,15 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.text.Html;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.view.Gravity;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -55,12 +49,22 @@ public class BetterCrewlinkNativePlugin extends Plugin {
         CreateTimer();
         if(!running) {
             Context context = this.getContext();
-            context.startService(new Intent(context, ChatHeadService.class));
+            context.startService(new Intent(context, OverlayService.class));
         }
 
         running = true;
-
     }
+
+
+
+    @PluginMethod()
+    public void showTalking(PluginCall call) {
+        int color    = call.getInt("color");
+        Boolean talking = call.getBoolean("talking");
+        Context context = this.getContext();
+        OverlayService.setVisible(color, talking);
+    }
+
 
     @PluginMethod()
     public void disconnect(PluginCall call) {

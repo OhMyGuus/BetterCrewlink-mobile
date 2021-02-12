@@ -72,7 +72,7 @@ export default function (
 		onUpdate: function () {
 			/* DO NOTHING */
 		},
-		stereo: true,
+		stereo: true
 	};
 
 	const options: VADOptions = Object.assign({}, defaults, opts);

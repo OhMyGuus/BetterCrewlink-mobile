@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Peer from 'simple-peer';
-import { Storage } from '@ionic/storage';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
 import { SocketElement } from '../../services/smallInterfaces';
@@ -23,21 +22,14 @@ export class GameComponent implements OnInit {
 		return Array.from(map.values());
 	}
 
-
-
-	getPlayers(){
-		return Array.from(this.gameHelper.cManager.socketElements.values()).filter(o => o.player !== undefined);
+	getPlayers() {
+		return Array.from(this.gameHelper.cManager.socketElements.values()).filter((o) => o.player !== undefined);
 	}
-
-
-
 
 	getValues2(map): SocketElement[] {
-		const test = Array.from(map.values());
-	
-		return test as SocketElement[];
-		return Array.from(map.values()) as SocketElement[];
+		return Array.from(map.values());
 	}
+
 	ngOnInit() {
 		console.log('ngOninit');
 		this.gameHelper.on('onConnect', () => {
