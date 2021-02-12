@@ -181,6 +181,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			console.log('Notification action done');
 		});
 		this.cManager.on('player_talk', async (clientId: number, talking: boolean) => {
+			if(!this.IsMobile){
+				return;
+			}
 			setTimeout(
 				() => {
 					const sElement = this.cManager.getSocketElementByClientID(clientId);
@@ -196,6 +199,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 		});
 
 		this.cManager.audioController.on('local_talk', async (talking: boolean) => {
+			if(!this.IsMobile){
+				return;
+			}
 			setTimeout(
 				() => {
 					if (talking === this.localTalking() && this.cManager.localPLayer) {
