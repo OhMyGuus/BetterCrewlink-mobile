@@ -11,12 +11,13 @@ const routes: Routes = [
 	},
 	{
 		path: 'game',
-		component: GameComponent
+		component: GameComponent,
 	},
 	{
 		path: 'settings',
-		component: SettingsComponent
+		component: SettingsComponent,
 	},
+	{ path: '**', redirectTo: '/settings', pathMatch: 'full' },
 ];
 
 @NgModule({
