@@ -7,6 +7,7 @@
 				</ion-row>
 				<ion-row class="ion-justify-content-center">
 					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+					<ion-button (click)="gameHelper.connect()">Reconnect</ion-button>
 				</ion-row>
 			</ng-container>
 			<ng-container id="connectPg" *ngSwitchCase="1">
@@ -19,23 +20,63 @@
 				</p>
 				<ion-row class="ion-justify-content-center">
 					<ion-button (click)="gameHelper.connect()">refresh</ion-button>
-          <ion-button [routerLink]="['/settings']">Settings</ion-button>
-          <ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
+					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+					<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
 				</ion-row>
 			</ng-container>
 			<ng-container id="connectedPg" *ngSwitchCase="2">
-				<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
-					<ion-list-header lines="full" color="secondary">
-						<ion-label>Connected Players:</ion-label>
-					</ion-list-header>
-					<ion-item *ngFor="let item of gameHelper.cManager.currentGameState.players" color="secondary">
-						<ion-label position="fixed">{{ item.name }}</ion-label>
-					</ion-item>
-				</ion-list>
-        <ion-button (click)="gameHelper.connect()">Refresh</ion-button>
-        <ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
-
+				<ion-grid style="height: 80%">
+					<ion-row class="playerGrid localPLayerRow">
+						<ion-col size="4">
+							<app-avatar [player]="gameHelper.cManager.localPLayer"></app-avatar>
+						</ion-col>
+						<ion-col size="4">
+							<div class="nameCode-Container">
+								<span class="nameCode-username">{{ gameHelper.cManager?.localPLayer?.name }} </span
+								><span class="nameCode-code" style="background: rgb(62, 67, 70)">{{
+									gameHelper.cManager.currentGameCode
+								}}</span>
+							</div>
+						</ion-col>
+						<ion-col size="2">
+							<div class="nameCode-Container">
+								<ion-button fill="clear" (click)="gameHelper.muteMicrophone()">
+									<ion-icon
+										[style.color]="gameHelper.microphoneMuted() ? 'red' : 'white'"
+										[name]="gameHelper.microphoneMuted() ? 'mic-off-circle-outline' : 'mic-circle-outline'"
+										name="close-circle"
+										style="zoom: 2"
+									></ion-icon>
+								</ion-button>
+								<ion-button fill="clear" (click)="gameHelper.muteAudio()">
+									<ion-icon
+										[style.color]="gameHelper.audioMuted() ? 'red' : 'white'"
+										[name]="gameHelper.audioMuted() ? 'volume-mute-outline' : 'volume-high-outline'"
+										name="close-circle"
+										style="zoom: 2"
+									></ion-icon>
+								</ion-button>
+							</div>
+						</ion-col>
+					</ion-row>
+					<ion-row class="playerGrid playersGrid">
+						<ng-container *ngFor="let item of getPlayers()">
+							<ion-col *ngIf="item.player" size="4" class="testColumn">
+								<app-avatar *ngIf="item.player" [player]="item.player" [talking]="item.talking"></app-avatar
+							></ion-col>
+						</ng-container>
+					</ion-row>
+				</ion-grid>
 			</ng-container>
 		</ng-container>
 	</ion-grid>
+	
+	
 </ion-content>
+
+<div class="testButtons" *ngIf="gameHelper.cManager.connectionState == 2">
+	<ion-row>
+		<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
+		<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
+	</ion-row>
+</div>

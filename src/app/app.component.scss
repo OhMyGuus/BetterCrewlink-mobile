@@ -118,3 +118,9 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+.full-width-select{
+    max-width: unset !important;
+    width: 100% !important;
+}
+

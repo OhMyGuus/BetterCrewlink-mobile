@@ -79,13 +79,9 @@ Server code is located at [OhMyGuus/BetterCrewLink-server](https://github.com/Oh
 
 This is an example of how to list things you need to use the software and how to install them.
 * [node.js](https://nodejs.org/en/download/)
-* Ionic
+* Ionic cli
 ```sh
 npm install -g @ionic/cli
-```
-* Cordova
-```sh
-npm install -g ionic cordova
 ```
 
 ### Setup
@@ -95,11 +91,10 @@ npm install -g ionic cordova
 git clone https://github.com/OhMyGuus/better-crewlink-mobile.git
 cd better-crewlink-mobile
 ```
-2. Install Ionic packages
+2. Install packages and sync
 ```sh
-npm install @ionic/angular@latest --save
-ionic cordova plugin add cordova-plugin-appcenter-analytics
-npm install @ionic-native/app-center-analytics
+npm install 
+ionic capacitor sync
 ```
 3. Run the project
 ```JS

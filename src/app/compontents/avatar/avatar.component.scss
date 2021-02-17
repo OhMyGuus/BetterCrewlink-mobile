@@ -1,0 +1,61 @@
+.avatar {
+   width: 100%;
+    position: relative;
+    transition: border-color .2s ease-out;
+    border-style: solid;
+    border-radius: 50%;
+    padding-bottom: 100%;
+    border-width: 2px;
+    border-color: transparent;
+}
+
+.avatar-2{
+    overflow: hidden;
+    position: absolute;
+    // top: -2.5px;
+    // left: -2.5px;
+    border-width: 2px;
+    transform: unset;
+}
+
+.skin {
+    top: calc(33% + 22%);
+    width: 105%;
+    z-index: 3;
+    position: absolute;
+    left:-7px;
+
+}
+
+.base {
+	width: 105%;
+	position: absolute;
+	top: 22%;
+	left: -7px;
+    z-index: 2
+}
+
+.hat {
+	position: absolute;
+    display: block;
+    left: -6px;
+    top: -11%;
+    z-index: 3;
+    width: 100%;
+}
+.backlayerd-hat {
+    z-index: 1;
+}
+
+.avatarBase{
+    position: relative;
+    // max-width: 75px
+  //  height: 500px;
+
+}
+
+
+.avatar.talking{
+    border-color: limegreen !important;
+}
+

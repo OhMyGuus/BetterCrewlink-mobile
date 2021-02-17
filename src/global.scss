@@ -41,11 +41,12 @@
 }
 
 .alert-wrapper {
-	width: 20% !important;
-	max-width: 80% !important;
+	 width: 100% !important;
+	max-width: 20vw !important;
 }
 
 .ion-page > ion-content
 {
    top: 56px;//your headers height
 }
+

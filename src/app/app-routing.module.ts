@@ -11,16 +11,17 @@ const routes: Routes = [
 	},
 	{
 		path: 'game',
-		component: GameComponent
+		component: GameComponent,
 	},
 	{
 		path: 'settings',
-		component: SettingsComponent
+		component: SettingsComponent,
 	},
+	{ path: '**', redirectTo: '/settings', pathMatch: 'full' },
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes)],
+	imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
 	exports: [RouterModule],
 })
 export class AppRoutingModule {}
