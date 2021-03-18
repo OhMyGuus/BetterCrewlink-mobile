@@ -2,7 +2,7 @@
 
 <br />
 <p align="center">
-  <a>
+  <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile">
     <img src="logo.png" alt="Logo" width="80" height="80">
   </a>
   <h3 align="center">BetterCrewLink Mobile is here!</h3>
