@@ -43,6 +43,7 @@
 
 * [About the Project](#about-the-project)
 * [Installation](#installation)
+  * [Setup Instructions](#setup-instructions)
 * [Development](#development)
   * [Prerequisites](#prerequisites)
   * [Setup](#setup)
