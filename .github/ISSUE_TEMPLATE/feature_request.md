@@ -11,7 +11,7 @@ assignees: ''
 Please use this checklist to avoid spamming:
 
 1. [ ] I am not asking a question => use the [Discord](https://discord.gg/qDqTzvj4SH) if you are
-2. [ ] I have checked that someone else has not suggested this using the [search bar](https://github.com/OhMyGuus/BetterCrewLink/issues?q=is%3Aissue)
+2. [ ] I have checked that someone else has not suggested this using the [search bar](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues?q=is%3Aissue)
 3. [ ] My feature request is not one of the **commonly suggested features**:
 - Linux/MacOS/Chromebook support (is already being development and you can follow this [development](https://github.com/OhMyGuus/BetterCrewLink/pull/29) or try using the [web version](https://web.bettercrewl.ink/))
 - iOS app (its already being development)
