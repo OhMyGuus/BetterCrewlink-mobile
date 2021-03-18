@@ -40,8 +40,8 @@ Steps to reproduce the behaviour:
 **Smartphone (please complete the following information):**
  - Device: [e.g. Motorola G8 Play]
  - OS: [e.g. Android 11]
- - Browser [e.g. stock browser, safari] (optional, only if you use the [web version](https://web.bettercrewl.ink/))
- - Version [e.g. 1.0.20]
+ - Version: [e.g. 1.0.20]
+ - Browser: [e.g. Chrome] (optional, only if you use the [web version](https://web.bettercrewl.ink/))
 
 **Additional context**
 <!-- Add any other context about the problem here. -->
