@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 # You MUST use this template or your issue will be deleted.
-**If your problem is with BetterCrewLink on your PC, [click here](https://github.com/OhMyGuus/BetterCrewLink/issues) and make an issue there, if your problem is with BetterCrewLink on your mobile or the web version, ignore that and continue with your issue**
+**If your problem is with BetterCrewLink on your PC, [click here](https://github.com/OhMyGuus/BetterCrewLink/issues) and make an issue there, if your problem is with BetterCrewLink on your mobile or the web version, ignore that and continue with your bug report**
 
 # Pre-Flight Checklist
 Please use this checklist to avoid spamming:
