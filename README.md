@@ -62,6 +62,8 @@ You can also use the web version in your browser [here](https://web.bettercrewl.
 
 If you can, you should use a private server by deploying [this repository](https://github.com/OhMyGuus/BetterCrewLink-server).
 
+If you want to download the PC version of BetterCrewLink [click here](https://github.com/OhMyGuus/BetterCrewLink/releases/latest).
+
 ### Setup Instructions
 
 * Open the app
