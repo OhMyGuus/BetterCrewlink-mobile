@@ -65,7 +65,7 @@ If you have a PC and want to download the PC version of BetterCrewLink (without 
 ### Setup Instructions
 
 * Open the app
-* Ensure there is one person in the lobby with "Mobile Host" enabled on their pc (they must use [BetterCrewLink](https://github.com/OhMyGuus/BetterCrewLink))
+* Ensure there is one person in the lobby with "Mobile Host" enabled on their PC (they must use [BetterCrewLink](https://github.com/OhMyGuus/BetterCrewLink))
 * Fill in the required information (make sure you have a unique name in your lobby)
 * Hit the connect button
   * If you are waiting on the connecting screen for a while you may want to check that all the information is correct and the is a pc user with "Mobile Host" enabled in the lobby
