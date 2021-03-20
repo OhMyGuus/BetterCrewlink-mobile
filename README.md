@@ -114,6 +114,9 @@ Any contributions you make are greatly appreciated.
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## License
+
+Distributed under the GNU General Public License v3.0. See <a href="https://github.com/MatadorProBr/BetterCrewLink-Mobile/blob/master/LICENSE">`LICENSE`</a> for more information.
 
 [paypal-url]: https://www.paypal.com/donate?hosted_button_id=KS43BDTGN76JQ
 [paypal-shield]: https://img.shields.io/badge/Donate-PayPal-green.svg
