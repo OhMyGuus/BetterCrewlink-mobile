@@ -11,9 +11,9 @@
   <p align="center">
     Free, open, Among Us proximity voice chat.
     <br />
-    <a href="https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues">Report Bug</a>
+    <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/issues">Report Bug</a>
     ·
-    <a href="https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues">Request Feature</a>
+    <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/issues">Request Feature</a>
     ·
     <a href="#installation">Installation Instructions</a>
   </p>
@@ -31,7 +31,7 @@
 
 - This is an unofficial fork of CrewLink, for any problem, issue or suggestion you have with BetterCrewLink talk to us on our [Discord](https://discord.gg/qDqTzvj4SH) or [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues), do not report any problems to the official Discord or GitHub project of CrewLink as they will not support you.
 
-- For issues with this fork you can message me on Discord (ThaGuus#2140) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues) and I will do my best to resolve it.
+- For issues with this fork you can message me on Discord (ThaGuus#2140) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues) and I will do my best to resolve it.
 
 - To get the most of BetterCrewLink use the voice server: <a href="https://bettercrewl.ink">`https://bettercrewl.ink`</a>
 
@@ -57,7 +57,7 @@ This project implements proximity voice chat for mobile users in Among Us. As lo
 
 ## Installation
 
-Download the latest version from [releases](https://github.com/OhMyGuus/BetterCrewLink-Mobile/releases/latest) and run the `Bettercrewlink-v-X-X-X-a.apk` file on your phone. You may have to allow chrome to install apps on your phone.
+Download the latest version from [releases](https://github.com/OhMyGuus/BetterCrewlink-mobile/releases/latest) and run the `Bettercrewlink-v-X-X-X-a.apk` file on your phone. You may have to allow chrome to install apps on your phone.
 
 You can also use the web version in your browser [here](https://web.bettercrewl.ink/).
 
@@ -74,7 +74,7 @@ If you have a PC and want to download the PC version of BetterCrewLink (without 
 
 ## Development
 
-You only need to follow the below instructions if you are trying to modify this software. Otherwise, please download the latest version from the [github releases](https://github.com/OhMyGuus/BetterCrewLink-Mobile/releases).
+You only need to follow the below instructions if you are trying to modify this software. Otherwise, please download the latest version from the [github releases](https://github.com/OhMyGuus/BetterCrewlink-mobile/releases).
 
 Server code is located at [OhMyGuus/BetterCrewLink-server](https://github.com/OhMyGuus/BetterCrewLink-server). Please use a local server for development purposes.
 
@@ -117,7 +117,7 @@ Any contributions you make are greatly appreciated.
 
 ## License
 
-Distributed under the GNU General Public License v3.0. See <a href="https://github.com/OhMyGuus/BetterCrewLink-Mobile/blob/master/LICENSE">`LICENSE`</a> for more information.
+Distributed under the GNU General Public License v3.0. See <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/blob/master/LICENSE">`LICENSE`</a> for more information.
 
 [paypal-url]: https://www.paypal.com/donate?hosted_button_id=KS43BDTGN76JQ
 [paypal-shield]: https://img.shields.io/badge/Donate-PayPal-green.svg
