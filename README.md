@@ -11,9 +11,9 @@
   <p align="center">
     Free, open, Among Us proximity voice chat.
     <br />
-    <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/issues">Report Bug</a>
+    <a href="https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues">Report Bug</a>
     ·
-    <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/issues">Request Feature</a>
+    <a href="https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues">Request Feature</a>
     ·
     <a href="#installation">Installation Instructions</a>
   </p>
@@ -31,7 +31,7 @@
 
 - This is an unofficial fork of CrewLink, for any problem, issue or suggestion you have with BetterCrewLink talk to us on our [Discord](https://discord.gg/qDqTzvj4SH) or [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues), do not report any problems to the official Discord or GitHub project of CrewLink as they will not support you.
 
-- For issues with this fork you can message me on Discord (ThaGuus#2140) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues) and I will do my best to resolve it.
+- For issues with this fork you can message me on Discord (ThaGuus#2140) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewLink-Mobile/issues) and I will do my best to resolve it.
 
 - To get the most of BetterCrewLink use the voice server: <a href="https://bettercrewl.ink">`https://bettercrewl.ink`</a>
 
@@ -74,7 +74,7 @@ If you have a PC and want to download the PC version of BetterCrewLink (without 
 
 ## Development
 
-You only need to follow the below instructions if you are trying to modify this software. Otherwise, please download the latest version from the [github releases](https://github.com/OhMyGuus/BetterCrewlink-mobile/releases).
+You only need to follow the below instructions if you are trying to modify this software. Otherwise, please download the latest version from the [github releases](https://github.com/OhMyGuus/BetterCrewLink-Mobile/releases).
 
 Server code is located at [OhMyGuus/BetterCrewLink-server](https://github.com/OhMyGuus/BetterCrewLink-server). Please use a local server for development purposes.
 
