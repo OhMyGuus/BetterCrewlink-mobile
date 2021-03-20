@@ -48,6 +48,7 @@
   * [Prerequisites](#prerequisites)
   * [Setup](#setup)
 * [Contributing](#contributing)
+* [License](#license)
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
