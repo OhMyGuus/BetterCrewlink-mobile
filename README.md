@@ -57,7 +57,7 @@ This project implements proximity voice chat for mobile users in Among Us. As lo
 
 ## Installation
 
-Download the latest version from [releases](https://github.com/OhMyGuus/BetterCrewlink-mobile/releases/latest) and run the `Bettercrewlink-v-X-X-X-a.apk` file on your phone. You may have to allow chrome to install apps on your phone.
+Download the latest version from [releases](https://github.com/OhMyGuus/BetterCrewLink-Mobile/releases/latest) and run the `Bettercrewlink-v-X-X-X-a.apk` file on your phone. You may have to allow chrome to install apps on your phone.
 
 You can also use the web version in your browser [here](https://web.bettercrewl.ink/).
 
