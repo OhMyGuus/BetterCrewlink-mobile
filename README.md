@@ -61,7 +61,7 @@ Download the latest version from [releases](https://github.com/OhMyGuus/BetterCr
 
 You can also use the web version in your browser [here](https://web.bettercrewl.ink/).
 
-If you have a PC and want to download the PC version of BetterCrewLink (without being the Bluestacks) [click here](https://github.com/OhMyGuus/BetterCrewLink/releases/latest).
+If you have a PC and want to download the PC version of BetterCrewLink (without being the Bluestacks) go to category [Windows](https://github.com/MatadorProBr/BetterCrewLink#windows).
 
 ## Setup Instructions
 
