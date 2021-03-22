@@ -63,9 +63,9 @@ You can also use the web version in your browser [here](https://web.bettercrewl.
 
 If you have a PC and want to download the PC version of BetterCrewLink (without being the Bluestacks) [click here](https://github.com/OhMyGuus/BetterCrewLink/releases/latest).
 
-### Setup Instructions
+## Setup Instructions
 
-## Android
+### Android
 
 * Open the app.
 * Ensure there is one person in the lobby with "Mobile Host" enabled on their PC (they must use [BetterCrewLink](https://github.com/OhMyGuus/BetterCrewLink)).
@@ -74,7 +74,7 @@ If you have a PC and want to download the PC version of BetterCrewLink (without 
   * If you are waiting on the connecting screen for a while you may want to check that all the information is correct and the is a pc user with "Mobile Host" enabled in the lobby.
 * All done!
 
-# iOS
+### iOS
 
 An iOS version is still being developed and will be released soon.
 
