@@ -31,7 +31,7 @@
 
 - This is an unofficial fork of CrewLink, for any problem, issue or suggestion you have with BetterCrewLink talk to us on our [Discord](https://discord.gg/qDqTzvj4SH) or [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues), do not report any problems to the official Discord or GitHub project of CrewLink as they will not support you.
 
-- For issues with this fork you can message me on Discord (ThaGuus#2140) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewlink-mobile/issues) and I will do my best to resolve it.
+- For issues with this fork you can join in the [Discord server](https://discord.gg/qDqTzvj4SH) or reporting in [GitHub](https://github.com/OhMyGuus/BetterCrewLink/issues) or message me on Discord (ThaGuus#2140) and is we will do our best to resolve this.
 
 - To get the most of BetterCrewLink use the voice server: <a href="https://bettercrewl.ink">`https://bettercrewl.ink`</a>
 
@@ -78,7 +78,7 @@ If you have a PC and want to download the PC version of BetterCrewLink (without 
 
 ### iOS
 
-An iOS version is still being developed and will be released soon.
+An iOS version is still being developed and will be released soon, but you can use in the meantime the [web version](https://web.bettercrewl.ink/). (requires a PC player)
 
 ## Development
 
