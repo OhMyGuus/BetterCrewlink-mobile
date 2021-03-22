@@ -44,6 +44,8 @@
 * [About the Project](#about-the-project)
 * [Installation](#installation)
   * [Setup Instructions](#setup-instructions)
+  * [Android](#android)
+  * [iOS](#ios)
 * [Development](#development)
   * [Prerequisites](#prerequisites)
   * [Setup](#setup)
