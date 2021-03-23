@@ -14,7 +14,7 @@ export interface AmongUsState {
 	clientId: number;
 	hostId: number;
 	comsSabotaged: boolean;
-
+	lightRadius: number;
 }
 
 export interface Player {
@@ -32,10 +32,11 @@ export interface Player {
 	taskPtr: number;
 	objectPtr: number;
 	isLocal: boolean;
-
+	nameHash: number;
 	x: number;
 	y: number;
 	inVent: boolean;
+	isbetter: boolean;
 }
 
 export enum GameState {

@@ -8,21 +8,20 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Voice server</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
-					<ion-select text-wrap [(ngModel)]="gameHelper.settings.voiceServerOption" (ionChange)="onSettingsChange()">
-						<ion-select-option [value]="0">Original-Crewlink</ion-select-option>
+				<ion-col size="7" class="settingInputCol">
+					<ion-select text-wrap [(ngModel)]="getSettings().voiceServerOption" (ionChange)="onSettingsChange()">
 						<ion-select-option [value]="1">Better-Crewlink</ion-select-option>
 						<ion-select-option [value]="2">Custom server</ion-select-option>
 					</ion-select>
 				</ion-col>
 			</ion-item>
-			<ion-item color="secondary" *ngIf="gameHelper.settings.voiceServerOption === 2">
+			<ion-item color="secondary" *ngIf="getSettings().voiceServerOption === 2">
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Custom server</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
-						[(ngModel)]="gameHelper.settings.customVoiceServer"
+						[(ngModel)]="getSettings().customVoiceServer"
 						(ionChange)="onSettingsChange()"
 						placeholder="Voice server URL"
 					></ion-input>
@@ -32,9 +31,9 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Ingame name</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
-						[(ngModel)]="gameHelper.settings.username"
+						[(ngModel)]="getSettings().username"
 						(ionChange)="onSettingsChange()"
 						placeholder="'Coochie Man'"
 					></ion-input>
@@ -44,24 +43,36 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Lobby code</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
 						style="text-transform: uppercase"
 						pattern="[A-Za-z]{6}"
-						[(ngModel)]="gameHelper.settings.gamecode"
+						[(ngModel)]="getSettings().gamecode"
 						(ionChange)="onSettingsChange()"
 						placeholder="'ABCDEF'"
 						maxlength="6"
 					></ion-input>
 				</ion-col>
 			</ion-item>
+			<ion-item *ngIf="getSettings().isMobile">
+				<ion-col size="5" class="settingLabelCol">
+					<ion-label>Overlay enabled</ion-label>
+				</ion-col>
+				<ion-col size="7" class="settingInputCol">
+					<ion-checkbox
+						[(ngModel)]="getSettings().overlayEnabled"
+						(ionChange)="onSettingsChange()"
+						placeholder="Overlay enabled"
+					></ion-checkbox>
+				</ion-col>
+			</ion-item>
 			<ion-item>
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>NAT FIX</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
+				<ion-col size="7" class="settingInputCol">
 					<ion-checkbox
-						[(ngModel)]="gameHelper.settings.natFix"
+						[(ngModel)]="getSettings().natFix"
 						(ionChange)="onSettingsChange()"
 						placeholder="NAT FIX"
 					></ion-checkbox>
@@ -71,9 +82,9 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Microphone</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
+				<ion-col size="7" class="settingInputCol">
 					<ion-select
-						[(ngModel)]="gameHelper.settings.selectedMicrophone"
+						[(ngModel)]="getSettings().selectedMicrophone"
 						[compareWith]="compareFn"
 						(ionChange)="onSettingsChange()"
 						class="full-width-select"

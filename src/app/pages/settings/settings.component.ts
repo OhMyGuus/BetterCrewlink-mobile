@@ -2,8 +2,10 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Plugins } from '@capacitor/core';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
-const { OverlayPlugin } = Plugins;
-const { BetterCrewlinkNativePlugin } = Plugins;
+import { SettingsService } from '../../services/settings.service';
+
+// const { OverlayPlugin } = Plugins;
+// const { BetterCrewlinkNativePlugin } = Plugins;
 
 @Component({
 	selector: 'app-settings',
@@ -11,10 +13,18 @@ const { BetterCrewlinkNativePlugin } = Plugins;
 	styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
+	constructor(
+		public gameHelper: GameHelperService,
+		private changeDetectorRef: ChangeDetectorRef,
+		private settings: SettingsService
+	) {}
+
+	getSettings() {
+		return this.settings.get();
+	}
 
 	onSettingsChange() {
-		this.gameHelper.saveSettings();
+		this.settings.save();
 	}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
@@ -28,7 +38,7 @@ export class SettingsComponent implements OnInit {
 	// }
 
 	ngOnInit() {
-		this.gameHelper.on('onConnect', () => {
+		this.gameHelper.on('onChange', () => {
 			this.changeDetectorRef.detectChanges();
 		});
 	}

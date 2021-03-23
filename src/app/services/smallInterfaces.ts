@@ -1,12 +1,16 @@
 import Peer from 'simple-peer';
-import { Player } from './AmongUsState';
+import { Player, GameState } from './AmongUsState';
 import { ConnectionController } from './ConnectionController.service';
 
-export enum VoiceServerOption{
+export enum VoiceServerOption {
 	ORIGINALCREWLINK = 0,
 	BETTERCREWLINK = 1,
-	CUSTOM = 2
+	CUSTOM = 2,
 }
+export interface PlayerSetting {
+	volume: number;
+}
+
 export interface ISettings {
 	voiceServerOption: VoiceServerOption;
 	customVoiceServer: string;
@@ -14,13 +18,15 @@ export interface ISettings {
 	gamecode: string;
 	selectedMicrophone: IDeviceInfo;
 	natFix: boolean;
+	playerSettings: PlayerSettingsMap;
+	overlayEnabled: boolean;
+	isMobile: boolean;
 }
 
 export interface Client {
 	playerId: number;
 	clientId: number;
 }
-
 
 export interface SocketClientMap {
 	[socketId: string]: Client;
@@ -46,7 +52,6 @@ export interface AudioElement {
 	muffleConnected: boolean;
 }
 
-
 export interface ILobbySettings {
 	maxDistance: number;
 	haunting: boolean;
@@ -58,7 +63,6 @@ export interface ILobbySettings {
 	hearThroughCameras: boolean;
 	wallsBlockAudio: boolean;
 }
-
 
 export const DEFAULT_LOBBYSETTINGS: ILobbySettings = {
 	maxDistance: 5.32,
@@ -79,7 +83,8 @@ export class SocketElement {
 	audioElement?: AudioElement;
 	player?: Player;
 	talking: boolean = false;
-
+	isDead: boolean;
+	settings: PlayerSetting | undefined;
 	constructor(socketId: string, peer?: Peer, client?: Client, audioElement?: AudioElement, player?: Player) {
 		this.socketId = socketId;
 		this.peer = peer;
@@ -90,7 +95,24 @@ export class SocketElement {
 
 	updatePLayer(connectionController: ConnectionController) {
 		this.player = this.client ? connectionController.getPlayer(this.client?.clientId) : undefined;
+		if (this.isDead && !this.player?.isDead) {
+			this.isDead = false;
+		} else if (
+			this.player?.isDead &&
+			(connectionController.localPLayer.isDead ||
+				connectionController.oldGameState?.gameState === GameState.DISCUSSION ||
+				connectionController.oldGameState.gameState === GameState.LOBBY)
+		) {
+			this.isDead = true;
+		}
+
+		if (this.player && this.client && this.player.disconnected) {
+			this.client.clientId = -100;
+			this.player.clientId = -100;
+		}
 	}
 }
 
 export class SocketElementMap extends Map<string, SocketElement> {}
+
+export class PlayerSettingsMap extends Map<number, PlayerSetting> {}

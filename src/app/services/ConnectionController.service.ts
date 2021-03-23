@@ -14,12 +14,26 @@ import {
 import { DEFAULT_ICE_CONFIG, DEFAULT_ICE_CONFIG_TURN } from './turnServers';
 import { Injectable } from '@angular/core';
 import AudioController from './AudioController.service';
+import { SettingsService } from './settings.service';
 
 export enum ConnectionState {
 	disconnected = 0,
 	connecting = 1,
 	conencted = 2,
+	error = 3,
 }
+
+export enum ConnectingStage {
+	connectingToVoiceServer = 0,
+	startingMicrophone = 1,
+	searchingForHost = 2,
+	waitingForHostToEnable = 3,
+	WaitingForGameData = 4,
+	waitingForYouToJoin = 5,
+	parsingGameData = 6,
+	FullyConnected = 7,
+}
+
 interface mobileHostInfo {
 	mobileHostInfo: {
 		isHostingMobile: boolean;
@@ -30,7 +44,9 @@ interface mobileHostInfo {
 export declare interface IConnectionController {
 	currentGameState: AmongUsState;
 	connectionState: ConnectionState;
+	connectingStage: ConnectingStage;
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean);
+	on(event: 'onChange', listener: () => void): this;
 }
 
 @Injectable({
@@ -39,9 +55,12 @@ export declare interface IConnectionController {
 export class ConnectionController extends EventEmitterO implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;
+	public oldGameState: AmongUsState;
+
 	socketElements: SocketElementMap = new SocketElementMap();
 	amongusUsername: string;
 	currentGameCode: string;
+	connectingStage = 0;
 	connectionState = ConnectionState.disconnected;
 	gamecode: string;
 	lastPing: number = -1;
@@ -54,25 +73,35 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	private currentHost: string;
 	private triedGameHost: boolean;
 	private lastHostIndex = -1;
-	constructor() {
+	public error: string | undefined;
+	constructor(private settingsService: SettingsService) {
 		super();
 		this.audioController = new AudioController(this);
 		this.ConnectionCheck();
 	}
 
+	updateConnectingStage(state: ConnectingStage) {
+		if (this.connectingStage === state) {
+			this.connectingStage += 1;
+		}
+		this.updateViews();
+	}
+
 	private ConnectionCheck() {
 		const recievedDataLength = Date.now() - this.lastPing;
-		if (this.connectionState !== ConnectionState.disconnected && this.lastPing !== -1 && recievedDataLength > 1000) {
+		if (this.connectionState !== ConnectionState.disconnected && this.lastPing !== -1 && recievedDataLength > 2000) {
 			let index = 0;
 			const nextIndex = this.mobileHosts.size > this.lastHostIndex ? this.lastHostIndex + 1 : 0;
 			this.mobileHosts.forEach((mobiledata, from) => {
 				if (mobiledata.mobileHostInfo.isGameHost || (this.triedGameHost && index++ === nextIndex)) {
 					this.currentHost = from;
 					this.lastHostIndex = this.triedGameHost ? nextIndex : -1;
+
 					this.socketIOClient?.emit('signal', {
 						to: from,
 						data: { mobilePlayerInfo: { code: this.gamecode, askingForHost: true } },
 					});
+					this.updateConnectingStage(ConnectingStage.waitingForHostToEnable);
 				}
 			});
 			this.triedGameHost = true;
@@ -88,7 +117,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		return this.socketElements.get(socketId);
 	}
 
-	private getSocketElementByClientID(clientId: number): SocketElement | undefined {
+	public getSocketElementByClientID(clientId: number): SocketElement | undefined {
 		return Array.from(this.socketElements.values()).find((o) => o.client?.clientId === clientId);
 	}
 
@@ -101,6 +130,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		console.log('Connect called??');
 		this.socketElements.clear();
 		this.lobbySettings = DEFAULT_LOBBYSETTINGS;
+		this.connectingStage = 0;
 		this.lastPing = Date.now();
 		this.lastHostIndex = -1;
 		this.connectionState = ConnectionState.connecting;
@@ -110,10 +140,8 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		this.mobileHosts.clear();
 		this.natFix = natFix;
 		this.currentGameState = undefined;
+		this.oldGameState = undefined;
 		this.initialize(voiceserver);
-		this.audioController.startAudio().then(() => {
-			this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
-		});
 	}
 
 	disconnect(disconnectAudio: boolean) {
@@ -123,8 +151,8 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		this.connectionState = ConnectionState.disconnected;
 		this.gamecode = '';
 		this.amongusUsername = '';
-		this.socketIOClient.emit('leave');
-		this.socketIOClient.disconnect();
+		this.socketIOClient?.emit('leave');
+		this.socketIOClient?.disconnect();
 		this.disconnectSockets();
 		if (disconnectAudio) {
 			this.audioController.disconnect();
@@ -167,6 +195,10 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		}
 	}
 
+	private updateViews() {
+		this.emit('onChange');
+	}
+
 	private createPeerConnection(socketId: string, stream: MediaStream, initiator): Peer {
 		console.log('[createPeerConnection1], ', { peerId: socketId });
 		const peer: Peer = new Peer({
@@ -182,6 +214,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			const socketElement = this.getSocketElement(socketId);
 			const audioElement = this.audioController.createAudioElement(recievedDtream, (bool: boolean) => {
 				socketElement.talking = bool;
+				this.emit('player_talk', socketElement.client?.clientId ?? -1, bool);
 			});
 
 			socketElement.audioElement = audioElement;
@@ -238,42 +271,65 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		});
 	}
 	private onGameStateChange(amongUsState: AmongUsState) {
-		this.currentGameState = amongUsState;
-		const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
-		if (!newLocalplayer) {
-			this.muteAll(); // if localplayer not found mute all players in lobby.
-			return;
-		}
-		if (
-			this.connectionState === ConnectionState.conencted &&
-			this.localPLayer &&
-			(this.localPLayer.id !== newLocalplayer.id || this.localPLayer.clientId !== newLocalplayer.clientId)
-		) {
-			this.socketIOClient.emit('id', newLocalplayer.id, newLocalplayer.clientId);
-		}
-
-		this.localPLayer = newLocalplayer;
-
-		if (this.connectionState === ConnectionState.connecting || this.currentGameCode !== this.gamecode) {
-			this.currentGameCode = this.gamecode;
-			console.log(this.localPLayer);
-			this.startAudio().then(() => {
-				this.socketIOClient.emit('join', this.gamecode, this.localPLayer.id, this.localPLayer.clientId);
-				this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
-			});
-			this.connectionState = ConnectionState.conencted;
-		}
-
-		this.socketElements.forEach((value) => {
-			if (value.client?.clientId === this.localPLayer?.clientId) {
+		try {
+			console.log(this.socketElements);
+			this.oldGameState = this.currentGameState;
+			this.currentGameState = amongUsState;
+			const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
+			this.updateConnectingStage(ConnectingStage.WaitingForGameData);
+			if (!newLocalplayer) {
+				this.muteAll(); // if localplayer not found mute all players in lobby.
 				return;
+			} else {
+				this.updateConnectingStage(ConnectingStage.waitingForYouToJoin);
 			}
-			value.updatePLayer(this);
-			if (value?.audioElement?.gain) {
-				const endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
-				value.audioElement.gain.gain.value = endGain;
+
+			if (
+				this.connectionState === ConnectionState.conencted &&
+				this.localPLayer &&
+				(this.localPLayer.id !== newLocalplayer.id || this.localPLayer.clientId !== newLocalplayer.clientId)
+			) {
+				this.socketIOClient.emit('id', newLocalplayer.id, newLocalplayer.clientId);
 			}
-		});
+
+			this.localPLayer = newLocalplayer;
+
+			if (this.connectionState === ConnectionState.connecting || this.currentGameCode !== this.gamecode) {
+				this.currentGameCode = this.gamecode;
+				console.log(this.localPLayer);
+				this.startAudio().then(() => {
+					this.socketIOClient.emit('join', this.gamecode, this.localPLayer.id, this.localPLayer.clientId);
+					this.socketIOClient.emit('id', this.localPLayer.id, this.localPLayer.clientId);
+				});
+				this.updateConnectingStage(ConnectingStage.parsingGameData);
+				this.connectionState = ConnectionState.conencted;
+			}
+
+			this.socketElements.forEach((value) => {
+				if (value.client?.clientId === this.localPLayer?.clientId) {
+					return;
+				}
+
+				value.updatePLayer(this);
+				if (value.player) {
+					value.player.isbetter = this.mobileHosts.has(value.socketId);
+				}
+				if (!value.settings && value.player) {
+					value.settings = this.settingsService.getPlayerSettings(value.player?.nameHash);
+				}
+
+				if (value?.audioElement?.gain) {
+					let endGain = this.audioController.updateAudioLocation(this.currentGameState, value, this.localPLayer);
+					if (value.settings && endGain > 0) {
+						endGain *= value.settings.volume / 100;
+					}
+					value.audioElement.gain.gain.value = endGain;
+				}
+			});
+		} catch (e) {
+			this.error = e.message;
+			this.connectionState = ConnectionState.error;
+		}
 	}
 
 	private initialize(serverUrl: string) {
@@ -288,6 +344,13 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 		});
 		this.socketIOClient.on('connect', () => {
 			console.log('[client.connect]');
+			if (this.connectionState !== ConnectionState.disconnected) {
+				this.updateConnectingStage(ConnectingStage.connectingToVoiceServer);
+				this.connectionState = ConnectionState.connecting; // resetting it to connecting since connection to voice server got reset;
+				this.audioController.startAudio().then(() => {
+					this.socketIOClient.emit('join', this.gamecode + '_mobile', Number(Date.now()), Number(Date.now()));
+				});
+			}
 		});
 		this.socketIOClient.on('disconnect', () => {
 			console.log('[client.disconnect]');
@@ -318,11 +381,13 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			if (data.hasOwnProperty('mobileHostInfo')) {
 				const mobiledata = data as mobileHostInfo;
 				this.mobileHosts.set(from, mobiledata);
+				this.updateConnectingStage(ConnectingStage.searchingForHost);
 				return;
 			}
 
 			if (data.hasOwnProperty('gameState')) {
 				this.lastPing = Date.now();
+				this.updateConnectingStage(ConnectingStage.waitingForHostToEnable);
 				const mobiledata = data as MobileData;
 				this.onLobbySettingsChange(mobiledata.lobbySettings);
 				this.onGameStateChange(mobiledata.gameState);
