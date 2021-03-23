@@ -14,7 +14,7 @@
 				<ion-row class="ion-justify-content-center">
 					<ion-spinner paused="false" id="spinnyBoi" color="light"></ion-spinner>
 				</ion-row>
-				<p style="text-align: center"><b>Waiting for you to join</b></p>
+				<p style="text-align: center"><b>{{gameHelper.getConnectionStage()}}</b></p>
 				<p style="text-align: center">
 					**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**
 				</p>
@@ -24,11 +24,24 @@
 					<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
 				</ion-row>
 			</ng-container>
+
+			<ng-container id="connectPg" *ngSwitchCase="3">
+				<h2 style="text-align: center; color: red">Error</h2>
+				<p style="text-align: center;">{{ gameHelper.getError() }}</p>
+				<ion-row class="ion-justify-content-center">
+					<ion-button (click)="gameHelper.connect()">refresh</ion-button>
+					<ion-button [routerLink]="['/settings']">Settings</ion-button>
+				</ion-row>
+			</ng-container>
 			<ng-container id="connectedPg" *ngSwitchCase="2">
 				<ion-grid style="height: 80%">
 					<ion-row class="playerGrid localPLayerRow">
 						<ion-col size="4">
-							<app-avatar [isDead]="gameHelper.cManager.localPLayer.isDead" [player]="gameHelper.cManager.localPLayer" [talking]="gameHelper.localTalking()"></app-avatar>
+							<app-avatar
+								[isDead]="gameHelper.cManager.localPLayer.isDead"
+								[player]="gameHelper.cManager.localPLayer"
+								[talking]="gameHelper.localTalking()"
+							></app-avatar>
 						</ion-col>
 						<ion-col size="4">
 							<div class="nameCode-Container">
@@ -62,7 +75,14 @@
 					<ion-row class="playerGrid playersGrid">
 						<ng-container *ngFor="let item of getPlayers()">
 							<ion-col *ngIf="item.player" size="4" class="testColumn">
-								<app-avatar  *ngIf="item.player" [settings]="item.settings"  [isDead]="item.isDead" [player]="item.player" [talking]="item.talking"></app-avatar
+								<app-avatar
+									settings="item.socketId"
+									*ngIf="item.player"
+									[settings]="item.settings"
+									[isDead]="item.isDead"
+									[player]="item.player"
+									[talking]="item.talking"
+								></app-avatar
 							></ion-col>
 						</ng-container>
 					</ion-row>
@@ -70,8 +90,6 @@
 			</ng-container>
 		</ng-container>
 	</ion-grid>
-	
-	
 </ion-content>
 
 <div class="testButtons" *ngIf="gameHelper.cManager.connectionState == 2">

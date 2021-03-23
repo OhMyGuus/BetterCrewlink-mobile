@@ -1,19 +1,21 @@
 import { Injectable, OnInit } from '@angular/core';
-import { VoiceServerOption, ISettings, PlayerSettingsMap, playerSetting } from './smallInterfaces';
+import { VoiceServerOption, ISettings, PlayerSettingsMap, PlayerSetting } from './smallInterfaces';
 import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
 const DEFAULTSETTINGS: ISettings = {
 	gamecode: '',
-	voiceServerOption: VoiceServerOption.ORIGINALCREWLINK,
+	voiceServerOption: VoiceServerOption.BETTERCREWLINK,
 	customVoiceServer: 'https://bettercrewl.ink',
 	username: '',
 	selectedMicrophone: { id: 0, label: 'default', deviceId: 'default', kind: 'audioinput' },
 	natFix: false,
 	playerSettings: new PlayerSettingsMap(),
+	overlayEnabled: false,
+	isMobile: false
 };
 
-const DEFAULTPLAYERSETTING: playerSetting = {
+const DEFAULTPLAYERSETTING: PlayerSetting = {
 	volume: 100,
 };
 
@@ -30,17 +32,20 @@ export class SettingsService {
 	}
 
 	get() {
+		if (this.settings.isMobile !== this.IsMobile) {
+			this.settings.isMobile = this.IsMobile;
+		}
 		return this.settings;
 	}
 
-	getPlayerSettings(nameHash: number): playerSetting {
+	getPlayerSettings(nameHash: number): PlayerSetting {
 		if (!this.settings.playerSettings.has(nameHash)) {
-			return DEFAULTPLAYERSETTING;
+			return { ...DEFAULTPLAYERSETTING };
 		}
 		return this.settings.playerSettings.get(nameHash);
 	}
 
-	savePlayerSetting(nameHash: number, playerSetting: playerSetting) {
+	savePlayerSetting(nameHash: number, playerSetting: PlayerSetting) {
 		this.settings.playerSettings.set(nameHash, playerSetting);
 		this.save();
 	}
@@ -48,7 +53,6 @@ export class SettingsService {
 	getVoiceServer() {
 		switch (this.settings.voiceServerOption) {
 			case VoiceServerOption.ORIGINALCREWLINK:
-				return this.IsMobile ? 'https://crewl.ink' : 'https://ubuntu1.guus.info';
 			case VoiceServerOption.BETTERCREWLINK:
 				return 'https://bettercrewl.ink';
 			case VoiceServerOption.CUSTOM:

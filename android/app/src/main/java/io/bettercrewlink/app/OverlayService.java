@@ -24,52 +24,92 @@ import static com.microsoft.appcenter.utils.HandlerUtils.runOnUiThread;
 public class OverlayService extends Service {
 
     private WindowManager windowManager;
-    private View chatHead;
+    private View iconsContainerView;
     private static List<ImageView> imageViews = new ArrayList<ImageView>();
+    private static ImageView audioImageView;
+    private static ImageView micImageView;
+    private static boolean mic_muted = false;
+    private static boolean audio_muted = false;
+    private ImageView refreshButtonimageview;
+
+    enum OVERLAY_BUTTON {
+        MICROPHONE,
+        AUDIO,
+        REFRESH
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // Not used
         return null;
     }
 
     public static void setVisible(int color, boolean visible) {
         if (color >= 0 && color <= 12) {
             runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
-
-                    imageViews.get(color).setVisibility(visible? View.VISIBLE : View.GONE);
+                    if (color < imageViews.size())
+                        imageViews.get(color).setVisibility(visible ? View.VISIBLE : View.GONE);
                 }
             });
         }
     }
 
-    ImageView addImage(int resId) {
-        float density = Resources.getSystem().getDisplayMetrics().density;
-        int width = (int) (40 * density);
-        LinearLayout row = chatHead.findViewById(R.id.overlay_player_container);
-        ImageView playerImg = new ImageView(this);
-        playerImg.setImageResource(resId);
-        row.addView(playerImg);
-        playerImg.requestLayout();
-        ViewGroup.LayoutParams layoutParams = playerImg.getLayoutParams();
-        layoutParams.width = width;
-        layoutParams.height = width;
-        imageViews.add(playerImg);
-        return playerImg;
+    public static void updateMuteIcons(boolean mic_muted, boolean audio_muted) {
+        OverlayService.mic_muted = mic_muted;
+        OverlayService.audio_muted = audio_muted;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (audioImageView != null && micImageView != null) {
+                    audioImageView.setImageResource(audio_muted ? R.drawable.audio_off : R.drawable.audio_on);
+                    micImageView.setImageResource(mic_muted ? R.drawable.mic_off : R.drawable.mic_on);
+                }
+            }
+        });
     }
+
+
+    ImageView addImage(int resId, boolean addToViewList) {
+        return addImage(resId, addToViewList, 40, 40);
+    }
+
+    ImageView addImage(int resId, boolean addToViewList, int width, int height) {
+        float density = Resources.getSystem().getDisplayMetrics().density;
+        int calcWidth = (int) (width * density);
+        int calcHeight = (int) (height * density);
+        LinearLayout row = iconsContainerView.findViewById(R.id.overlay_player_container);
+        ImageView img = new ImageView(this);
+        img.setImageResource(resId);
+        row.addView(img);
+        img.requestLayout();
+        ViewGroup.LayoutParams layoutParams = img.getLayoutParams();
+        layoutParams.width = calcWidth;
+        layoutParams.height = calcHeight;
+        if (addToViewList) {
+            imageViews.add(img);
+        }
+        return img;
+    }
+
+    public void pressOverlayButton(OVERLAY_BUTTON button) {
+        BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("press_overlay", "{ 'action': '" + button + "' }");
+    }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        chatHead = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
+        iconsContainerView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
+        refreshButtonimageview = addImage(R.drawable.refresh_button, false);
+        micImageView = addImage(mic_muted ? R.drawable.mic_off : R.drawable.mic_on, false);
+        audioImageView = addImage(audio_muted ? R.drawable.audio_off : R.drawable.audio_on, false);
+
 
         for (int i = 0; i < 12; i++) {
-            ImageView view = addImage(this.getResources().getIdentifier("playericon_" + i, "drawable", this.getPackageName()));
+            ImageView view = addImage(this.getResources().getIdentifier("playericon_" + i, "drawable", this.getPackageName()), true);
             view.setVisibility(View.GONE);
         }
 
@@ -80,7 +120,21 @@ public class OverlayService extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSPARENT);
         Context context = this;
-        chatHead.setOnTouchListener(new View.OnTouchListener() {
+
+
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.x = 0;
+        params.y = 100;
+
+        AddTouchEventListner(context, iconsContainerView, params);
+        windowManager.addView(iconsContainerView, params);
+
+    }
+
+
+    public void AddTouchEventListner(Context context, View view, WindowManager.LayoutParams
+            params) {
+        iconsContainerView.setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
             private float initialTouchX;
@@ -90,7 +144,7 @@ public class OverlayService extends Service {
             private GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-                    LinearLayout row = chatHead.findViewById(R.id.overlay_player_container);
+                    LinearLayout row = iconsContainerView.findViewById(R.id.overlay_player_container);
 
                     if (!side) {
                         row.setOrientation(LinearLayout.VERTICAL);
@@ -101,48 +155,63 @@ public class OverlayService extends Service {
                     }
                     params.x = 0;
                     params.y = 0;
-                    windowManager.updateViewLayout(chatHead, params);
+                    windowManager.updateViewLayout(iconsContainerView, params);
 
                     return super.onDoubleTap(e);
                 }
             });
+            boolean clickingOnVolume = false;
+            boolean clickingOnMic = false;
+            boolean clickingOnRefresh = false;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+//                Log.w("OOF", "volumeImageView x: " + volumeImageView.getX() + " y:" + volumeImageView.getY() + " w: " + volumeImageView.getWidth() + " h: " + volumeImageView.getHeight() + " --> " + event.getX() + " -- " + event.getY());
 
                 gestureDetector.onTouchEvent(event);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         initialX = params.x;
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
-                        return true;
+                        clickingOnVolume = event.getX() >= audioImageView.getX() && event.getX() <= audioImageView.getX() + audioImageView.getWidth() &&
+                                event.getY() >= audioImageView.getY() && event.getY() <= audioImageView.getY() + audioImageView.getHeight();
+                        clickingOnMic = event.getX() >= micImageView.getX() && event.getX() <= micImageView.getX() + micImageView.getWidth() &&
+                                event.getY() >= micImageView.getY() && event.getY() <= micImageView.getY() + micImageView.getHeight();
+                        clickingOnRefresh = event.getX() >= refreshButtonimageview.getX() && event.getX() <= refreshButtonimageview.getX() + refreshButtonimageview.getWidth() &&
+                                event.getY() >= refreshButtonimageview.getY() && event.getY() <= refreshButtonimageview.getY() + refreshButtonimageview.getHeight();
+
+                        return false;
                     case MotionEvent.ACTION_UP:
-                        return true;
+                        int movedPixels = Math.abs(initialX - params.x) + Math.abs(initialY - params.y);
+                        if (movedPixels > 10) {
+                            return false;
+                        }
+                        if (clickingOnMic) {
+                            pressOverlayButton(OVERLAY_BUTTON.MICROPHONE);
+                        }
+                        if (clickingOnVolume) {
+                            pressOverlayButton(OVERLAY_BUTTON.AUDIO);
+                        }
+                        if (clickingOnRefresh) {
+                            pressOverlayButton(OVERLAY_BUTTON.REFRESH);
+                        }
+                        return false;
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        windowManager.updateViewLayout(chatHead, params);
-                        return true;
+                        windowManager.updateViewLayout(iconsContainerView, params);
+                        return false;
                 }
                 return false;
             }
         });
-
-
-        params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.x = 0;
-        params.y = 100;
-
-        windowManager.addView(chatHead, params);
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (chatHead != null) windowManager.removeView(chatHead);
+        if (iconsContainerView != null) windowManager.removeView(iconsContainerView);
     }
 }

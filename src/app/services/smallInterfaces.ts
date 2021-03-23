@@ -7,7 +7,7 @@ export enum VoiceServerOption {
 	BETTERCREWLINK = 1,
 	CUSTOM = 2,
 }
-export interface playerSetting {
+export interface PlayerSetting {
 	volume: number;
 }
 
@@ -19,6 +19,8 @@ export interface ISettings {
 	selectedMicrophone: IDeviceInfo;
 	natFix: boolean;
 	playerSettings: PlayerSettingsMap;
+	overlayEnabled: boolean;
+	isMobile: boolean;
 }
 
 export interface Client {
@@ -82,7 +84,7 @@ export class SocketElement {
 	player?: Player;
 	talking: boolean = false;
 	isDead: boolean;
-	settings: playerSetting | undefined;
+	settings: PlayerSetting | undefined;
 	constructor(socketId: string, peer?: Peer, client?: Client, audioElement?: AudioElement, player?: Player) {
 		this.socketId = socketId;
 		this.peer = peer;
@@ -103,9 +105,14 @@ export class SocketElement {
 		) {
 			this.isDead = true;
 		}
+
+		if (this.player && this.client && this.player.disconnected) {
+			this.client.clientId = -100;
+			this.player.clientId = -100;
+		}
 	}
 }
 
 export class SocketElementMap extends Map<string, SocketElement> {}
 
-export class PlayerSettingsMap extends Map<number, playerSetting> {}
+export class PlayerSettingsMap extends Map<number, PlayerSetting> {}

@@ -8,9 +8,8 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Voice server</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
+				<ion-col size="7" class="settingInputCol">
 					<ion-select text-wrap [(ngModel)]="getSettings().voiceServerOption" (ionChange)="onSettingsChange()">
-						<ion-select-option [value]="0">Original-Crewlink</ion-select-option>
 						<ion-select-option [value]="1">Better-Crewlink</ion-select-option>
 						<ion-select-option [value]="2">Custom server</ion-select-option>
 					</ion-select>
@@ -20,7 +19,7 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Custom server</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
 						[(ngModel)]="getSettings().customVoiceServer"
 						(ionChange)="onSettingsChange()"
@@ -32,7 +31,7 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Ingame name</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
 						[(ngModel)]="getSettings().username"
 						(ionChange)="onSettingsChange()"
@@ -44,7 +43,7 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Lobby code</ion-label>
 				</ion-col>
-				<ion-col size="7" >
+				<ion-col size="7">
 					<ion-input
 						style="text-transform: uppercase"
 						pattern="[A-Za-z]{6}"
@@ -55,11 +54,23 @@
 					></ion-input>
 				</ion-col>
 			</ion-item>
+			<ion-item *ngIf="getSettings().isMobile">
+				<ion-col size="5" class="settingLabelCol">
+					<ion-label>Overlay enabled</ion-label>
+				</ion-col>
+				<ion-col size="7" class="settingInputCol">
+					<ion-checkbox
+						[(ngModel)]="getSettings().overlayEnabled"
+						(ionChange)="onSettingsChange()"
+						placeholder="Overlay enabled"
+					></ion-checkbox>
+				</ion-col>
+			</ion-item>
 			<ion-item>
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>NAT FIX</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
+				<ion-col size="7" class="settingInputCol">
 					<ion-checkbox
 						[(ngModel)]="getSettings().natFix"
 						(ionChange)="onSettingsChange()"
@@ -71,7 +82,7 @@
 				<ion-col size="5" class="settingLabelCol">
 					<ion-label>Microphone</ion-label>
 				</ion-col>
-				<ion-col size="7"  class="settingInputCol">
+				<ion-col size="7" class="settingInputCol">
 					<ion-select
 						[(ngModel)]="getSettings().selectedMicrophone"
 						[compareWith]="compareFn"
@@ -100,5 +111,4 @@
 			</ng-container>
 		</ion-list>
 	</div>
-	
 </ion-content>

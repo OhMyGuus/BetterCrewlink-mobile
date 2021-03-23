@@ -4,8 +4,8 @@ import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
 
-const { OverlayPlugin } = Plugins;
-const { BetterCrewlinkNativePlugin } = Plugins;
+// const { OverlayPlugin } = Plugins;
+// const { BetterCrewlinkNativePlugin } = Plugins;
 
 @Component({
 	selector: 'app-settings',
@@ -38,7 +38,7 @@ export class SettingsComponent implements OnInit {
 	// }
 
 	ngOnInit() {
-		this.gameHelper.on('onConnect', () => {
+		this.gameHelper.on('onChange', () => {
 			this.changeDetectorRef.detectChanges();
 		});
 	}

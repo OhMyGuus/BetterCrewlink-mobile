@@ -3,6 +3,7 @@ import Peer from 'simple-peer';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
 import { SocketElement } from '../../services/smallInterfaces';
+import { Player } from '../../services/AmongUsState';
 
 @Component({
 	selector: 'app-game',
@@ -23,7 +24,9 @@ export class GameComponent implements OnInit {
 	}
 
 	getPlayers() {
-		return Array.from(this.gameHelper.cManager.socketElements.values()).filter((o) => o.player !== undefined);
+		return Array.from(this.gameHelper.cManager.socketElements.values())
+			.filter((o) => o.player !== undefined)
+			.sort((a, b) => a.player?.colorId -  b.player?.colorId);
 	}
 
 	getValues2(map): SocketElement[] {
@@ -32,7 +35,7 @@ export class GameComponent implements OnInit {
 
 	ngOnInit() {
 		console.log('ngOninit');
-		this.gameHelper.on('onConnect', () => {
+		this.gameHelper.on('onChange', () => {
 			this.changeDetectorRef.detectChanges();
 		});
 	}

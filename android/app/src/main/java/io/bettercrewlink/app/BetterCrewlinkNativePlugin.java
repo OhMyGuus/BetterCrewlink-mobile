@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
 
@@ -33,11 +35,14 @@ public class BetterCrewlinkNativePlugin extends Plugin {
     private boolean micMuted = false;
     private boolean timmerRunning = false;
     private boolean running = false;
+    private boolean overlayShown = false;
 
     @PluginMethod()
     public void showNotification(PluginCall call) {
         Boolean audioMuted = call.getBoolean("audiomuted");
         Boolean micMuted = call.getBoolean("micmuted");
+        Boolean overlayEnabled = call.getBoolean("overlayEnabled");
+
         this.audionMuted = audioMuted;
         this.micMuted = micMuted;
         String message = call.getString("message");
@@ -47,19 +52,25 @@ public class BetterCrewlinkNativePlugin extends Plugin {
         CreateNotification();
         call.success(ret);
         CreateTimer();
-        if(!running) {
-            Context context = this.getContext();
-            context.startService(new Intent(context, OverlayService.class));
+        OverlayService.updateMuteIcons(micMuted, audioMuted);
+        if ((!overlayShown) && overlayEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this.getContext())) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + this.getContext().getPackageName()));
+                startActivityForResult(call, intent, 0);
+            } else {
+                Context context = this.getContext();
+                context.startService(new Intent(context, OverlayService.class));
+                overlayShown = true;
+            }
         }
 
         running = true;
     }
 
 
-
     @PluginMethod()
     public void showTalking(PluginCall call) {
-        int color    = call.getInt("color");
+        int color = call.getInt("color");
         Boolean talking = call.getBoolean("talking");
         Context context = this.getContext();
         OverlayService.setVisible(color, talking);
@@ -112,7 +123,6 @@ public class BetterCrewlinkNativePlugin extends Plugin {
             notificationManager.createNotificationChannel(channel);
         }
     }
-
 
 
     public PendingIntent createAction(String action) {

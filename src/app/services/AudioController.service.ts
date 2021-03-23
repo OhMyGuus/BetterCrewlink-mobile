@@ -1,7 +1,7 @@
 import { EventEmitter as EventEmitterO } from 'events';
 import { AmongUsState, GameState, Player } from './AmongUsState';
 import { SocketElement, AudioElement, IDeviceInfo } from './smallInterfaces';
-import { ConnectionController } from './ConnectionController.service';
+import { ConnectingStage, ConnectionController } from './ConnectionController.service';
 import VAD from './vad';
 
 export default class AudioController extends EventEmitterO {
@@ -19,6 +19,7 @@ export default class AudioController extends EventEmitterO {
 
 	async startAudio() {
 		if (this.stream) {
+			this.connectionController.updateConnectingStage(ConnectingStage.startingMicrophone);
 			return;
 		}
 
@@ -46,7 +47,7 @@ export default class AudioController extends EventEmitterO {
 		});
 
 		this.stream.getAudioTracks()[0].enabled = !this.microphoneMuted && !this.audioMuted;
-		console.log('connected to microphone');
+		this.connectionController.updateConnectingStage(ConnectingStage.startingMicrophone);
 	}
 
 	changeMuteState(microphoneMuted: boolean, audioMuted: boolean) {
@@ -109,7 +110,7 @@ export default class AudioController extends EventEmitterO {
 		VAD(context, gain, undefined, {
 			onVoiceStart: () => update(true),
 			onVoiceStop: () => update(false),
-			stereo: false
+			stereo: false,
 		});
 		gain.connect(context.destination);
 
@@ -285,8 +286,10 @@ export default class AudioController extends EventEmitterO {
 	}
 
 	disconnect() {
-		this.stream.getTracks().forEach((track) => track.stop());
-		this.stream = undefined;
+		if (this.stream) {
+			this.stream.getTracks().forEach((track) => track.stop());
+			this.stream = undefined;
+		}
 	}
 
 	disconnectElement(socketElement: SocketElement) {

@@ -4,9 +4,9 @@
 			<ion-range
 				class="volumeSliderThingy"
 				[(ngModel)]="settings.volume"
-				ionChange="onVolumeChange()"
+				(ionChange)="onVolumeChange()"
 				color="light"
-				max="300"
+				max="{{MAXVOLUME}}"
 				min="0"
 				step="1"
 				pin="1"
@@ -31,13 +31,13 @@
 		</div>
 		<img
 			*ngIf="!isDead && player.hatId > 0"
-			src="assets/avatar/hats/{{ player.hatId }}.png"
+			src="assets/avatar/hats/{{getHatImage()}}.png"
 			[style.top]="getHatY()"
 			[class]="backLayerHats.has(player.hatId) ? 'backlayerd-hat' : ''"
 			class="hat no-drag-img"
 		/>
 	</div>
 	<p class="playername_container">
-		<span class="playername noselect">{{ player.name }} </span>
+		<span class="playername noselect">{{ player.name }}</span>
 	</p>
 </div>

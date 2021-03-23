@@ -14,6 +14,7 @@ export interface AmongUsState {
 	clientId: number;
 	hostId: number;
 	comsSabotaged: boolean;
+	lightRadius: number;
 }
 
 export interface Player {
