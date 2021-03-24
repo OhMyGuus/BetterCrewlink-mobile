@@ -127,5 +127,7 @@ Any contributions you make are greatly appreciated.
 
 Distributed under the GNU General Public License v3.0. See <a href="https://github.com/OhMyGuus/BetterCrewlink-mobile/blob/master/LICENSE">`LICENSE`</a> for more information.
 
+[license-shield]: https://img.shields.io/github/license/OhMyGuus/BetterCrewlink-mobile.svg?style=flat-square
+[license-url]: https://github.com/OhMyGuus/BetterCrewlink-mobile/blob/master/LICENSE
 [paypal-url]: https://www.paypal.com/donate?hosted_button_id=KS43BDTGN76JQ
 [paypal-shield]: https://img.shields.io/badge/Donate-PayPal-green.svg
