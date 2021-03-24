@@ -1,14 +1,11 @@
 import { EventEmitter as EventEmitterO } from 'events';
-import * as io from 'socket.io-client';
 import { AmongUsState, GameState, Player } from './AmongUsState';
-import { SocketElementMap, SocketElement, Client, AudioElement, IDeviceInfo } from './smallInterfaces';
-import { element } from 'protractor';
-import { waitForAsync } from '@angular/core/testing';
-import { ConnectionController } from './ConnectionController.service';
-import { Injectable } from '@angular/core';
+import { SocketElement, AudioElement, IDeviceInfo } from './smallInterfaces';
+import { ConnectingStage, ConnectionController } from './ConnectionController.service';
 import VAD from './vad';
 
 export default class AudioController extends EventEmitterO {
+	localTalking: boolean;
 	constructor(private connectionController: ConnectionController) {
 		super();
 		this.audioElementsCotainer = document.getElementById('AudioElements');
@@ -22,19 +19,35 @@ export default class AudioController extends EventEmitterO {
 
 	async startAudio() {
 		if (this.stream) {
+			this.connectionController.updateConnectingStage(ConnectingStage.startingMicrophone);
 			return;
 		}
 
 		const audio: MediaTrackConstraintSet = {
-			deviceId: this.audioDeviceId,
+			deviceId: this.connectionController.deviceID,
 			autoGainControl: false,
 			echoCancellation: true,
 			latency: 0,
 			noiseSuppression: true,
 		};
 		this.stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
+		const AudioContext = window.webkitAudioContext || window.AudioContext;
+		const context = new AudioContext();
+
+		VAD(context, context.createMediaStreamSource(this.stream), undefined, {
+			onVoiceStart: () => {
+				this.localTalking = true;
+				this.emit('local_talk', true);
+			},
+			onVoiceStop: () => {
+				this.localTalking = false;
+				this.emit('local_talk', false);
+			},
+			stereo: false,
+		});
+
 		this.stream.getAudioTracks()[0].enabled = !this.microphoneMuted && !this.audioMuted;
-		console.log('connected to microphone');
+		this.connectionController.updateConnectingStage(ConnectingStage.startingMicrophone);
 	}
 
 	changeMuteState(microphoneMuted: boolean, audioMuted: boolean) {
@@ -273,8 +286,10 @@ export default class AudioController extends EventEmitterO {
 	}
 
 	disconnect() {
-		this.stream.getTracks().forEach((track) => track.stop());
-		this.stream = undefined;
+		if (this.stream) {
+			this.stream.getTracks().forEach((track) => track.stop());
+			this.stream = undefined;
+		}
 	}
 
 	disconnectElement(socketElement: SocketElement) {
