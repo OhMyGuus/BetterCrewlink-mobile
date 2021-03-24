@@ -1,4 +1,4 @@
-[![Donate][paypal-shield]](paypal-url) [![Discord](https://img.shields.io/discord/791516611143270410.svg?color=%237289da&label=discord)](https://discord.gg/qDqTzvj4SH)
+[![GPL-3.0 License][license-shield]][license-url] [![Donate][paypal-shield]](paypal-url) [![Discord](https://img.shields.io/discord/791516611143270410.svg?color=%237289da&label=discord)](https://discord.gg/qDqTzvj4SH)
 
 <br />
 <p align="center">
