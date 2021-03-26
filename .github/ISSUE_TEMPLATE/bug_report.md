@@ -8,6 +8,9 @@ assignees: ''
 ---
 
 # You MUST use this template or your issue will be deleted.
+
+**Before reporting a bug, always look at the [FAQ](https://discord.gg/qDqTzvj4SH) in Discord Server that there usually has a solution for your bug**
+
 **If your problem is with BetterCrewLink on your PC, [click here](https://github.com/OhMyGuus/BetterCrewLink/issues) and make an issue there, if your problem is with BetterCrewLink on your mobile or the web version, ignore that and continue with your bug report**
 
 # Pre-Flight Checklist
