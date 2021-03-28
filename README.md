@@ -1,4 +1,4 @@
-[![GitHub Downloads][github-shield]][github-url] [![GPL-3.0 License][license-shield]][license-url] [![Donate][paypal-shield]](paypal-url) [![Discord Server][discord-shield]][discord-url]
+[![GitHub Downloads][github-shield]][github-url] [![GPL-3.0 License][license-shield]][license-url] [![Support BetterCrewLink][paypal-shield]][paypal-url] [![Discord Server][discord-shield]][discord-url]
 
 <br />
 <p align="center">
@@ -127,9 +127,9 @@ Distributed under the GNU General Public License v3.0. See <a href="https://gith
 
 [github-shield]: https://img.shields.io/github/downloads/OhMyGuus/BetterCrewlink-mobile/total?label=Downloads
 [github-url]: https://github.com/OhMyGuus/BetterCrewlink-mobile/releases/
-[license-shield]: https://img.shields.io/github/license/OhMyGuus/BetterCrewlink-mobile.svg?style=flat-square
+[license-shield]: https://img.shields.io/github/license/OhMyGuus/BetterCrewlink-mobile?label=License
 [license-url]: https://github.com/OhMyGuus/BetterCrewlink-mobile/blob/master/LICENSE
-[paypal-shield]: https://img.shields.io/badge/Donate-PayPal-green.svg
+[paypal-shield]: https://img.shields.io/badge/Support-BetterCrewLink-purple
 [paypal-url]: https://www.paypal.com/donate?hosted_button_id=KS43BDTGN76JQ
 [discord-shield]: https://img.shields.io/discord/791516611143270410?color=cornflowerblue&label=Discord&logo=Discord&logoColor=white
 [discord-url]: https://discord.gg/qDqTzvj4SH
