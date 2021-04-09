@@ -1,30 +1,57 @@
-.avatar {
-   width: 100%;
-    position: relative;
-    transition: border-color .2s ease-out;
-    border-style: solid;
-    border-radius: 50%;
-    padding-bottom: 100%;
-    border-width: 2px;
-    border-color: transparent;
+.no-drag-img {
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
-.avatar-2{
-    overflow: hidden;
-    position: absolute;
-    // top: -2.5px;
-    // left: -2.5px;
-    border-width: 2px;
-    transform: unset;
+.avatar {
+	width: 100%;
+	position: relative;
+	transition: border-color 0.2s ease-out;
+	border-style: solid;
+	border-radius: 50%;
+	padding-bottom: 100%;
+	border-width: 2px;
+	border-color: transparent;
+}
+
+.avatar-2 {
+	cursor: pointer;
+	overflow: hidden;
+	position: absolute;
+	// top: -2.5px;
+	// left: -2.5px;
+	border-width: 2px;
+	transform: unset;
+}
+
+.volumeslider {
+	position: absolute;
+	width: 100%;
+	border-radius: 20px;
+	//  height: 20px;
+	background-color: #000000; //60
+	z-index: 40;
+	height: 30px;
+}
+.volumeslider-1 {
+	position: absolute;
+	width: 90%;
+}
+.volumeSliderThingy {
+	padding: 0px;
+	margin-top: -5px;
+	margin-left: 10px;
 }
 
 .skin {
-    top: calc(33% + 22%);
-    width: 105%;
-    z-index: 3;
-    position: absolute;
-    left:-7px;
-
+	top: calc(33% + 22%);
+	width: 105%;
+	z-index: 3;
+	position: absolute;
+	left: -7px;
 }
 
 .base {
@@ -32,30 +59,54 @@
 	position: absolute;
 	top: 22%;
 	left: -7px;
-    z-index: 2
+	z-index: 2;
 }
 
 .hat {
+	cursor: pointer;
 	position: absolute;
-    display: block;
-    left: -6px;
-    top: -11%;
-    z-index: 3;
-    width: 100%;
+	display: block;
+	left: -6px;
+	top: -11%;
+	z-index: 3;
+	width: 100%;
 }
 .backlayerd-hat {
-    z-index: 1;
+	z-index: 1;
 }
 
-.avatarBase{
-    position: relative;
-    // max-width: 75px
-  //  height: 500px;
-
+.avatarBase {
+	position: relative;
+	// max-width: 75px
+	//  height: 500px;
 }
 
-
-.avatar.talking{
-    border-color: limegreen !important;
+.avatar.talking {
+	border-color: limegreen !important;
 }
 
+.playername_container {
+	width: 100%;
+	z-index: 20;
+	bottom: -6px;
+	position: absolute;
+	text-align: center;
+}
+.playername {
+	font-weight: bold;
+	color: white;
+	text-align: center;
+	padding: 5px 10px 5px 10px;
+	background-color: rgb(0 0 0 / 69%);
+	border-radius: 20px;
+}
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}

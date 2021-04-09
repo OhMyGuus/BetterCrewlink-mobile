@@ -3,7 +3,7 @@
 		<ion-content color="secondary">
 
 			<ion-list id="inbox-list" style="background-color: #25232a">
-				<ion-item><b>BetterCrewlink Mobile v1.0.20</b></ion-item>
+				<ion-item><b>BetterCrewlink Mobile v1.0.25</b></ion-item>
 				<ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
 					<ion-item
 						(click)="selectedIndex = i"
@@ -24,8 +24,8 @@
 	<ion-header>
 		<app-header></app-header>
 	</ion-header>
-	<ion-router-outlet id="main-content"></ion-router-outlet>
-	<ion-footer>
+	<ion-router-outlet id="main-content" style="height: 40% !important;"></ion-router-outlet>
+	<ion-footer class="footer">
 		<app-footer></app-footer>
 	</ion-footer>
 </ion-app>
