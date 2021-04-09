@@ -1,19 +1,13 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Peer from 'simple-peer';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
-import { SocketElement } from '../../services/smallInterfaces';
-import { Player } from '../../services/AmongUsState';
+import { SocketElement } from './services/smallInterfaces';
+import { Player } from './services/AmongUsState';
 
-@Component({
-	selector: 'app-game',
-	templateUrl: './game.component.html',
-	styleUrls: ['./game.component.scss'],
-})
-export class GameComponent implements OnInit {
+export class GameComponent {
 	client: SocketIOClient.Socket;
 	peerConnections: Array<Peer> = [];
-	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
+	constructor(public gameHelper: GameHelperService) {}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
 		return e1 && e2 ? e1.id === e2.id : false;
@@ -31,12 +25,5 @@ export class GameComponent implements OnInit {
 
 	getValues2(map): SocketElement[] {
 		return Array.from(map.values());
-	}
-
-	ngOnInit() {
-		console.log('ngOninit');
-		this.gameHelper.on('onChange', () => {
-			this.changeDetectorRef.detectChanges();
-		});
 	}
 }
