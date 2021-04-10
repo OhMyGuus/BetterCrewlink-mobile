@@ -1,4 +1,5 @@
 import React from 'react';
+import { useStyles, makeStyles } from "@andywer/style-hook";
 import { Player } from './services/AmongUsState';
 import { backLayerHats, hatOffsets, hats, skins, players, hatXOffsets } from './cosmetics';
 import {
@@ -92,10 +93,32 @@ const Avatar: React.FC<AvatarProps> = function ({
 			if (deafened) {
 				icon = <VolumeMuteSharp 
                     color = { '#ea3c2a' }
+					style = {`
+						background: '#ea3c2a';
+						position: 'absolute';
+						left: '50%';
+						top: '50%';
+						transform: 'translate(-50%, -50%)';
+						border: '2px solid #690a00';
+						borderRadius: '50%';
+						padding: 2;
+						zIndex: 10;
+						`}
                 />;
 			} else if (muted) {
 				icon = <MicOffCircleSharp
                     color = { '#ea3c2a' }
+					style = {`
+						background: '#ea3c2a';
+						position: 'absolute';
+						left: '50%';
+						top: '50%';
+						transform: 'translate(-50%, -50%)';
+						border: '2px solid #690a00';
+						borderRadius: '50%';
+						padding: 2;
+						zIndex: 10;
+						`}
                 />;
 			}
 			break;
@@ -103,18 +126,41 @@ const Avatar: React.FC<AvatarProps> = function ({
 			icon = (
 				<LinkSharp
                     color = { '#ea3c2a' }
+					style = {`
+						background: '#ea3c2a';
+						position: 'absolute';
+						left: '50%';
+						top: '50%';
+						transform: 'translate(-50%, -50%)';
+						border: '2px solid #690a00';
+						borderRadius: '50%';
+						padding: 2;
+						zIndex: 10;
+						`}
+					
 				/>
 			);
 			break;
 		case 'disconnected':
 			icon = <WifiSharp
                 color = { '#ea3c2a' }
+				style = {`
+					background: '#ea3c2a';
+					position: 'absolute';
+					left: '50%';
+					top: '50%';
+					transform: 'translate(-50%, -50%)';
+					border: '2px solid #690a00';
+					borderRadius: '50%';
+					padding: 2;
+					zIndex: 10;
+					`}
             />;
 			break;
 	}
 
 	return (
-		<IonContent className={classes.avatar} style={style} onClick={onSelect ? () => onSelect(player) : undefined}>
+		<IonContent style={style} onClick={onSelect ? () => onSelect(player) : undefined}>
 			<Canvas
 				className={classes.canvas}
 				src={image}
@@ -132,22 +178,49 @@ interface UseCanvasStylesParams {
 	isAlive: boolean;
 }
 
+const useCanvasStyles = makeStyles(() => ({
+	base: {
+		width: '100%',
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		zIndex: 2,
+	},
+	hat: {
+		position: 'absolute',
+		transform: 'translateX(calc(-50% + 4px)) scale(0.7)',
+		zIndex: ({ backLayerHat }: UseCanvasStylesParams) => (backLayerHat ? 1 : 4),
+		display: ({ isAlive }: UseCanvasStylesParams) =>
+			isAlive ? 'block' : 'none',
+	},
+	skin: {
+		position: 'absolute',
+		top: '38%',
+		left: '17%',
+		width: '73.5%',
+		transform: 'scale(0.8)',
+		zIndex: 3,
+		display: ({ isAlive }: UseCanvasStylesParams) =>
+			isAlive ? 'block' : 'none',
+	},
+}));
+
 function Canvas({ src, hat, skin, isAlive }: CanvasProps) {
-	const hatImg = useRef<HTMLImageElement>(null);
-	const skinImg = useRef<HTMLImageElement>(null);
-	const image = useRef<HTMLImageElement>(null);
 	const hatY = 11 - hatOffsets[hat];
+	const classes = useCanvasStyles({
+		backLayerHat: backLayerHats.has(hat),
+		isAlive,
+	});
 
 	return (
 		<>
-			<IonImg src={src} ref={image} className={classes.base} />
+			<IonImg src={src} />
 			<IonImg
 				src={hats[hat]}
-				ref={hatImg}
 				className={classes.hat}
 				style={{ top: `${hatY}%`, left: hatXOffsets[hat.toString()] ?? '50%' }}
 			/>
-			<IonImg src={skins[skin]} ref={skinImg} className={classes.skin} />
+			<IonImg src={skins[skin]}/>
 		</>
 	);
 }
