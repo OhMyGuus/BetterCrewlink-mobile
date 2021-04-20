@@ -3,6 +3,7 @@ import { useStyles, makeStyles } from "@andywer/style-hook";
 import { Player } from './services/AmongUsState';
 import { backLayerHats, hatOffsets, hats, skins, players, hatXOffsets } from './cosmetics';
 import {
+	IonAvatar,
     IonContent,
     IonImg,
 } from '@ionic/react';
@@ -214,13 +215,15 @@ function Canvas({ src, hat, skin, isAlive }: CanvasProps) {
 
 	return (
 		<>
-			<IonImg src={src} />
-			<IonImg
-				src={hats[hat]}
-				className={classes.hat}
-				style={{ top: `${hatY}%`, left: hatXOffsets[hat.toString()] ?? '50%' }}
-			/>
-			<IonImg src={skins[skin]}/>
+			<IonAvatar>
+				<img src={src} />
+				<img
+					src={hats[hat]}
+					className={classes.hat}
+					style={{ top: `${hatY}%`, left: hatXOffsets[hat.toString()] ?? '50%' }}
+				/>
+				<img src={skins[skin]}/>
+			</IonAvatar>
 		</>
 	);
 }
