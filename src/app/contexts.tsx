@@ -1,16 +1,26 @@
 import React, { createContext } from 'react';
 import { AmongUsState } from './services/AmongUsState';
-import { SettingsService } from './services/settings.service';
+import { ISettings, ILobbySettings } from './services/smallInterfaces';
 
 type SettingsContextValue = [
-	SettingsService,
+	ISettings,
 	React.Dispatch<{
 		type: 'set' | 'setOne' | 'setLobbySetting';
-		action: SettingsService | [string, unknown];
+		action: ISettings | [string, unknown];
+	}>
+];
+type LobbySettingsContextValue = [
+	ILobbySettings,
+	React.Dispatch<{
+		type: 'set' | 'setOne';
+		action: ILobbySettings | [string, unknown];
 	}>
 ];
 
 export const GameStateContext = createContext<AmongUsState>({} as AmongUsState);
 export const SettingsContext = createContext<SettingsContextValue>(
 	(null as unknown) as SettingsContextValue
+);
+export const LobbySettingsContext = createContext<LobbySettingsContextValue>(
+	(null as unknown) as LobbySettingsContextValue
 );

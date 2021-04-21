@@ -34,6 +34,8 @@
     "simple-peer": "^9.9.3",
     "socket.io-client": "^2.3.1",
     "tslib": "^2.0.0",
+    "universal-cookie": "^4.0.4",
+    "valid-url": "^1.0.9",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {

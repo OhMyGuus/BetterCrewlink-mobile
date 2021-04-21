@@ -10,13 +10,26 @@ import React, {
 import './App.css';
 import Settings from './Settings';
 import {
+	AmongUsState,
+	Player
+} from './services/AmongUsState'
+import {
 	GameStateContext,
-	SettingsContext
+	SettingsContext,
+	LobbySettingsContext
 } from './contexts';
-import {IonPage, IonContent, IonButton, IonText} from '@ionic/react';
+import {
+	IonApp,
+	IonPage,
+	IonContent,
+	IonButton,
+	IonText
+} from '@ionic/react';
 import {
 	SettingsSharp
 } from 'react-ionicons';
+import Cookies from 'universal-cookie';
+
 
 interface TitleBarProps {
 	settingsOpen: boolean;
@@ -144,7 +157,8 @@ const App: React.FC = function () {
 
 	return (
 		<GameStateContext.Provider value={gameState}>
-			<SettingsContext.Provider value={settings}>
+			<LobbySettingsContext.Provider value={settings}>
+				<SettingsContext.Provider value={settings}>
 						<div>
 							<TitleBar
 								settingsOpen={settingsOpen}
@@ -160,8 +174,8 @@ const App: React.FC = function () {
 								</>
 							</ErrorBoundary>
 						</div>
-					
-			</SettingsContext.Provider>
+				</SettingsContext.Provider>
+			</LobbySettingsContext.Provider>
 		</GameStateContext.Provider>
 	);
 };

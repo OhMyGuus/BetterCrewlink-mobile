@@ -6,38 +6,187 @@ import React, {
 	useState,
 } from 'react';
 import {
+	SettingsContext,
 	GameStateContext,
-	SettingsContext
+	LobbySettingsContext
 } from './contexts';
+import { GameState } from './services/AmongUsState';
+import { isHttpUri, isHttpsUri } from 'valid-url';
+import { ISettings, ILobbySettings } from './services/smallInterfaces';
 import {
-
+	IonContent,
+	IonButton,
+	IonText,
+	IonModal,
+	IonAlert,
+	IonFooter,
+	IonInput
 } from '@ionic/react';
+import Cookies from 'universal-cookie';
 
-interface DisabledTooltipProps {
-	disabled: boolean;
-	title: string;
-	children: ReactChild;
+export interface SettingsProps {
+	open: boolean;
+	onClose: () => void;
 }
 
-const DisabledTooltip: React.FC<DisabledTooltipProps> = function ({
-	disabled,
-	children,
-	title,
-}: DisabledTooltipProps) {
-	if (disabled)
-		return (
-			<Tooltip placement="top" arrow title={title}>
-				<span>{children}</span>
-			</Tooltip>
-		);
-	else return <>{children}</>;
+const saveSingleSettings = (key: string, val: unknown) => {
+	const cookies = new Cookies();
+	cookies.set(key, val, { path: '/' });
+}
+
+const saveSettings = (settings: ISettings) => {
+	Object.entries(settings).forEach((item) => {
+		saveSingleSettings(item[0], item[1]);
+	})
+}
+
+export const settingsReducer = (
+	state: ISettings,
+	action: {
+		type: 'set' | 'setOne' | 'setLobbySetting';
+		action: [string, unknown] | ISettings;
+	}
+): ISettings => {
+	if (action.type === 'set') {
+		saveSettings(action.action as ISettings);
+		return action.action as ISettings;
+	}
+	const v = action.action as [string, unknown];
+
+	saveSingleSettings(v[0], v[1]);
+	return {
+		...state,
+		[v[0]]: v[1],
+	};
+};
+
+export const lobbySettingsReducer = (
+	state: ILobbySettings,
+	action: {
+		type: 'set' | 'setOne';
+		action: [string, unknown] | ILobbySettings;
+	}
+): ILobbySettings => {
+	if (action.type === 'set') return action.action as ILobbySettings;
+	const v = action.action as [string, unknown];
+	return {
+		...state,
+		[v[0]]: v[1],
+	};
+};
+
+interface MediaDevice {
+	id: string;
+	kind: MediaDeviceKind;
+	label: string;
+}
+
+function validateServerUrl(uri: string): boolean {
+	try {
+		if (!isHttpUri(uri) && !isHttpsUri(uri)) return false;
+		const url = new URL(uri);
+		if (url.hostname === 'discord.gg') return false;
+		if (url.pathname !== '/') return false;
+		return true;
+	} catch (_) {
+		return false;
+	}
+}
+
+type URLInputProps = {
+	initialURL: string;
+	onValidURL: (url: string) => void;
+	className: string;
+};
+
+const URLInput: React.FC<URLInputProps> = function ({
+	initialURL,
+	onValidURL,
+	className,
+}: URLInputProps) {
+	const [isValidURL, setURLValid] = useState(true);
+	const [currentURL, setCurrentURL] = useState(initialURL);
+	const [open, setOpen] = useState(false);
+	const [alertOpen, setAlertOpen] = useState(false);
+
+	useEffect(() => {
+		setCurrentURL(initialURL);
+	}, [initialURL]);
+
+	function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+		const url = event.target.value.trim();
+		setCurrentURL(url);
+		if (validateServerUrl(url)) {
+			setURLValid(true);
+		} else {
+			setURLValid(false);
+		}
+	}
+
+	return (
+		<>
+			<IonButton color="secondary" onClick={() => setAlertOpen(true)}>
+				Change Voice Server
+			</IonButton>
+			<IonModal isOpen={open}>
+				<IonText>Change Voice Server</IonText>
+				<IonContent className={className}>
+					<IonInput
+						spellCheck={false}
+						value={currentURL}
+						color="primary"
+					/>
+					<IonAlert
+						isOpen={alertOpen}
+						onDidDismiss={() => {setAlertOpen(false); setOpen(true)}}
+						header="Change Server"
+						message="This option is for advanced users only. Other servers can steal your info or crash BetterCrewlink."
+						buttons={['OK']}
+					/>
+					<IonButton
+						color="primary"
+						onClick={() => {
+							setOpen(false);
+							setURLValid(true);
+							onValidURL('https://bettercrewl.ink');
+						}}
+					>
+						Reset to default
+					</IonButton>
+				</IonContent>
+				<IonFooter>
+					<IonButton
+						color="primary"
+						onClick={() => {
+							setURLValid(true);
+							setOpen(false);
+							setCurrentURL(initialURL);
+						}}
+					>
+						Cancel
+					</IonButton>
+					<IonButton
+						disabled={!isValidURL}
+						color="primary"
+						onClick={() => {
+							setOpen(false);
+							let url = currentURL;
+							if (url.endsWith('/')) url = url.substring(0, url.length - 1);
+							onValidURL(url);
+						}}
+					>
+						Confirm
+					</IonButton>
+				</IonFooter>
+			</IonModal>
+		</>
+	);
 };
 
 const Settings: React.FC<SettingsProps> = function ({
 	open,
 	onClose,
 }: SettingsProps) {
-	const classes = useStyles({ open });
 	const [settings, setSettings] = useContext(SettingsContext);
 	const gameState = useContext(GameStateContext);
 	const [lobbySettings, setLobbySettings] = useContext(LobbySettingsContext);
@@ -55,15 +204,6 @@ const Settings: React.FC<SettingsProps> = function ({
 		});
 	}, []);
 	*/
-
-	useEffect(() => {
-		setUnsavedCount((s) => s + 1);
-	}, [
-		settings.microphone,
-		settings.speaker,
-		settings.serverURL,
-		settings.enableSpatialAudio,
-	]);
 
 	const [devices, setDevices] = useState<MediaDevice[]>([]);
 	const [_, updateDevices] = useReducer((state) => state + 1, 0);
@@ -88,46 +228,8 @@ const Settings: React.FC<SettingsProps> = function ({
 		);
 	}, [_]);
 
-	const setShortcut = (ev: React.KeyboardEvent, shortcut: string) => {
-		let k = ev.key;
-		if (k.length === 1) k = k.toUpperCase();
-		else if (k.startsWith('Arrow')) k = k.substring(5);
-		if (k === ' ') k = 'Space';
-
-		if (k === 'Control' || k === 'Alt' || k === 'Shift')
-			k = (ev.location === 1 ? 'L' : 'R') + k;
-
-		if (/^[0-9A-Z]$/.test(k) || /^F[0-9]{1,2}$/.test(k) || keys.has(k)) {
-			setSettings({
-				type: 'setOne',
-				action: [shortcut, k],
-			});
-		}
-	};
-
-	const setMouseShortcut = (
-		ev: React.MouseEvent<HTMLDivElement>,
-		shortcut: string
-	) => {
-		if (ev.button > 2) {
-			// this makes our button start at 1 instead of 0
-			// React Mouse event starts at 0, but IOHooks starts at 1
-			const k = `MouseButton${ev.button + 1}`;
-			setSettings({
-				type: 'setOne',
-				action: [shortcut, k],
-			});
-		}
-	};
-
 	const microphones = devices.filter((d) => d.kind === 'audioinput');
 	const speakers = devices.filter((d) => d.kind === 'audiooutput');
-	const [localDistance, setLocalDistance] = useState(
-		settings.localLobbySettings.maxDistance
-	);
-	useEffect(() => {
-		setLocalDistance(settings.localLobbySettings.maxDistance);
-	}, [settings.localLobbySettings.maxDistance]);
 
 	const isInMenuOrLobby =
 		gameState?.gameState === GameState.LOBBY ||
@@ -137,329 +239,7 @@ const Settings: React.FC<SettingsProps> = function ({
 		(gameState?.isHost && gameState?.gameState === GameState.LOBBY);
 
 	return (
-		<Box className={classes.root}>
-			<div className={classes.header}>
-				<IconButton
-					className={classes.back}
-					size="small"
-					onClick={() => {
-						setSettings({
-							type: 'setOne',
-							action: ['localLobbySettings', lobbySettings],
-						});
-						if (unsaved) {
-							onClose();
-							location.reload();
-						} else onClose();
-					}}
-				>
-					<ChevronLeft htmlColor="#777" />
-				</IconButton>
-				<Typography variant="h6">Settings</Typography>
-			</div>
-			<div className={classes.scroll}>
-				{/* Lobby Settings */}
-				<div>
-					<Typography variant="h6">Lobby Settings</Typography>
-					<Typography gutterBottom>
-						Voice Distance:{' '}
-						{canChangeLobbySettings ? localDistance : lobbySettings.maxDistance}
-					</Typography>
-					<DisabledTooltip
-						disabled={!canChangeLobbySettings}
-						title={
-							isInMenuOrLobby
-								? 'Only the game host can change this!'
-								: 'You can only change this in the lobby!'
-						}
-					>
-						<Slider
-							disabled={!canChangeLobbySettings}
-							value={
-								canChangeLobbySettings
-									? localDistance
-									: lobbySettings.maxDistance
-							}
-							min={1}
-							max={10}
-							step={0.1}
-							onChange={(_, newValue: number | number[]) => {
-								setLocalDistance(newValue as number);
-							}}
-							onChangeCommitted={(_, newValue: number | number[]) => {
-								setSettings({
-									type: 'setLobbySetting',
-									action: ['maxDistance', newValue as number],
-								});
-								if (gameState?.isHost) {
-									setLobbySettings({
-										type: 'setOne',
-										action: ['maxDistance', newValue as number],
-									});
-								}
-							}}
-						/>
-					</DisabledTooltip>
-					<DisabledTooltip
-						disabled={!canChangeLobbySettings}
-						title={
-							isInMenuOrLobby
-								? 'Only the game host can change this!'
-								: 'You can only change this in the lobby!'
-						}
-					>
-						<FormControlLabel
-							label="Impostors Hear Dead"
-							disabled={!canChangeLobbySettings}
-							checked={
-								canChangeLobbySettings
-									? settings.localLobbySettings.haunting
-									: lobbySettings.haunting
-							}
-							onChange={(_, checked: boolean) => {
-								setSettings({
-									type: 'setLobbySetting',
-									action: ['haunting', checked],
-								});
-								if (gameState?.isHost) {
-									setLobbySettings({
-										type: 'setOne',
-										action: ['haunting', checked],
-									});
-								}
-							}}
-							control={<Checkbox />}
-						/>
-					</DisabledTooltip>
-					<DisabledTooltip
-						disabled={!canChangeLobbySettings}
-						title={
-							isInMenuOrLobby
-								? 'Only the game host can change this!'
-								: 'You can only change this in the lobby!'
-						}
-					>
-						<FormControlLabel
-							label="Hear Impostors In Vents"
-							disabled={!canChangeLobbySettings}
-							checked={
-								canChangeLobbySettings
-									? settings.localLobbySettings.hearImpostorsInVents
-									: lobbySettings.hearImpostorsInVents
-							}
-							onChange={(_, checked: boolean) => {
-								setSettings({
-									type: 'setLobbySetting',
-									action: ['hearImpostorsInVents', checked],
-								});
-								if (gameState?.isHost) {
-									setLobbySettings({
-										type: 'setOne',
-										action: ['hearImpostorsInVents', checked],
-									});
-								}
-							}}
-							control={<Checkbox />}
-						/>
-					</DisabledTooltip>
-					<DisabledTooltip
-						disabled={!canChangeLobbySettings}
-						title={
-							isInMenuOrLobby
-								? 'Only the game host can change this!'
-								: 'You can only change this in the lobby!'
-						}
-					>
-						<FormControlLabel
-							label="Comms Sabotage Disables Voice"
-							disabled={!canChangeLobbySettings}
-							checked={
-								canChangeLobbySettings
-									? settings.localLobbySettings.commsSabotage
-									: lobbySettings.commsSabotage
-							}
-							onChange={(_, checked: boolean) => {
-								setSettings({
-									type: 'setLobbySetting',
-									action: ['commsSabotage', checked],
-								});
-								if (gameState?.isHost) {
-									setLobbySettings({
-										type: 'setOne',
-										action: ['commsSabotage', checked],
-									});
-								}
-							}}
-							control={<Checkbox />}
-						/>
-					</DisabledTooltip>
-				</div>
-				<Divider />
-				<Typography variant="h6">Audio</Typography>
-				<TextField
-					select
-					label="Microphone"
-					variant="outlined"
-					color="secondary"
-					value={settings.microphone}
-					className={classes.shortcutField}
-					SelectProps={{ native: true }}
-					InputLabelProps={{ shrink: true }}
-					onChange={(ev) => {
-						setSettings({
-							type: 'setOne',
-							action: ['microphone', ev.target.value],
-						});
-					}}
-					onClick={updateDevices}
-				>
-					{microphones.map((d) => (
-						<option key={d.id} value={d.id}>
-							{d.label}
-						</option>
-					))}
-				</TextField>
-				{open && <MicrophoneSoundBar microphone={settings.microphone} />}
-				<TextField
-					select
-					label="Speaker"
-					variant="outlined"
-					color="secondary"
-					value={settings.speaker}
-					className={classes.shortcutField}
-					SelectProps={{ native: true }}
-					InputLabelProps={{ shrink: true }}
-					onChange={(ev) => {
-						setSettings({
-							type: 'setOne',
-							action: ['speaker', ev.target.value],
-						});
-					}}
-					onClick={updateDevices}
-				>
-					{speakers.map((d) => (
-						<option key={d.id} value={d.id}>
-							{d.label}
-						</option>
-					))}
-				</TextField>
-				{open && <TestSpeakersButton speaker={settings.speaker} />}
-				<RadioGroup
-					value={settings.pushToTalk}
-					onChange={(ev) => {
-						setSettings({
-							type: 'setOne',
-							action: ['pushToTalk', ev.target.value === 'true'],
-						});
-					}}
-				>
-					<FormControlLabel
-						label="Voice Activity"
-						value={false}
-						control={<Radio />}
-					/>
-					<FormControlLabel
-						label="Push To Talk"
-						value={true}
-						control={<Radio />}
-					/>
-				</RadioGroup>
-				<Divider />
-				<Typography variant="h6">Keyboard Shortcuts</Typography>
-				<Grid container spacing={1}>
-					<Grid item xs={12}>
-						<TextField
-							fullWidth
-							spellCheck={false}
-							color="secondary"
-							label="Push To Talk"
-							value={settings.pushToTalkShortcut}
-							className={classes.shortcutField}
-							variant="outlined"
-							onKeyDown={(ev) => {
-								setShortcut(ev, 'pushToTalkShortcut');
-							}}
-							onMouseDown={(ev) => {
-								setMouseShortcut(ev, 'pushToTalkShortcut');
-							}}
-						/>
-					</Grid>
-					<Grid item xs={6}>
-						<TextField
-							spellCheck={false}
-							color="secondary"
-							label="Mute"
-							value={settings.muteShortcut}
-							className={classes.shortcutField}
-							variant="outlined"
-							onKeyDown={(ev) => {
-								setShortcut(ev, 'muteShortcut');
-							}}
-							onMouseDown={(ev) => {
-								setMouseShortcut(ev, 'muteShortcut');
-							}}
-						/>
-					</Grid>
-					<Grid item xs={6}>
-						<TextField
-							spellCheck={false}
-							color="secondary"
-							label="Deafen"
-							value={settings.deafenShortcut}
-							className={classes.shortcutField}
-							variant="outlined"
-							onKeyDown={(ev) => {
-								setShortcut(ev, 'deafenShortcut');
-							}}
-							onMouseDown={(ev) => {
-								setMouseShortcut(ev, 'deafenShortcut');
-							}}
-						/>
-					</Grid>
-				</Grid>
-				<Divider />
-				<Typography variant="h6">Advanced</Typography>
-				<FormControlLabel
-					label="Show Lobby Code"
-					checked={!settings.hideCode}
-					onChange={(_, checked: boolean) => {
-						setSettings({
-							type: 'setOne',
-							action: ['hideCode', !checked],
-						});
-					}}
-					control={<Checkbox />}
-				/>
-				<FormControlLabel
-					label="Enable Spatial Audio"
-					checked={settings.enableSpatialAudio}
-					onChange={(_, checked: boolean) => {
-						setSettings({
-							type: 'setOne',
-							action: ['enableSpatialAudio', checked],
-						});
-					}}
-					control={<Checkbox />}
-				/>
-				<URLInput
-					initialURL={settings.serverURL}
-					onValidURL={(url: string) => {
-						setSettings({
-							type: 'setOne',
-							action: ['serverURL', url],
-						});
-					}}
-					className={classes.urlDialog}
-				/>
-				<Alert
-					className={classes.alert}
-					severity="info"
-					style={{ display: unsaved ? undefined : 'none' }}
-				>
-					Exit Settings to apply changes
-				</Alert>
-			</div>
-		</Box>
+		<IonText>Settings</IonText>
 	);
 };
 
