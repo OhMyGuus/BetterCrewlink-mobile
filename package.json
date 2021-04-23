@@ -56,9 +56,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "ionic serve --external --ssl",
+    "build": "ionic capacitor build android --prod"
   },
   "eslintConfig": {
     "extends": [
