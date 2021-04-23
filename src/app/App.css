@@ -1,0 +1,23 @@
+.root {
+    position: 'absolute';
+    width: '100vw';
+    height: 24;
+    backgroundColor: '#1d1a23';
+    top: 0;
+    WebkitAppRegion: 'drag';
+}
+.title {
+    width: '100%';
+    text-align: 'center';
+    display: 'block';
+    height: 24;
+    line-height: '24px';
+    color: '#ba68c8';
+}
+.button {
+    -webkit: 'no-drag';
+    margin-left: 'auto';
+    padding: 0;
+    position: 'absolute';
+    top: 0;
+}

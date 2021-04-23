@@ -1,0 +1,23 @@
+{
+    "name": "@andywer/style-hook",
+    "version": "0.1.1",
+    "author": "Andy Wermke (https://github.com/andywer)",
+    "main": "lib/index.js",
+    "license": "MIT",
+    "repository": "andywer/react-usestyles",
+    "scripts": {
+      "build": "babel src/ -d lib/ --root-mode upward",
+      "prepare": "build",
+      "watch": "yarn build -- --watch"
+    },
+    "peerDependencies": {
+      "@andywer/style-api": "0.x",
+      "react": ">= 16.7.0 || >= 16.7.0-alpha.0"
+    },
+    "dependencies": {
+      "theming": "^2.1.2"
+    },
+    "files": [
+      "lib/**"
+    ]
+  }

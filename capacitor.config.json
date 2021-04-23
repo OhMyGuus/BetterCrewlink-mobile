@@ -1,18 +1,13 @@
 {
-	"appId": "io.bettercrewlink.app",
-	"appName": "BetterCrewlinkMobile",
-	"bundledWebRuntime": false,
-	"npmClient": "npm",
-	"webDir": "www",
-	"plugins": {
-		"SplashScreen": {
-			"launchShowDuration": 0
-		}
-	},
-	"overrideUserAgent": "CrewLink/2.0.1 (win32)",
-	"cordova": {
-		"preferences": {
-			"APP_SECRET": "968c50f3-eb43-4ceb-9b3d-55458601a601"
-		}
-	}
+  "appId": "io.ionic.starter",
+  "appName": "better-crewlink-mobile",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
 }

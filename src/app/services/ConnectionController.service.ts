@@ -12,7 +12,6 @@ import {
 	DEFAULT_LOBBYSETTINGS,
 } from './smallInterfaces';
 import { DEFAULT_ICE_CONFIG, DEFAULT_ICE_CONFIG_TURN } from './turnServers';
-import { Injectable } from '@angular/core';
 import AudioController from './AudioController.service';
 import { SettingsService } from './settings.service';
 
@@ -49,9 +48,6 @@ export declare interface IConnectionController {
 	on(event: 'onChange', listener: () => void): this;
 }
 
-@Injectable({
-	providedIn: 'root',
-})
 export class ConnectionController extends EventEmitterO implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;

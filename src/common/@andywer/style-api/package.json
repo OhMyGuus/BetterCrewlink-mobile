@@ -1,0 +1,19 @@
+{
+    "name": "@andywer/style-api",
+    "version": "0.1.0",
+    "author": "Andy Wermke (https://github.com/andywer)",
+    "license": "MIT",
+    "main": "lib/index.jsx",
+    "repository": "andywer/react-usestyles",
+    "scripts": {
+      "build": "babel src/ -d lib/ --root-mode upward",
+      "prepare": "build",
+      "watch": "yarn build -- --watch"
+    },
+    "peerDependencies": {
+      "react": ">= 16.7.0 || >= 16.7.0-alpha.0"
+    },
+    "files": [
+      "lib/**"
+    ]
+  }
