@@ -5,17 +5,17 @@ import { ConnectingStage, ConnectionController } from './ConnectionController.se
 import VAD from './vad';
 
 export default class AudioController extends EventEmitterO {
-	localTalking: boolean;
+	localTalking: boolean | undefined;
 	constructor(private connectionController: ConnectionController) {
 		super();
 		this.audioElementsCotainer = document.getElementById('AudioElements');
 	}
 	audioDeviceId = 'default';
-	stream: MediaStream;
+	stream: MediaStream | undefined;
 	audioElementsCotainer: HTMLElement;
-	permissionRequested: boolean;
-	audioMuted: boolean;
-	microphoneMuted: boolean;
+	permissionRequested: boolean | undefined;
+	audioMuted: boolean | undefined;
+	microphoneMuted: boolean | undefined;
 
 	async startAudio() {
 		if (this.stream) {
