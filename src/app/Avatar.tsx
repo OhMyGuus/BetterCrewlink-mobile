@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStyles, makeStyles } from "@andywer/style-hook";
+import { makeStyles } from "@andywer/style-hook";
 import { Player } from './services/AmongUsState';
 import { backLayerHats, hatOffsets, hats, skins, players, hatXOffsets } from './cosmetics';
 import {
