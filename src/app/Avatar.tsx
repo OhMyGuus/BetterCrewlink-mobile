@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from "@andywer/style-hook";
+import { useStyles } from "../common/@andywer/style-hook/lib/index";
 import { Player } from './services/AmongUsState';
 import { backLayerHats, hatOffsets, hats, skins, players, hatXOffsets } from './cosmetics';
 import {
@@ -18,7 +18,7 @@ interface UseStylesParams {
 	size: number;
 	borderColor: string;
 }
-const useStyles = makeStyles(() => ({
+const style = useStyles(() => ({
 	avatar: {
 		borderRadius: '50%',
 		position: 'relative',
@@ -179,7 +179,7 @@ interface UseCanvasStylesParams {
 	isAlive: boolean;
 }
 
-const useCanvasStyles = makeStyles(() => ({
+const useCanvasStyles = useStyles(() => ({
 	base: {
 		width: '100%',
 		position: 'absolute',

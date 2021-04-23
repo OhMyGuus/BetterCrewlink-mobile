@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@andywer/style-api-jss": "^0.1.0",
     "@andywer/style-hook": "^0.1.1",
     "@capacitor/android": "^2.4.5",
     "@capacitor/core": "2.4.7",
@@ -30,7 +31,7 @@
     "ng2-fittext": "^1.2.12",
     "node.js": "0.0.1-security",
     "react": "0.0.0-a15586001",
-    "react-dom": "^17.0.1",
+    "react-dom": "0.0.0-a15586001",
     "react-ionicons": "^4.2.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
