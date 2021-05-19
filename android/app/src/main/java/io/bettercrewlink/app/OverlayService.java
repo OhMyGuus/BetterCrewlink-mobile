@@ -28,9 +28,9 @@ public class OverlayService extends Service {
     private static List<ImageView> imageViews = new ArrayList<ImageView>();
     private static ImageView audioImageView;
     private static ImageView micImageView;
+    private static ImageView refreshImageview;
     private static boolean mic_muted = false;
     private static boolean audio_muted = false;
-    private ImageView refreshButtonimageview;
 
     enum OVERLAY_BUTTON {
         MICROPHONE,
@@ -53,6 +53,20 @@ public class OverlayService extends Service {
                 }
             });
         }
+    }
+
+    public static void HideShow(boolean hide){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (audioImageView != null && micImageView != null && refreshImageview != null) {
+                    audioImageView.setVisibility(hide ? View.GONE : View.VISIBLE);
+                    micImageView.setVisibility(hide ? View.GONE : View.VISIBLE);
+                    refreshImageview.setVisibility(hide ? View.GONE : View.VISIBLE);
+                }
+            }
+        });
+
     }
 
     public static void updateMuteIcons(boolean mic_muted, boolean audio_muted) {
@@ -103,7 +117,7 @@ public class OverlayService extends Service {
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         iconsContainerView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
-        refreshButtonimageview = addImage(R.drawable.refresh_button, false);
+        refreshImageview = addImage(R.drawable.refresh_button, false);
         micImageView = addImage(mic_muted ? R.drawable.mic_off : R.drawable.mic_on, false);
         audioImageView = addImage(audio_muted ? R.drawable.audio_off : R.drawable.audio_on, false);
 
@@ -179,8 +193,8 @@ public class OverlayService extends Service {
                                 event.getY() >= audioImageView.getY() && event.getY() <= audioImageView.getY() + audioImageView.getHeight();
                         clickingOnMic = event.getX() >= micImageView.getX() && event.getX() <= micImageView.getX() + micImageView.getWidth() &&
                                 event.getY() >= micImageView.getY() && event.getY() <= micImageView.getY() + micImageView.getHeight();
-                        clickingOnRefresh = event.getX() >= refreshButtonimageview.getX() && event.getX() <= refreshButtonimageview.getX() + refreshButtonimageview.getWidth() &&
-                                event.getY() >= refreshButtonimageview.getY() && event.getY() <= refreshButtonimageview.getY() + refreshButtonimageview.getHeight();
+                        clickingOnRefresh = event.getX() >= refreshImageview.getX() && event.getX() <= refreshImageview.getX() + refreshImageview.getWidth() &&
+                                event.getY() >= refreshImageview.getY() && event.getY() <= refreshImageview.getY() + refreshImageview.getHeight();
 
                         return false;
                     case MotionEvent.ACTION_UP:

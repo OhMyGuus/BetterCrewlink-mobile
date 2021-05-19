@@ -63,7 +63,9 @@ public class BetterCrewlinkNativePlugin extends Plugin {
                 overlayShown = true;
             }
         }
-
+        if (overlayShown) {
+            OverlayService.HideShow(false);
+        }
         running = true;
     }
 
@@ -79,6 +81,9 @@ public class BetterCrewlinkNativePlugin extends Plugin {
 
     @PluginMethod()
     public void disconnect(PluginCall call) {
+        if(overlayShown)
+        OverlayService.HideShow(true);
+
         running = false;
     }
 

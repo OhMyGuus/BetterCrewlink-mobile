@@ -25,15 +25,17 @@ public class BetterCrewlinkNativeService extends IntentService {
 
     @Override
     public void onHandleIntent(Intent intent) {
-        final String action = intent.getAction();
-        if (REFRESH.equals(action)) {
-          BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'REFRESH' }");
-        } else  if (MUTEAUDIO.equals(action)) {
-            BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'MUTEAUDIO' }");
-        } else  if (MUTEMICROPHONE.equals(action)) {
-            BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'MUTEMICROPHONE' }");
-        } else  if (DISCONNECT.equals(action)) {
-            BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification",  "{ 'action': 'DISCONNECT' }");
+        if(BetterCrewlinkNativePlugin.bridgeP != null) {
+            final String action = intent.getAction();
+            if (REFRESH.equals(action)) {
+                BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification", "{ 'action': 'REFRESH' }");
+            } else if (MUTEAUDIO.equals(action)) {
+                BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification", "{ 'action': 'MUTEAUDIO' }");
+            } else if (MUTEMICROPHONE.equals(action)) {
+                BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification", "{ 'action': 'MUTEMICROPHONE' }");
+            } else if (DISCONNECT.equals(action)) {
+                BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("bettercrewlink_notification", "{ 'action': 'DISCONNECT' }");
+            }
         }
     }
 }
