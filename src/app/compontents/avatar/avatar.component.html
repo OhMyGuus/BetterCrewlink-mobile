@@ -6,7 +6,7 @@
 				[(ngModel)]="settings.volume"
 				(ionChange)="onVolumeChange()"
 				color="light"
-				max="{{MAXVOLUME}}"
+				max="{{ MAXVOLUME }}"
 				min="0"
 				step="1"
 				pin="1"
@@ -20,21 +20,29 @@
 			<img
 				src="assets/avatar/players/{{ player.colorId }}-{{ isDead ? 'dead' : 'alive' }}.png"
 				class="base no-drag-img"
+				style="display: none"
+				onload="this.style.display=''"
 			/>
 			<img
 				*ngIf="!isDead && player.skinId > 0"
 				src="assets/avatar/skins/{{ player.skinId }}.png"
 				class="skin no-drag-img"
+				style="display: none"
+				onload="this.style.display=''"
+				onerror="this.style.display='none'"
 			/>
 
 			<!-- {overflow && <img src={coloredHats[`${hat}${color}`] || hats[hat]} ref={hatImg} className={classes.hat} />} -->
 		</div>
 		<img
 			*ngIf="!isDead && player.hatId > 0"
-			src="assets/avatar/hats/{{getHatImage()}}.png"
+			src="assets/avatar/hats/{{ getHatImage() }}.png"
 			[style.top]="getHatY()"
 			[class]="backLayerHats.has(player.hatId) ? 'backlayerd-hat' : ''"
 			class="hat no-drag-img"
+			style="display: none"
+			onload="this.style.display=''"
+			onerror="this.style.display='none'"
 		/>
 	</div>
 	<p class="playername_container">

@@ -275,7 +275,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			console.log(this.socketElements);
 			this.oldGameState = this.currentGameState;
 			this.currentGameState = amongUsState;
-			const newLocalplayer = amongUsState.players.filter((o) => o.name === this.amongusUsername)[0];
+			const newLocalplayer = amongUsState.players.filter((o) => o.name.replace(' ', '') === this.amongusUsername.replace(' ', ''))[0];
 			this.updateConnectingStage(ConnectingStage.WaitingForGameData);
 			if (!newLocalplayer) {
 				this.muteAll(); // if localplayer not found mute all players in lobby.

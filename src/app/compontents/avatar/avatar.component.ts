@@ -12,6 +12,7 @@ const hatOffsets: { [key in number]: number | undefined } = {
 	77: -50,
 	90: -50,
 	94: -15,
+	103: -50,
 };
 
 const coloredHats: number[] = [77, 90];
@@ -22,7 +23,7 @@ const coloredHats: number[] = [77, 90];
 	styleUrls: ['./avatar.component.scss'],
 })
 export class AvatarComponent implements OnInit {
-	backLayerHats = new Set([39, 4, 6, 15, 29, 42, 75, 85]);
+	backLayerHats =new Set([39, 4, 6, 15, 29, 42, 75, 85, 102, 105, 106, 104, 103]);
 	@Input() player: Player;
 	@Input() talking: boolean;
 	@Input() isDead: boolean = false;
