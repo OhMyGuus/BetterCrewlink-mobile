@@ -38,10 +38,14 @@ export default class AudioController extends EventEmitterO {
 			onVoiceStart: () => {
 				this.localTalking = true;
 				this.emit('local_talk', true);
+				this.connectionController?.socketIOClient?.emit('VAD', true);
+				
 			},
 			onVoiceStop: () => {
 				this.localTalking = false;
 				this.emit('local_talk', false);
+				this.connectionController?.socketIOClient?.emit('VAD', false);
+
 			},
 			stereo: false,
 		});
@@ -107,11 +111,7 @@ export default class AudioController extends EventEmitterO {
 		} else {
 			pan.setPosition(panPos[0], panPos[1], -0.5);
 		}
-		VAD(context, gain, undefined, {
-			onVoiceStart: () => update(true),
-			onVoiceStop: () => update(false),
-			stereo: false,
-		});
+	
 		gain.connect(context.destination);
 
 		return {

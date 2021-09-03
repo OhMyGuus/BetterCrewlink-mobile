@@ -275,7 +275,9 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			console.log(this.socketElements);
 			this.oldGameState = this.currentGameState;
 			this.currentGameState = amongUsState;
-			const newLocalplayer = amongUsState.players.filter((o) => o.name.replace(' ', '') === this.amongusUsername.replace(' ', ''))[0];
+			const newLocalplayer = amongUsState.players.filter(
+				(o) => o.name.replace(' ', '') === this.amongusUsername.replace(' ', '')
+			)[0];
 			this.updateConnectingStage(ConnectingStage.WaitingForGameData);
 			if (!newLocalplayer) {
 				this.muteAll(); // if localplayer not found mute all players in lobby.
@@ -374,6 +376,14 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 				} else {
 					this.getSocketElement(socketId).client = clients[socketId];
 				}
+			}
+		});
+
+		this.socketIOClient.on('VAD', (data: { activity: boolean; client: Client; socketId: string }) => {
+			let socketElement = this.getSocketElementByClientID(data.client.clientId);
+			if (socketElement) {
+				socketElement.talking = data.activity;
+				this.emit('player_talk', socketElement.client?.clientId ?? -1, data.activity);
 			}
 		});
 
