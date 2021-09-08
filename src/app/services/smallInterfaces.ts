@@ -83,6 +83,8 @@ export class SocketElement {
 	audioElement?: AudioElement;
 	player?: Player;
 	talking: boolean = false;
+	audible: boolean = false;
+
 	isDead: boolean;
 	settings: PlayerSetting | undefined;
 	constructor(socketId: string, peer?: Peer, client?: Client, audioElement?: AudioElement, player?: Player) {

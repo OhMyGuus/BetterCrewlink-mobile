@@ -326,9 +326,11 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 						endGain *= value.settings.volume / 100;
 					}
 					value.audioElement.gain.gain.value = endGain;
+					value.audible = endGain > 0;
 				}
 			});
 		} catch (e) {
+			console.error("ERROR:", e);
 			this.error = e.message;
 			this.connectionState = ConnectionState.error;
 		}

@@ -27,7 +27,7 @@ export class SettingsService {
 	IsMobile: boolean;
 
 	constructor(private storage: Storage, private platform: Platform) {
-		this.IsMobile = this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile');
+		this.IsMobile = this.platform.is('cordova') || this.platform.is('capacitor');
 		this.load();
 	}
 

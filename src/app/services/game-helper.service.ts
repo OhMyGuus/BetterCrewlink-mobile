@@ -68,8 +68,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
-				console.log('permissions failed');
+				console.error('permissions failed');
 				this.cManager.connectionState = ConnectionState.error;
+				this.error = 'No permissions to use microphone.';
 				return;
 			}
 			this.backgroundMode.enable();
@@ -90,7 +91,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	disconnect(disableBackgroundMode = true) {
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
-			BetterCrewlinkNativePlugin.disconnect();
+			if (!this.IsMobile) {
+				BetterCrewlinkNativePlugin.disconnect();
+			}
 			this.appCenterAnalytics
 				.trackEvent('disconnect', {
 					disableBackgroundMode: disableBackgroundMode ? 'true' : 'false',
@@ -114,6 +117,7 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	}
 
 	async showNotification() {
+		if (!this.IsMobile) return;
 		await BetterCrewlinkNativePlugin.showNotification({
 			audiomuted: this.audioMuted(),
 			micmuted: this.microphoneMuted(),
@@ -193,23 +197,22 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			this.updateViews();
 		});
 
-		this.requestPermissions().then(() => {
-			this.cManager.audioController.getDevices(this.IsMobile).then((devices) => {
-				this.microphones = devices;
-				if (!this.microphones.some((o) => o.id === this.settings.get().selectedMicrophone?.id)) {
-					this.settings.get().selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
-						id: 0,
-						label: 'default',
-						deviceId: 'default',
-						kind: 'audioinput',
-					};
-				} else {
-					this.settings.get().selectedMicrophone = this.microphones.find(
-						(o) => o.id === this.settings.get().selectedMicrophone.id
-					);
-				}
-			});
+		this.cManager.audioController.getDevices(this.IsMobile).then((devices) => {
+			this.microphones = devices;
+			if (!this.microphones.some((o) => o.id === this.settings.get().selectedMicrophone?.id)) {
+				this.settings.get().selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
+					id: 0,
+					label: 'default',
+					deviceId: 'default',
+					kind: 'audioinput',
+				};
+			} else {
+				this.settings.get().selectedMicrophone = this.microphones.find(
+					(o) => o.id === this.settings.get().selectedMicrophone.id
+				);
+			}
 		});
+
 		// this.connect();
 
 		window.addEventListener('bettercrewlink_notification', (info: any) => {
