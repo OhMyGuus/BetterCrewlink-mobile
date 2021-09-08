@@ -46,7 +46,7 @@
 				<ion-col size="7">
 					<ion-input
 						style="text-transform: uppercase"
-						pattern="[A-Za-z]{6}"
+						pattern="^[A-Za-z]{4}$|^[A-Za-z]{6}$"
 						[(ngModel)]="getSettings().gamecode"
 						(ionChange)="onSettingsChange()"
 						placeholder="'ABCDEF'"
