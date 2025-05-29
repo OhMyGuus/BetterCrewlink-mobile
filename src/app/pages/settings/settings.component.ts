@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Plugins } from '@capacitor/core';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';

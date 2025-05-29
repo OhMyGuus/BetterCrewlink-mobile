@@ -91,7 +91,7 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	disconnect(disableBackgroundMode = true) {
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
-			if (!this.IsMobile) {
+			if (this.IsMobile) {
 				BetterCrewlinkNativePlugin.disconnect();
 			}
 			this.appCenterAnalytics
