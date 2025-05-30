@@ -25,10 +25,10 @@ const DEFAULTPLAYERSETTING: PlayerSetting = {
 export class SettingsService {
 	private settings: ISettings | undefined = DEFAULTSETTINGS;
 	IsMobile: boolean;
+	loaded = false;
 
 	constructor(private storage: Storage, private platform: Platform) {
 		this.IsMobile = this.platform.is('cordova') || this.platform.is('capacitor');
-		this.load();
 	}
 
 	get() {
@@ -66,7 +66,12 @@ export class SettingsService {
 		this.storage.set('settings', this.settings);
 	}
 
-	private async load() {
+	async load() {
+		if (this.loaded) {
+			return;
+		}
+		this.storage.create();
+		this.loaded = true;
 		const loadedSettings = await this.storage.get('settings');
 		console.log('loaded settings: ', loadedSettings);
 		if (loadedSettings && loadedSettings !== null) {
@@ -77,4 +82,6 @@ export class SettingsService {
 			}
 		}
 	}
+
+
 }

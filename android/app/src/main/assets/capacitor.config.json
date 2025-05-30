@@ -14,5 +14,10 @@
 		"preferences": {
 			"APP_SECRET": "968c50f3-eb43-4ceb-9b3d-55458601a601"
 		}
+	},
+	"android": {
+		"minSdkVersion": 24,
+		"compileSdkVersion": 34,
+		"targetSdkVersion": 34
 	}
 }

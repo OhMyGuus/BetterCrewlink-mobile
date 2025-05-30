@@ -17,6 +17,11 @@
             android:name="io.bettercrewlink.app.OverlayService"
             android:exported="false"/>
 
+        <service
+            android:name="de.appplant.cordova.plugin.background.ForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
         <activity
             android:exported="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
@@ -74,5 +79,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 </manifest>

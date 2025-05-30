@@ -46,13 +46,12 @@ export declare interface IConnectionController {
 	connectionState: ConnectionState;
 	connectingStage: ConnectingStage;
 	connect(voiceserver: string, gamecode: string, username: string, deviceID: string, natFix: boolean);
-	on(event: 'onChange', listener: () => void): this;
 }
 
 @Injectable({
 	providedIn: 'root',
 })
-export class ConnectionController extends EventEmitterO implements IConnectionController {
+export class ConnectionController implements IConnectionController {
 	socketIOClient: SocketIOClient.Socket;
 	public currentGameState: AmongUsState;
 	public oldGameState: AmongUsState;
@@ -74,8 +73,8 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	private triedGameHost: boolean;
 	private lastHostIndex = -1;
 	public error: string | undefined;
+	public events = new EventEmitterO();
 	constructor(private settingsService: SettingsService) {
-		super();
 		this.audioController = new AudioController(this);
 		this.ConnectionCheck();
 	}
@@ -196,7 +195,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 	}
 
 	private updateViews() {
-		this.emit('onChange');
+		this.events.emit('onChange');
 	}
 
 	private createPeerConnection(socketId: string, stream: MediaStream, initiator): Peer {
@@ -214,7 +213,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			const socketElement = this.getSocketElement(socketId);
 			const audioElement = this.audioController.createAudioElement(recievedDtream, (bool: boolean) => {
 				socketElement.talking = bool;
-				this.emit('player_talk', socketElement.client?.clientId ?? -1, bool);
+				this.events.emit('player_talk', socketElement.client?.clientId ?? -1, bool);
 			});
 
 			socketElement.audioElement = audioElement;
@@ -385,7 +384,7 @@ export class ConnectionController extends EventEmitterO implements IConnectionCo
 			let socketElement = this.getSocketElementByClientID(data.client.clientId);
 			if (socketElement) {
 				socketElement.talking = data.activity;
-				this.emit('player_talk', socketElement.client?.clientId ?? -1, data.activity);
+				this.events.emit('player_talk', socketElement.client?.clientId ?? -1, data.activity);
 			}
 		});
 

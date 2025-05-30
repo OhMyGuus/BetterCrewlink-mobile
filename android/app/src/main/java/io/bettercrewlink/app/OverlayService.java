@@ -19,8 +19,6 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.microsoft.appcenter.utils.HandlerUtils.runOnUiThread;
-
 public class OverlayService extends Service {
 
     private WindowManager windowManager;
@@ -45,7 +43,7 @@ public class OverlayService extends Service {
 
     public static void setVisible(int color, boolean visible) {
         if (color >= 0 && color <= 12) {
-            runOnUiThread(new Runnable() {
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     if (color < imageViews.size())
@@ -56,7 +54,7 @@ public class OverlayService extends Service {
     }
 
     public static void HideShow(boolean hide){
-        runOnUiThread(new Runnable() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if (audioImageView != null && micImageView != null && refreshImageview != null) {
@@ -72,7 +70,7 @@ public class OverlayService extends Service {
     public static void updateMuteIcons(boolean mic_muted, boolean audio_muted) {
         OverlayService.mic_muted = mic_muted;
         OverlayService.audio_muted = audio_muted;
-        runOnUiThread(new Runnable() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if (audioImageView != null && micImageView != null) {

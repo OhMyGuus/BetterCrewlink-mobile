@@ -24,6 +24,7 @@ export class SettingsComponent implements OnInit {
 
 	onSettingsChange() {
 		this.settings.save();
+		console.log('Settings changed:', this.settings.get());
 	}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
@@ -37,7 +38,7 @@ export class SettingsComponent implements OnInit {
 	// }
 
 	ngOnInit() {
-		this.gameHelper.on('onChange', () => {
+		this.gameHelper.events.on('onChange', () => {
 			this.changeDetectorRef.detectChanges();
 		});
 	}
