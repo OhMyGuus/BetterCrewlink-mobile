@@ -271,7 +271,7 @@ export class ConnectionController implements IConnectionController {
 	}
 	private onGameStateChange(amongUsState: AmongUsState) {
 		try {
-			console.log(this.socketElements);
+			// console.log(this.socketElements);
 			this.oldGameState = this.currentGameState;
 			this.currentGameState = amongUsState;
 			const newLocalplayer = amongUsState.players.filter(

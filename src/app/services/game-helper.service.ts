@@ -1,14 +1,13 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { ISettings, IDeviceInfo, VoiceServerOption } from './smallInterfaces';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';import { Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { element } from 'protractor';
 import { SettingsService } from './settings.service';
+import { BetterCrewlinkNativeService } from 'bcl-mobile-overlay';
 
-const { BetterCrewlinkNativePlugin } = Plugins;
 
 export declare interface IGameHelperService {
 }
@@ -79,7 +78,7 @@ export class GameHelperService implements IGameHelperService {
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
 			if (this.IsMobile) {
-				BetterCrewlinkNativePlugin.disconnect();
+				BetterCrewlinkNativeService.disconnect();
 			}
 		}
 		this.cManager.disconnect(true);
@@ -100,7 +99,8 @@ export class GameHelperService implements IGameHelperService {
 
 	async showNotification() {
 		if (!this.IsMobile) return;
-		await BetterCrewlinkNativePlugin.showNotification({
+		console.log('showNotification BCL PLUGIN');
+		await BetterCrewlinkNativeService.showNotification({
 			audiomuted: this.audioMuted(),
 			micmuted: this.microphoneMuted(),
 			overlayEnabled: this.settings.get().overlayEnabled,
@@ -198,10 +198,11 @@ export class GameHelperService implements IGameHelperService {
 		// this.connect();
 
 		window.addEventListener('bettercrewlink_notification', (info: any) => {
+			console.log('[EVENT] bettercrewlink_notification: ', JSON.stringify(info));
 			switch (info.action) {
 				case 'REFRESH': {
 					this.reconnect();
-					break;
+					break; 
 				}
 				case 'MUTEAUDIO': {
 					this.muteAudio();
@@ -230,7 +231,7 @@ export class GameHelperService implements IGameHelperService {
 				() => {
 					const sElement = this.cManager.getSocketElementByClientID(clientId);
 					if (sElement && sElement.player && sElement.talking === talking) {
-						BetterCrewlinkNativePlugin.showTalking({
+						BetterCrewlinkNativeService.showTalking({
 							color: sElement.player?.colorId,
 							talking,
 						});
@@ -247,7 +248,7 @@ export class GameHelperService implements IGameHelperService {
 			setTimeout(
 				() => {
 					if (talking === this.localTalking() && this.cManager.localPLayer) {
-						BetterCrewlinkNativePlugin.showTalking({
+						BetterCrewlinkNativeService.showTalking({
 							color: this.cManager.localPLayer.colorId,
 							talking,
 						});
