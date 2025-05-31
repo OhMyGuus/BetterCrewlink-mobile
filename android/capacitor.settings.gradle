@@ -3,4 +3,4 @@ include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
 
 include ':bcl-mobile-overlay'
-project(':bcl-mobile-overlay').projectDir = new File('../../bcl-overlay/bcl-mobile-overlay/android')
+project(':bcl-mobile-overlay').projectDir = new File('../plugins/bcl-mobile-overlay/android')
