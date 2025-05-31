@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Socket } from 'dgram';
 import { Player } from '../../services/AmongUsState';
 import { SocketElement, PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';

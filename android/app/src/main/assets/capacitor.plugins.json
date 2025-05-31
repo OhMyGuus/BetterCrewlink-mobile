@@ -1,0 +1,6 @@
+[
+	{
+		"pkg": "bcl-mobile-overlay",
+		"classpath": "io.bettercrewlink.plugin.BetterCrewlinkNativeServicePlugin"
+	}
+]

@@ -1,28 +1,25 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { ISettings, IDeviceInfo, VoiceServerOption } from './smallInterfaces';
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-import { Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';import { Platform } from '@ionic/angular';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
-import { BackgroundMode } from '@ionic-native/background-mode/ngx';
-import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
+import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { element } from 'protractor';
 import { SettingsService } from './settings.service';
+import { BetterCrewlinkNativeService } from 'bcl-mobile-overlay';
 
-const { BetterCrewlinkNativePlugin } = Plugins;
 
 export declare interface IGameHelperService {
-	on(event: 'onChange', listener: () => void): this;
 }
 
 @Injectable({
 	providedIn: 'root',
 })
-export class GameHelperService extends EventEmitterO implements IGameHelperService {
+export class GameHelperService implements IGameHelperService {
 	microphones: IDeviceInfo[] = [];
 	IsMobile: boolean = false;
 	error: string;
+	events: EventEmitterO = new EventEmitterO();
 	audioMuted = () => this.cManager.audioController.audioMuted ?? false;
 	microphoneMuted = () =>
 		(this.cManager.audioController.microphoneMuted || this.cManager.audioController.audioMuted) ?? false;
@@ -32,11 +29,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 		public platform: Platform,
 		public cManager: ConnectionController,
 		private backgroundMode: BackgroundMode,
-		private appCenterAnalytics: AppCenterAnalytics,
 		private settings: SettingsService
 	) {
-		super();
-		this.IsMobile = this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile');
+		this.IsMobile = true;//this.platform.is('cordova') || this.platform.is('android') || this.platform.is('mobile');
 		this.load();
 	}
 
@@ -56,15 +51,6 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 
 	connect() {
 		this.disconnect(false);
-
-		this.appCenterAnalytics
-			.trackEvent('connect', {
-				gameCode: this.settings.get().gamecode.toUpperCase(),
-				username: this.settings.get().username,
-				micrphone: this.settings.get().selectedMicrophone.deviceId,
-				natfixEnabled: this.settings.get().natFix ? 'true' : 'false',
-			})
-			.then(() => {});
 
 		this.requestPermissions().then((haspermissions) => {
 			if (!haspermissions) {
@@ -91,14 +77,9 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	disconnect(disableBackgroundMode = true) {
 		if (disableBackgroundMode) {
 			this.backgroundMode.disable();
-			if (!this.IsMobile) {
-				BetterCrewlinkNativePlugin.disconnect();
+			if (this.IsMobile) {
+				BetterCrewlinkNativeService.disconnect();
 			}
-			this.appCenterAnalytics
-				.trackEvent('disconnect', {
-					disableBackgroundMode: disableBackgroundMode ? 'true' : 'false',
-				})
-				.then(() => {});
 		}
 		this.cManager.disconnect(true);
 	}
@@ -118,7 +99,8 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 
 	async showNotification() {
 		if (!this.IsMobile) return;
-		await BetterCrewlinkNativePlugin.showNotification({
+		console.log('showNotification BCL PLUGIN');
+		await BetterCrewlinkNativeService.showNotification({
 			audiomuted: this.audioMuted(),
 			micmuted: this.microphoneMuted(),
 			overlayEnabled: this.settings.get().overlayEnabled,
@@ -187,13 +169,13 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 	}
 
 	updateViews() {
-		this.emit('onChange');
+		this.events.emit('onChange');
 	}
 
 	load() {
 		console.log('load??');
 
-		this.cManager.on('onchange', () => {
+		this.cManager.events.on('onchange', () => {
 			this.updateViews();
 		});
 
@@ -216,10 +198,11 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 		// this.connect();
 
 		window.addEventListener('bettercrewlink_notification', (info: any) => {
+			console.log('[EVENT] bettercrewlink_notification: ', JSON.stringify(info));
 			switch (info.action) {
 				case 'REFRESH': {
 					this.reconnect();
-					break;
+					break; 
 				}
 				case 'MUTEAUDIO': {
 					this.muteAudio();
@@ -240,7 +223,7 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			}
 			console.log('Notification action done');
 		});
-		this.cManager.on('player_talk', async (clientId: number, talking: boolean) => {
+		this.cManager.events.on('player_talk', async (clientId: number, talking: boolean) => {
 			if (!this.IsMobile) {
 				return;
 			}
@@ -248,7 +231,7 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 				() => {
 					const sElement = this.cManager.getSocketElementByClientID(clientId);
 					if (sElement && sElement.player && sElement.talking === talking) {
-						BetterCrewlinkNativePlugin.showTalking({
+						BetterCrewlinkNativeService.showTalking({
 							color: sElement.player?.colorId,
 							talking,
 						});
@@ -258,14 +241,14 @@ export class GameHelperService extends EventEmitterO implements IGameHelperServi
 			);
 		});
 
-		this.cManager.audioController.on('local_talk', async (talking: boolean) => {
+		this.cManager.audioController.events.on('local_talk', async (talking: boolean) => {
 			if (!this.IsMobile) {
 				return;
 			}
 			setTimeout(
 				() => {
 					if (talking === this.localTalking() && this.cManager.localPLayer) {
-						BetterCrewlinkNativePlugin.showTalking({
+						BetterCrewlinkNativeService.showTalking({
 							color: this.cManager.localPLayer.colorId,
 							talking,
 						});

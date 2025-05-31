@@ -4,10 +4,9 @@ import { SocketElement, AudioElement, IDeviceInfo } from './smallInterfaces';
 import { ConnectingStage, ConnectionController } from './ConnectionController.service';
 import VAD from './vad';
 
-export default class AudioController extends EventEmitterO {
+export default class AudioController {
 	localTalking: boolean;
 	constructor(private connectionController: ConnectionController) {
-		super();
 		this.audioElementsCotainer = document.getElementById('AudioElements');
 	}
 	audioDeviceId = 'default';
@@ -16,6 +15,7 @@ export default class AudioController extends EventEmitterO {
 	permissionRequested: boolean;
 	audioMuted: boolean;
 	microphoneMuted: boolean;
+	public events: EventEmitterO = new EventEmitterO();
 
 	async startAudio() {
 		if (this.stream) {
@@ -27,7 +27,6 @@ export default class AudioController extends EventEmitterO {
 			deviceId: this.connectionController.deviceID,
 			autoGainControl: false,
 			echoCancellation: true,
-			latency: 0,
 			noiseSuppression: true,
 		};
 		this.stream = await navigator.mediaDevices.getUserMedia({ video: false, audio });
@@ -37,13 +36,13 @@ export default class AudioController extends EventEmitterO {
 		VAD(context, context.createMediaStreamSource(this.stream), undefined, {
 			onVoiceStart: () => {
 				this.localTalking = true;
-				this.emit('local_talk', true);
+				this.events.emit('local_talk', true);
 				this.connectionController?.socketIOClient?.emit('VAD', true);
 				
 			},
 			onVoiceStop: () => {
 				this.localTalking = false;
-				this.emit('local_talk', false);
+				this.events.emit('local_talk', false);
 				this.connectionController?.socketIOClient?.emit('VAD', false);
 
 			},

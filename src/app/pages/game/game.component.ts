@@ -35,7 +35,7 @@ export class GameComponent implements OnInit {
 
 	ngOnInit() {
 		console.log('ngOninit');
-		this.gameHelper.on('onChange', () => {
+		this.gameHelper.events.on('onChange', () => {
 			this.changeDetectorRef.detectChanges();
 		});
 	}
