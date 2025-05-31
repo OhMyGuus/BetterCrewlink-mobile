@@ -8,5 +8,6 @@ import { Component, OnInit } from '@angular/core';
 export class GlobalFooterComponent implements OnInit {
 	constructor() {}
 
-	ngOnInit() {}
+	// eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
+	ngOnInit(): void {}
 }

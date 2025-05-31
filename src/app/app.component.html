@@ -12,7 +12,7 @@
 						[routerLink]="[p.url]"
 						lines="none"
 						detail="false"
-						[class.selected]="selectedIndex == i"
+						[class.selected]="selectedIndex === i"
 					>
 						<ion-icon slot="start" color="light" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
 						<ion-label>{{ p.title }} </ion-label>

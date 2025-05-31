@@ -92,7 +92,7 @@
 	</ion-grid>
 </ion-content>
 
-<div class="testButtons" *ngIf="gameHelper.cManager.connectionState == 2">
+<div class="testButtons" *ngIf="gameHelper.cManager.connectionState === 2">
 	<ion-row>
 		<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
 		<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>

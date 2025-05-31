@@ -8,6 +8,7 @@ import { GameHelperService } from 'src/app/services/game-helper.service';
 })
 export class GlobalHeaderComponent implements OnInit {
 	constructor(public gameHelper: GameHelperService) {}
-	ngOnInit(): void {
-	}
+
+	// eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
+	ngOnInit(): void {}
 }
