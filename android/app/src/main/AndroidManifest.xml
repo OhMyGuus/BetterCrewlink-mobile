@@ -39,7 +39,6 @@
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
-
     </application>
 
     <!-- Permissions -->

@@ -54,5 +54,5 @@ node_modules/
 .sourcemaps/
 .versions/
 /platforms/
-/plugins/
+# /plugins/
 UserInterfaceState.xcuserstate
