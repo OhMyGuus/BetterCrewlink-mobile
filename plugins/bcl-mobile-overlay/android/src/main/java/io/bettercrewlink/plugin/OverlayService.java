@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +20,8 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.bettercrewlink.plugin.R;
 
 public class OverlayService extends Service {
 
@@ -43,7 +47,7 @@ public class OverlayService extends Service {
 
     public static void setVisible(int color, boolean visible) {
         if (color >= 0 && color <= 12) {
-            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (color < imageViews.size())
@@ -54,7 +58,7 @@ public class OverlayService extends Service {
     }
 
     public static void HideShow(boolean hide){
-        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (audioImageView != null && micImageView != null && refreshImageview != null) {
@@ -70,7 +74,7 @@ public class OverlayService extends Service {
     public static void updateMuteIcons(boolean mic_muted, boolean audio_muted) {
         OverlayService.mic_muted = mic_muted;
         OverlayService.audio_muted = audio_muted;
-        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (audioImageView != null && micImageView != null) {
@@ -105,7 +109,7 @@ public class OverlayService extends Service {
     }
 
     public void pressOverlayButton(OVERLAY_BUTTON button) {
-        BetterCrewlinkNativePlugin.bridgeP.triggerWindowJSEvent("press_overlay", "{ 'action': '" + button + "' }");
+        BetterCrewlinkNativeServicePlugin.bridgeP.triggerWindowJSEvent("press_overlay", "{ 'action': '" + button + "' }");
     }
 
 
@@ -225,5 +229,9 @@ public class OverlayService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (iconsContainerView != null) windowManager.removeView(iconsContainerView);
+    }
+
+    private static void runOnUiThread(Runnable action) {
+        new Handler(Looper.getMainLooper()).post(action);
     }
 }

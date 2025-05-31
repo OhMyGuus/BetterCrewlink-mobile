@@ -31,7 +31,7 @@
     "@ionic/angular-server": "^8.5.8",
     "@ionic/storage": "^4.0.0",
     "@ionic/storage-angular": "^4.0.0",
-    "bcl-mobile-overlay": "file:../bcl-overlay/bcl-mobile-overlay",
+    "bcl-mobile-overlay": "file:plugins/bcl-mobile-overlay",
     "cordova-plugin-android-permissions": "^1.1.5",
     "cordova-plugin-background-mode": "github:OhMyGuus/cordova-plugin-background-mode",
     "cordova-plugin-device": "^2.0.3",

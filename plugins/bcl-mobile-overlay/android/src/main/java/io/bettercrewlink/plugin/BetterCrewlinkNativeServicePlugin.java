@@ -5,11 +5,39 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.Bridge;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.net.Uri;
+import android.text.Html;
+import android.text.SpannableString;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 @CapacitorPlugin(name = "BetterCrewlinkNativeService")
 public class BetterCrewlinkNativeServicePlugin extends Plugin {
 
-    private BetterCrewlinkNativeService implementation = new BetterCrewlinkNativeService();
+    static Bridge bridgeP;
+    private Boolean audionMuted = false;
+    private boolean micMuted = false;
+    private boolean timmerRunning = false;
+    private boolean running = false;
+    private boolean overlayShown = false;
 
     @PluginMethod()
     public void showNotification(PluginCall call) {
@@ -24,7 +52,7 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("result", "ok");
         CreateNotification();
-        call.success(ret);
+        call.resolve(ret);
         CreateTimer();
         OverlayService.updateMuteIcons(micMuted, audioMuted);
         if ((!overlayShown) && overlayEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -104,15 +132,18 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
     public PendingIntent createAction(String action) {
         Intent intent = new Intent(this.getContext(), BetterCrewlinkNativeService.class);
         intent.setAction(action);
-        PendingIntent piAction1 = PendingIntent.getService(this.getContext(), 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piAction1 = PendingIntent.getService(
+                this.getContext(),
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
         return piAction1;
     }
-
     int notificationCount = 0;
 
     public void CreateNotification() {
-        // createNotificationChannel();
+      //  createNotificationChannel();
         bridgeP = bridge;
         BetterCrewlinkNativeService service = getSystemService(this.getContext(), BetterCrewlinkNativeService.class);
         PendingIntent refreshAction = createAction(BetterCrewlinkNativeService.REFRESH);
@@ -138,16 +169,10 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
                 .setAutoCancel(false)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        // Notification Noti = new Notification.Builder(this.getContext())
-        // .setContentTitle("YourTitle")
-        // .setContentText("YourDescription")
-        // .setSmallIcon(R.mipmap.ic_launcher)
-        // .setContentIntent(pIntent)
-        // .setAutoCancel(true).build();
-
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.getContext());
 
         // notificationId is a unique int for each notification that you must define
+
         notificationManager.notify(-574543954, builder.build());
     }
 

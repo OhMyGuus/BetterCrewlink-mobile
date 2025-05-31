@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "BclOverlayPlugin",
+    name: "BclMobileOverlay",
     platforms: [.iOS(.v14)],
     products: [
         .library(
-            name: "BclOverlayPlugin",
+            name: "BclMobileOverlay",
             targets: ["BetterCrewlinkNativeServicePlugin"])
     ],
     dependencies: [
