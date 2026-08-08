@@ -329,7 +329,7 @@ export default class AudioController {
 		}
 	}
 
-	async getDevices(output: boolean = true): Promise<IDeviceInfo[]> {
+	async getDevices(output = true): Promise<IDeviceInfo[]> {
 		await this.requestPermissions();
 		let deviceId = 0;
 		return (await navigator.mediaDevices.enumerateDevices())

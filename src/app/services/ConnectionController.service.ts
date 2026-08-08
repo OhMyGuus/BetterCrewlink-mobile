@@ -62,11 +62,11 @@ export class ConnectionController implements IConnectionController {
 	connectingStage = 0;
 	connectionState = ConnectionState.disconnected;
 	gamecode: string;
-	lastPing: number = -1;
+	lastPing = -1;
 	localPLayer: Player;
 	deviceID: string;
 	public lobbySettings: ILobbySettings = DEFAULT_LOBBYSETTINGS;
-	natFix: boolean = false;
+	natFix = false;
 	public audioController: AudioController;
 	public mobileHosts: Map<string, mobileHostInfo> = new Map<string, mobileHostInfo>();
 	private currentHost: string;
@@ -381,7 +381,7 @@ export class ConnectionController implements IConnectionController {
 		});
 
 		this.socketIOClient.on('VAD', (data: { activity: boolean; client: Client; socketId: string }) => {
-			let socketElement = this.getSocketElementByClientID(data.client.clientId);
+			const socketElement = this.getSocketElementByClientID(data.client.clientId);
 			if (socketElement) {
 				socketElement.talking = data.activity;
 				this.events.emit('player_talk', socketElement.client?.clientId ?? -1, data.activity);

@@ -4,7 +4,6 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
-import { element } from 'protractor';
 import { SettingsService } from './settings.service';
 import { BetterCrewlinkNativeService } from 'bcl-mobile-overlay';
 
@@ -17,7 +16,7 @@ export declare interface IGameHelperService {
 })
 export class GameHelperService implements IGameHelperService {
 	microphones: IDeviceInfo[] = [];
-	IsMobile: boolean = false;
+	IsMobile = false;
 	error: string;
 	events: EventEmitterO = new EventEmitterO();
 	audioMuted = () => this.cManager.audioController.audioMuted ?? false;

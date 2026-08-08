@@ -4,20 +4,16 @@
 			<ion-menu-button></ion-menu-button>
 		</ion-buttons>
 		<ion-buttons slot="end">
-			<ion-button
-				right
-				*ngIf="gameHelper.cManager.connectionState !== 0"
-				[routerLink]="['/settings']"
-				(click)="gameHelper.disconnect()"
-				>Disconnect</ion-button
-			>
+			@if (gameHelper.cManager.connectionState !== 0) {
+				<ion-button right [routerLink]="['/settings']" (click)="gameHelper.disconnect()">Disconnect</ion-button>
+			}
 		</ion-buttons>
 		<!-- <ion-title fittext [minFontSize]="'40px'" *ngIf="gameHelper.cManager.connectionState !== 0" class="ion-text-center small-title"
-			>BetterCrewlink Mobile v1.0.13</ion-title
-		> -->
+      >BetterCrewlink Mobile v1.0.13</ion-title
+      > -->
 		<div>BetterCrewlink</div>
 		<!-- <ion-title  *ngIf="gameHelper.cManager.connectionState == 0" class="ion-text-center small-title"
-			>BetterCrewlink Mobile v1.0.13</ion-title
-		> -->
+      >BetterCrewlink Mobile v1.0.13</ion-title
+      > -->
 	</ion-toolbar>
 </ng-container>

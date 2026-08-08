@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { GameHelperService } from 'src/app/services/game-helper.service';
-import { IDeviceInfo } from 'src/app/services/smallInterfaces';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { GameHelperService } from '../../services/game-helper.service';
+import { IDeviceInfo } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
 
 // const { OverlayPlugin } = Plugins;
@@ -10,6 +10,8 @@ import { SettingsService } from '../../services/settings.service';
 	selector: 'app-settings',
 	templateUrl: './settings.component.html',
 	styleUrls: ['./settings.component.scss'],
+	changeDetection: ChangeDetectionStrategy.Eager,
+	standalone: false,
 })
 export class SettingsComponent implements OnInit {
 	constructor(

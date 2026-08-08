@@ -28,9 +28,7 @@ export interface Client {
 	clientId: number;
 }
 
-export interface SocketClientMap {
-	[socketId: string]: Client;
-}
+export type SocketClientMap = Record<string, Client>;
 
 export interface IDeviceInfo {
 	kind: string;
@@ -82,8 +80,8 @@ export class SocketElement {
 	client?: Client;
 	audioElement?: AudioElement;
 	player?: Player;
-	talking: boolean = false;
-	audible: boolean = false;
+	talking = false;
+	audible = false;
 
 	isDead: boolean;
 	settings: PlayerSetting | undefined;

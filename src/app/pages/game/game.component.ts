@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import Peer from 'simple-peer';
 import { Socket } from 'socket.io-client';
-import { GameHelperService } from 'src/app/services/game-helper.service';
-import { IDeviceInfo } from 'src/app/services/smallInterfaces';
+import { GameHelperService } from '../../services/game-helper.service';
+import { IDeviceInfo } from '../../services/smallInterfaces';
 import { SocketElement } from '../../services/smallInterfaces';
 import { Player } from '../../services/AmongUsState';
 
@@ -10,11 +10,16 @@ import { Player } from '../../services/AmongUsState';
 	selector: 'app-game',
 	templateUrl: './game.component.html',
 	styleUrls: ['./game.component.scss'],
+	changeDetection: ChangeDetectionStrategy.Eager,
+	standalone: false,
 })
 export class GameComponent implements OnInit {
 	client: Socket;
-	peerConnections: Array<Peer> = [];
-	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
+	peerConnections: Peer[] = [];
+	constructor(
+		public gameHelper: GameHelperService,
+		private changeDetectorRef: ChangeDetectorRef
+	) {}
 
 	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
 		return e1 && e2 ? e1.id === e2.id : false;
@@ -27,7 +32,7 @@ export class GameComponent implements OnInit {
 	getPlayers() {
 		return Array.from(this.gameHelper.cManager.socketElements.values())
 			.filter((o) => o.player !== undefined)
-			.sort((a, b) => a.player?.colorId -  b.player?.colorId);
+			.sort((a, b) => a.player?.colorId - b.player?.colorId);
 	}
 
 	getValues2(map): SocketElement[] {

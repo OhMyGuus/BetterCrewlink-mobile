@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../../services/AmongUsState';
 import { SocketElement, PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
 
-const hatOffsets: { [key in number]: number | undefined } = {
+const hatOffsets: Record<number, number | undefined> = {
 	7: -50,
 	21: -50,
 	28: -50,
@@ -20,12 +20,14 @@ const coloredHats: number[] = [77, 90];
 	selector: 'app-avatar',
 	templateUrl: './avatar.component.html',
 	styleUrls: ['./avatar.component.scss'],
+	changeDetection: ChangeDetectionStrategy.Eager,
+	standalone: false,
 })
 export class AvatarComponent implements OnInit {
-	backLayerHats =new Set([39, 4, 6, 15, 29, 42, 75, 85, 102, 105, 106, 104, 103]);
+	backLayerHats = new Set([39, 4, 6, 15, 29, 42, 75, 85, 102, 105, 106, 104, 103]);
 	@Input() player: Player;
 	@Input() talking: boolean;
-	@Input() isDead: boolean = false;
+	@Input() isDead = false;
 	@Input() settings: PlayerSetting = undefined;
 	volumeOpen: boolean;
 	readonly MAXVOLUME = 500;
@@ -52,10 +54,10 @@ export class AvatarComponent implements OnInit {
 	}
 
 	onVolumeChange() {
-		console.log("Volume: ",this.player.nameHash, this.settings )
+		console.log('Volume: ', this.player.nameHash, this.settings);
 
 		if (this.settings) {
-			console.log("Volume: ",this.player.nameHash, this.settings )
+			console.log('Volume: ', this.player.nameHash, this.settings);
 			this.settingsService.savePlayerSetting(this.player.nameHash, this.settings);
 		}
 	}
