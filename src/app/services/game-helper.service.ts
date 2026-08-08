@@ -7,14 +7,14 @@ import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { SettingsService } from './settings.service';
 import { BetterCrewlinkNativeService } from 'bcl-mobile-overlay';
 
-
-export declare interface IGameHelperService {
+interface NativeBridgeEvent extends Event {
+	action: string;
 }
 
 @Injectable({
 	providedIn: 'root',
 })
-export class GameHelperService implements IGameHelperService {
+export class GameHelperService {
 	microphones: IDeviceInfo[] = [];
 	IsMobile = false;
 	error: string;
@@ -201,7 +201,7 @@ export class GameHelperService implements IGameHelperService {
 
 		// this.connect();
 
-		window.addEventListener('bettercrewlink_notification', (info: any) => {
+		window.addEventListener('bettercrewlink_notification', (info: NativeBridgeEvent) => {
 			console.log('[EVENT] bettercrewlink_notification: ', JSON.stringify(info));
 			switch (info.action) {
 				case 'REFRESH': {
@@ -262,7 +262,7 @@ export class GameHelperService implements IGameHelperService {
 			);
 		});
 
-		window.addEventListener('press_overlay', (info: any) => {
+		window.addEventListener('press_overlay', (info: NativeBridgeEvent) => {
 			console.log('[EVENT] press_overlay: ', JSON.stringify(info));
 			if (info.action === 'MICROPHONE') {
 				this.muteMicrophone();

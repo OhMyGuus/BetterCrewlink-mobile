@@ -201,7 +201,7 @@ export class ConnectionController implements IConnectionController {
 		console.log('[createPeerConnection1], ', { peerId: socketId });
 		const peer: Peer = new Peer({
 			stream,
-			initiator, // @ts-ignore-line
+			initiator,
 			config: this.natFix ? DEFAULT_ICE_CONFIG_TURN : DEFAULT_ICE_CONFIG,
 			objectMode: true,
 		});
@@ -389,18 +389,18 @@ export class ConnectionController implements IConnectionController {
 			}
 		});
 
-		this.socketIOClient.on('signal', ({ data, from }: { data: any; from: string }) => {
-			if (data.hasOwnProperty('mobileHostInfo')) {
-				const mobiledata = data as mobileHostInfo;
+		this.socketIOClient.on('signal', ({ data, from }: { data: Record<string, unknown>; from: string }) => {
+			if (Object.prototype.hasOwnProperty.call(data, 'mobileHostInfo')) {
+				const mobiledata = data as unknown as mobileHostInfo;
 				this.mobileHosts.set(from, mobiledata);
 				this.updateConnectingStage(ConnectingStage.searchingForHost);
 				return;
 			}
 
-			if (data.hasOwnProperty('gameState')) {
+			if (Object.prototype.hasOwnProperty.call(data, 'gameState')) {
 				this.lastPing = Date.now();
 				this.updateConnectingStage(ConnectingStage.waitingForHostToEnable);
-				const mobiledata = data as MobileData;
+				const mobiledata = data as unknown as MobileData;
 				this.onLobbySettingsChange(mobiledata.lobbySettings);
 				this.onGameStateChange(mobiledata.gameState);
 				return;

@@ -162,7 +162,7 @@ export default class AudioController {
 
 		const other = element.player; // this.getPlayer(element.client?.clientId);
 		let panPos = [other.x - localPLayer.x, other.y - localPLayer.y];
-		let endGain = 0;
+		let endGain: number;
 		switch (state.gameState) {
 			case GameState.MENU:
 				endGain = 0;

@@ -102,7 +102,7 @@
 	</ion-grid>
 </ion-content>
 
-@if (gameHelper.cManager.connectionState == 2) {
+@if (gameHelper.cManager.connectionState === 2) {
 	<div class="testButtons">
 		<ion-row>
 			<ion-button (click)="gameHelper.connect()">Refresh</ion-button>

@@ -1,6 +1,6 @@
 <div class="avatarBase">
 	@if (this.volumeOpen) {
-		<div class="volumeslider" (mouseout)="openVolume(false)">
+		<div class="volumeslider" tabindex="0" (mouseout)="openVolume(false)" (blur)="openVolume(false)">
 			<div class="volumeslider-1">
 				<ion-range
 					class="volumeSliderThingy"
@@ -17,13 +17,21 @@
 			</div>
 		</div>
 	}
-	<div class="avatar" [class.talking]="talking" (click)="openVolume()">
+	<div
+		class="avatar"
+		[class.talking]="talking"
+		tabindex="0"
+		role="button"
+		(click)="openVolume()"
+		(keyup.enter)="openVolume()"
+	>
 		<div class="avatar avatar-2">
 			<img
 				src="assets/avatar/players/{{ player.colorId }}-{{ isDead ? 'dead' : 'alive' }}.png"
 				class="base no-drag-img"
 				style="display: none"
 				onload="this.style.display=''"
+				alt="{{ player.name }}"
 			/>
 			@if (!isDead && player.skinId > 0) {
 				<img
@@ -32,6 +40,7 @@
 					style="display: none"
 					onload="this.style.display=''"
 					onerror="this.style.display='none'"
+					alt=""
 				/>
 			}
 
@@ -46,6 +55,7 @@
 				style="display: none"
 				onload="this.style.display=''"
 				onerror="this.style.display='none'"
+				alt=""
 			/>
 		}
 	</div>

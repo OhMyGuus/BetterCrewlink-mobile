@@ -64,9 +64,16 @@ import 'zone.js'; // Updated for Angular 17+
  * APPLICATION IMPORTS
  */
 
-(window as any).global = window;
+interface MinimalProcessShim {
+	global: Window;
+	process: { env: { DEBUG: undefined }; nextTick(): null };
+}
 
-(window as any).process = (window as any).process || {
+const globalShim = window as unknown as MinimalProcessShim;
+
+globalShim.global = window;
+
+globalShim.process = globalShim.process || {
 	env: { DEBUG: undefined },
 	nextTick() {
 		return null;
