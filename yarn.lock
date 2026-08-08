@@ -3304,7 +3304,7 @@ cordova-plugin-android-permissions@^1.1.5:
 
 "cordova-plugin-background-mode@github:OhMyGuus/cordova-plugin-background-mode":
   version "0.7.3"
-  resolved "git+ssh://git@github.com/OhMyGuus/cordova-plugin-background-mode.git#795f036c3ba7e3af1f7b4bbaffa6e7b6f6af69d4"
+  resolved "git+ssh://git@github.com/OhMyGuus/cordova-plugin-background-mode.git#6cf536fab61de6b892308c6228565dcda91f9512"
 
 cordova-plugin-device@^2.0.3:
   version "2.1.0"

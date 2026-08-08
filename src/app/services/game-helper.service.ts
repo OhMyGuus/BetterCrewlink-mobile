@@ -52,13 +52,18 @@ export class GameHelperService implements IGameHelperService {
 	connect() {
 		this.disconnect(false);
 
-		this.requestPermissions().then((haspermissions) => {
+		this.requestPermissions().then(async (haspermissions) => {
 			if (!haspermissions) {
 				console.error('permissions failed');
 				this.cManager.connectionState = ConnectionState.error;
 				this.error = 'No permissions to use microphone.';
 				return;
 			}
+			// Android 14+ requires the mic to be actively capturing before a
+			// "microphone" type foreground service can be started, otherwise
+			// backgroundMode.enable() crashes with a SecurityException.
+			this.cManager.deviceID = this.settings.get().selectedMicrophone.deviceId;
+			await this.cManager.audioController.startAudio();
 			this.backgroundMode.enable();
 			this.cManager.connect(
 				this.settings.getVoiceServer(),

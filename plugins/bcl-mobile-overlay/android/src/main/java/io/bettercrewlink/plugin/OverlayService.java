@@ -109,6 +109,9 @@ public class OverlayService extends Service {
     }
 
     public void pressOverlayButton(OVERLAY_BUTTON button) {
+        if (BetterCrewlinkNativeServicePlugin.bridgeP == null) {
+            return;
+        }
         BetterCrewlinkNativeServicePlugin.bridgeP.triggerWindowJSEvent("press_overlay", "{ 'action': '" + button + "' }");
     }
 

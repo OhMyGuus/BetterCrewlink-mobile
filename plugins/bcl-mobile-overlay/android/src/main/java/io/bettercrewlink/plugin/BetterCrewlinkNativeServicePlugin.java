@@ -74,9 +74,8 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
 
     @PluginMethod()
     public void showTalking(PluginCall call) {
-        int color = call.getInt("color");
-        Boolean talking = call.getBoolean("talking");
-        Context context = this.getContext();
+        int color = call.getInt("color", -1);
+        Boolean talking = call.getBoolean("talking", false);
         OverlayService.setVisible(color, talking);
     }
 
