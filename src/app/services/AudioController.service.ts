@@ -303,10 +303,9 @@ export default class AudioController {
 		socketElement?.audioElement?.pan?.disconnect();
 		socketElement?.audioElement?.gain?.disconnect();
 		socketElement?.audioElement?.mediaStreamAudioSource?.disconnect();
-		socketElement?.audioElement?.audioContext
-			?.close()
-			.then(() => {})
-			.catch(() => {});
+		socketElement?.audioElement?.audioContext?.close().catch((err) => {
+			console.log('disconnectElement -> audioContext.close() failed -> ', err);
+		});
 
 		console.log('socketElement?.audioElement?.htmlAudioElement');
 

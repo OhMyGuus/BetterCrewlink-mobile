@@ -23,11 +23,7 @@ export class AppComponent implements OnInit {
 		},
 	];
 
-	constructor(private settingsService: SettingsService) {
-		this.initializeApp();
-	}
-
-	initializeApp() {}
+	constructor(private settingsService: SettingsService) {}
 
 	async ngOnInit() {
 		console.log('AppComponent initialized');

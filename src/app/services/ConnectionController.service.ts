@@ -206,7 +206,9 @@ export class ConnectionController implements IConnectionController {
 			config: this.natFix ? DEFAULT_ICE_CONFIG_TURN : DEFAULT_ICE_CONFIG,
 			objectMode: true,
 		});
-		peer.on('connect', () => {});
+		peer.on('connect', () => {
+			console.log('PEER ON connect');
+		});
 
 		peer.on('stream', (recievedDtream: MediaStream) => {
 			console.log('stream recieved', { recievedDtream });

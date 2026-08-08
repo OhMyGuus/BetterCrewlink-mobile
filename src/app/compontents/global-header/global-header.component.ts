@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { GameHelperService } from '../../services/game-helper.service';
 
 @Component({
@@ -8,7 +8,6 @@ import { GameHelperService } from '../../services/game-helper.service';
 	changeDetection: ChangeDetectionStrategy.Eager,
 	standalone: false,
 })
-export class GlobalHeaderComponent implements OnInit {
+export class GlobalHeaderComponent {
 	constructor(public gameHelper: GameHelperService) {}
-	ngOnInit(): void {}
 }

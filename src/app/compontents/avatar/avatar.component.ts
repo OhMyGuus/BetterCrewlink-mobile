@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../../services/AmongUsState';
 import { SocketElement, PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
@@ -20,10 +20,10 @@ const coloredHats: number[] = [77, 90];
 	selector: 'app-avatar',
 	templateUrl: './avatar.component.html',
 	styleUrls: ['./avatar.component.scss'],
-	changeDetection: ChangeDetectionStrategy.Eager,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
-export class AvatarComponent implements OnInit {
+export class AvatarComponent {
 	backLayerHats = new Set([39, 4, 6, 15, 29, 42, 75, 85, 102, 105, 106, 104, 103]);
 	@Input() player: Player;
 	@Input() talking: boolean;
@@ -61,6 +61,4 @@ export class AvatarComponent implements OnInit {
 			this.settingsService.savePlayerSetting(this.player.nameHash, this.settings);
 		}
 	}
-
-	ngOnInit() {}
 }
