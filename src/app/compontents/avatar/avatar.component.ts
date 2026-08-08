@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../../services/AmongUsState';
-import { SocketElement, PlayerSetting } from '../../services/smallInterfaces';
+import { PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
 
 const hatOffsets: Record<number, number | undefined> = {

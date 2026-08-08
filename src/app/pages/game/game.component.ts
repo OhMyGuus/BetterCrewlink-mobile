@@ -4,7 +4,6 @@ import { Socket } from 'socket.io-client';
 import { GameHelperService } from '../../services/game-helper.service';
 import { IDeviceInfo } from '../../services/smallInterfaces';
 import { SocketElement } from '../../services/smallInterfaces';
-import { Player } from '../../services/AmongUsState';
 
 @Component({
 	selector: 'app-game',

@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { ISettings, IDeviceInfo, VoiceServerOption } from './smallInterfaces';
+import { Injectable } from '@angular/core';
+import { IDeviceInfo } from './smallInterfaces';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';import { Platform } from '@ionic/angular';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
 import { EventEmitter as EventEmitterO } from 'events';
@@ -124,14 +124,14 @@ export class GameHelperService implements IGameHelperService {
 			];
 
 			try {
-				const reqPermissionRespons = await this.androidPermissions.requestPermissions(PERMISSIONS_NEEDED);
+				await this.androidPermissions.requestPermissions(PERMISSIONS_NEEDED);
 				for (const permission of PERMISSIONS_NEEDED) {
 					const permissionResponse = await this.androidPermissions.checkPermission(permission);
 					if (!permissionResponse.hasPermission) {
 						return true;
 					}
 				}
-			} catch (exception) {
+			} catch {
 				//	this.error = 'Bluetooth audio permission denied';
 				return true;
 			}
@@ -139,7 +139,7 @@ export class GameHelperService implements IGameHelperService {
 
 		try {
 			await this.cManager.audioController.requestPermissions();
-		} catch (exception) {
+		} catch {
 			this.error = 'No permission to use microphone';
 			return false;
 		}

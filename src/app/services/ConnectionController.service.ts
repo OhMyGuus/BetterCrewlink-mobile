@@ -1,12 +1,11 @@
 import { EventEmitter as EventEmitterO } from 'events';
 import Peer from 'simple-peer';
 import { io, Socket } from 'socket.io-client';
-import { AmongUsState, GameState, Player, MobileData } from './AmongUsState';
+import { AmongUsState, Player, MobileData } from './AmongUsState';
 import {
 	SocketElementMap,
 	SocketElement,
 	Client,
-	AudioElement,
 	SocketClientMap,
 	ILobbySettings,
 	DEFAULT_LOBBYSETTINGS,

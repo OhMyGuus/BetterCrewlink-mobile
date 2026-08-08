@@ -1,5 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Storage } from '@ionic/storage';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SettingsService } from './services/settings.service';
 @Component({
 	selector: 'app-root',
