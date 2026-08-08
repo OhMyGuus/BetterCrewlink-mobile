@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Peer from 'simple-peer';
+import { Socket } from 'socket.io-client';
 import { GameHelperService } from 'src/app/services/game-helper.service';
 import { IDeviceInfo } from 'src/app/services/smallInterfaces';
 import { SocketElement } from '../../services/smallInterfaces';
@@ -11,7 +12,7 @@ import { Player } from '../../services/AmongUsState';
 	styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements OnInit {
-	client: SocketIOClient.Socket;
+	client: Socket;
 	peerConnections: Array<Peer> = [];
 	constructor(public gameHelper: GameHelperService, private changeDetectorRef: ChangeDetectorRef) {}
 
