@@ -16,8 +16,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            // All four values come from env vars set only for the lifetime of a single
+            // build invocation (see scripts/build-release-aab.sh) - never written to disk.
+            // Passwords can't rely on Gradle's interactive prompt here: the AAB signing
+            // task (FinalizeBundleTask, via bundletool) throws a bare NullPointerException
+            // instead of prompting when they're null - unlike APK signing, which does
+            // support the prompt. So the wrapper script prompts for them itself instead.
+            if (System.getenv("RELEASE_STORE_FILE")) {
+                storeFile = file(System.getenv("RELEASE_STORE_FILE"))
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig = signingConfigs.release
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
