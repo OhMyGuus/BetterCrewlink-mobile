@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  OverlayService.java looks up these drawables dynamically by string name
+  (getResources().getIdentifier("playericon_" + i, "drawable", ...)), which
+  the resource shrinker can't see via static analysis - without this file it
+  strips them as "unused" in release builds, and player icons in the native
+  overlay silently stop showing up.
+  https://developer.android.com/build/shrink-code#keep-resources
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/playericon_0,@drawable/playericon_1,@drawable/playericon_2,@drawable/playericon_3,@drawable/playericon_4,@drawable/playericon_5,@drawable/playericon_6,@drawable/playericon_7,@drawable/playericon_8,@drawable/playericon_9,@drawable/playericon_10,@drawable/playericon_11,@drawable/playericon_12" />
