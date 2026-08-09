@@ -55,7 +55,11 @@
 }
 
 #main-content .ion-page {
-	top: 56px;
+	// --app-header-height is measured directly off the real <ion-header> element
+	// (AppComponent, via ResizeObserver) rather than assumed, since the header's
+	// actual rendered height varies by device/OS insets/font scale and a
+	// hardcoded pixel guess kept drifting out of sync with it.
+	top: var(--app-header-height, 56px);
 	//	height: calc(100% - 53px);
 	//	margin-bottom: 80px;
 }
