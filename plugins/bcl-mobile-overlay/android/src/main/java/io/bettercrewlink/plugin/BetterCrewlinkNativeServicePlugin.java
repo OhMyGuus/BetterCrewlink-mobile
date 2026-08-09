@@ -59,7 +59,7 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
             if (!Settings.canDrawOverlays(this.getContext())) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + this.getContext().getPackageName()));
-                startActivityForResult(call, intent, 0);
+                getActivity().startActivity(intent);
             } else {
                 Context context = this.getContext();
                 context.startService(new Intent(context, OverlayService.class));
@@ -147,9 +147,7 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
         BetterCrewlinkNativeService service = getSystemService(this.getContext(), BetterCrewlinkNativeService.class);
         PendingIntent refreshAction = createAction(BetterCrewlinkNativeService.REFRESH);
         String body = "<b>Guus(red)</b> talking <br><b>player2(lime)</b> talking";
-        SpannableString spannableString = new SpannableString(
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N ? Html.fromHtml(body)
-                        : Html.fromHtml(body, Html.FROM_HTML_MODE_LEGACY));
+        SpannableString spannableString = new SpannableString(Html.fromHtml(body, Html.FROM_HTML_MODE_LEGACY));
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getContext(),
                 "bettercrewlink-background-id")
