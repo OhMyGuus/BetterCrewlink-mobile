@@ -88,6 +88,7 @@ export class ConnectionController implements IConnectionController {
 	private ConnectionCheck() {
 		const recievedDataLength = Date.now() - this.lastPing;
 		if (this.connectionState !== ConnectionState.disconnected && this.lastPing !== -1 && recievedDataLength > 2000) {
+			this.currentHost = undefined;
 			let index = 0;
 			const nextIndex = this.mobileHosts.size > this.lastHostIndex ? this.lastHostIndex + 1 : 0;
 			this.mobileHosts.forEach((mobiledata, from) => {
@@ -136,6 +137,7 @@ export class ConnectionController implements IConnectionController {
 		this.amongusUsername = username;
 		this.deviceID = deviceID;
 		this.mobileHosts.clear();
+		this.currentHost = undefined;
 		this.natFix = natFix;
 		this.currentGameState = undefined;
 		this.oldGameState = undefined;
@@ -398,6 +400,10 @@ export class ConnectionController implements IConnectionController {
 			}
 
 			if (Object.prototype.hasOwnProperty.call(data, 'gameState')) {
+				if (this.currentHost && from !== this.currentHost) {
+					return;
+				}
+				this.currentHost = from;
 				this.lastPing = Date.now();
 				this.updateConnectingStage(ConnectingStage.waitingForHostToEnable);
 				const mobiledata = data as unknown as MobileData;
