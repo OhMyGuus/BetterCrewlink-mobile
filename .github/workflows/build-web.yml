@@ -61,12 +61,14 @@ jobs:
       - name: Package distributable zip
         run: (cd www && zip -qr "../bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}.zip" .)
 
+      # Upload the zip itself, not the raw www/ tree: upload-artifact otherwise wraps
+      # everything in another zip, which would nest a zip inside a zip (and would ship
+      # every file twice). With archive: false the single file is stored as-is and its
+      # file name becomes the artifact name, so the download is the distributable zip.
       - name: Upload web build
         uses: actions/upload-artifact@v7
         with:
-          name: bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}
-          path: |
-            www/
-            bettercrewlink-mobile-web-v*.zip
+          path: bettercrewlink-mobile-web-v*.zip
+          archive: false
           if-no-files-found: error
           retention-days: 30
