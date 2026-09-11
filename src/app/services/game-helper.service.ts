@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { IDeviceInfo } from './smallInterfaces';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';import { Platform } from '@ionic/angular';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
+import { VoiceController } from './voice-controller.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { SettingsService } from './settings.service';
@@ -16,6 +17,7 @@ interface NativeBridgeEvent extends Event {
 })
 export class GameHelperService {
 	microphones: IDeviceInfo[] = [];
+	speakers: IDeviceInfo[] = [];
 	IsMobile = false;
 	error: string;
 	events: EventEmitterO = new EventEmitterO();
@@ -27,6 +29,7 @@ export class GameHelperService {
 		private androidPermissions: AndroidPermissions,
 		public platform: Platform,
 		public cManager: ConnectionController,
+		public voiceController: VoiceController,
 		private backgroundMode: BackgroundMode,
 		private settings: SettingsService
 	) {
@@ -50,6 +53,7 @@ export class GameHelperService {
 
 	connect() {
 		this.disconnect(false);
+		this.error = undefined;
 
 		this.requestPermissions().then(async (haspermissions) => {
 			if (!haspermissions) {
@@ -86,6 +90,7 @@ export class GameHelperService {
 			}
 		}
 		this.cManager.disconnect(true);
+		this.voiceController.reset();
 	}
 
 	muteMicrophone() {
@@ -112,7 +117,10 @@ export class GameHelperService {
 	}
 
 	getError(): string {
-		return this.error;
+		// ConnectionController.error carries game-state/orchestration failures (e.g. from
+		// VoiceController's onGameState); this.error carries permission/microphone failures set
+		// directly here. Both land on the same error screen, so both must be readable from it.
+		return this.cManager.error ?? this.error;
 	}
 
 	async requestPermissions(): Promise<boolean> {
@@ -179,24 +187,33 @@ export class GameHelperService {
 	load() {
 		console.log('load??');
 
-		this.cManager.events.on('onchange', () => {
+		this.cManager.events.on('onChange', () => {
 			this.updateViews();
 		});
 
-		this.cManager.audioController.getDevices(this.IsMobile).then((devices) => {
-			this.microphones = devices;
-			if (!this.microphones.some((o) => o.id === this.settings.get().selectedMicrophone?.id)) {
-				this.settings.get().selectedMicrophone = devices.filter((o) => o.kind === 'audioinput')[0] ?? {
-					id: 0,
-					label: 'default',
-					deviceId: 'default',
-					kind: 'audioinput',
-				};
-			} else {
-				this.settings.get().selectedMicrophone = this.microphones.find(
-					(o) => o.id === this.settings.get().selectedMicrophone.id
-				);
-			}
+		// Stored settings (including the previously selected microphone) must be in place before
+		// devices are enumerated and a default is picked - otherwise the fresh device list's
+		// positional id would be matched against (and overwrite) the persisted selection, or the
+		// hardcoded default would win before the stored value ever arrived.
+		void this.settings.load().then(() => {
+			this.cManager.audioController.getDevices().then((devices) => {
+				this.microphones = devices.filter((o) => o.kind === 'audioinput');
+				this.speakers = devices.filter((o) => o.kind === 'audiooutput');
+				const storedMicrophone = this.settings.get().selectedMicrophone;
+				if (!this.microphones.some((o) => o.id === storedMicrophone?.id)) {
+					this.settings.get().selectedMicrophone = this.microphones[0] ?? {
+						id: 0,
+						label: 'default',
+						deviceId: 'default',
+						kind: 'audioinput',
+					};
+				} else {
+					this.settings.get().selectedMicrophone = this.microphones.find(
+						(o) => o.id === storedMicrophone.id
+					);
+				}
+				this.updateViews();
+			});
 		});
 
 		// this.connect();
@@ -233,10 +250,10 @@ export class GameHelperService {
 			}
 			setTimeout(
 				() => {
-					const sElement = this.cManager.getSocketElementByClientID(clientId);
-					if (sElement && sElement.player && sElement.talking === talking) {
+					const player = this.cManager.getPlayer(clientId);
+					if (player && this.voiceController.isTalking(clientId) === talking) {
 						BetterCrewlinkNativeService.showTalking({
-							color: sElement.player?.colorId,
+							color: player.colorId,
 							talking,
 						});
 					}

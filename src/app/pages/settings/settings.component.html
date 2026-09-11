@@ -101,15 +101,21 @@
 			</ion-item>
 			<hr />
 			@switch (gameHelper.cManager.connectionState) {
+				@case (1) {
+					<ion-item color="secondary">
+						<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
+						<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
+					</ion-item>
+				}
+				@case (2) {
+					<ion-item color="secondary">
+						<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
+						<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
+					</ion-item>
+				}
 				@default {
 					<ion-item color="secondary">
 						<ion-button (click)="gameHelper.connect()" [routerLink]="['/game']">Connect</ion-button>
-					</ion-item>
-				}
-				@case (1 || 2) {
-					<ion-item color="secondary">
-						<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
-						<ion-button (click)="gameHelper.disconnect()">disconnect</ion-button>
 					</ion-item>
 				}
 			}
