@@ -1,0 +1,62 @@
+name: Build web
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - 'feature/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    name: Build web bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # .nvmrc pins the Node version CI must match (package.json requires >=24.15.0).
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Sourced from the same environment file the production build swaps in, so the
+      # artifact name always matches the version baked into the bundle.
+      - name: Read app version
+        id: version
+        run: |
+          VERSION=$(node -p "require('fs').readFileSync('src/environments/environment.prod.ts','utf8').match(/appVersion:\s*'([^']+)'/)[1]")
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build web (production)
+        run: npx ng build --configuration=production --source-map=false
+
+      # Same layout as the hand-built bettercrewlink-mobile-web-v<version>.zip release
+      # artifact: the contents of www/ at the zip root.
+      - name: Package distributable zip
+        run: (cd www && zip -qr "../bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}.zip" .)
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}
+          path: |
+            www/
+            bettercrewlink-mobile-web-v*.zip
+          if-no-files-found: error
+          retention-days: 30
