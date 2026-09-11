@@ -14,7 +14,11 @@
     "pretty": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    // Don't auto-include every @types package found in node_modules up the tree: this
+    // plugin still compiles with TypeScript 4.1 (its own devDependency), and newer
+    // @types packages in the root node_modules use syntax it can't parse.
+    "types": []
   },
   "files": ["src/index.ts"]
 }
