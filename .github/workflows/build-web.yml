@@ -56,19 +56,13 @@ jobs:
       - name: Build web (production)
         run: npx ng build --configuration=production --source-map=false
 
-      # Same layout as the hand-built bettercrewlink-mobile-web-v<version>.zip release
-      # artifact: the contents of www/ at the zip root.
-      - name: Package distributable zip
-        run: (cd www && zip -qr "../bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}.zip" .)
-
-      # Upload the zip itself, not the raw www/ tree: upload-artifact otherwise wraps
-      # everything in another zip, which would nest a zip inside a zip (and would ship
-      # every file twice). With archive: false the single file is stored as-is and its
-      # file name becomes the artifact name, so the download is the distributable zip.
+      # upload-artifact builds the zip itself. The recursive wildcard drops the leading
+      # "www/" directory, so the artifact unzips to the same layout as the release zip
+      # (index.html, chunk-*.js, assets/ ... at the root) and nothing is double-zipped.
       - name: Upload web build
         uses: actions/upload-artifact@v7
         with:
-          path: bettercrewlink-mobile-web-v*.zip
-          archive: false
+          name: bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}
+          path: www/**/*
           if-no-files-found: error
           retention-days: 30
