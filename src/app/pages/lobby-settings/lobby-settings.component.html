@@ -1,0 +1,67 @@
+<ion-content color="secondary">
+	<div>
+		<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
+			<ion-list-header lines="full" color="secondary">
+				<ion-label fixed class="fixedLabel"> Current Lobby Settings </ion-label>
+			</ion-list-header>
+			@if (!connected) {
+				<ion-item color="secondary">
+					<ion-label class="ion-text-wrap">
+						No game data yet. Connect to a lobby and these settings will appear, read-only, as
+						reported by the PC host.
+					</ion-label>
+				</ion-item>
+			} @else {
+				<ion-item color="secondary">
+					<ion-col size="5" class="settingLabelCol">
+						<ion-label>Active PC host</ion-label>
+					</ion-col>
+					<ion-col size="7">
+						<ion-label class="ion-text-wrap">{{ activeHostName ?? 'Unknown' }}</ion-label>
+					</ion-col>
+				</ion-item>
+				<ion-item color="secondary">
+					<ion-col size="5" class="settingLabelCol">
+						<ion-label>Game phase</ion-label>
+					</ion-col>
+					<ion-col size="7">
+						<ion-label>{{ gameStateLabel() }}</ion-label>
+					</ion-col>
+				</ion-item>
+				<ion-item color="secondary">
+					<ion-col size="5" class="settingLabelCol">
+						<ion-label>Maximum voice distance</ion-label>
+					</ion-col>
+					<ion-col size="7">
+						<ion-label>{{ maxDistance() ?? '?' }}</ion-label>
+					</ion-col>
+				</ion-item>
+				@for (toggle of toggles(); track toggle.label) {
+					<ion-item color="secondary">
+						<ion-col size="7" class="settingLabelCol">
+							<ion-label>{{ toggle.label }}</ion-label>
+						</ion-col>
+						<ion-col size="5">
+							<ion-label>{{ toggle.value ? 'On' : 'Off' }}</ion-label>
+						</ion-col>
+					</ion-item>
+				}
+				<ion-item color="secondary">
+					<ion-label class="ion-text-wrap">
+						Lobby settings are owned by the PC host running BetterCrewLink. Mobile can only
+						display them - ask the host to change these in their own BetterCrewLink settings.
+					</ion-label>
+				</ion-item>
+				@if (localPlayerIsGameHost) {
+					<ion-item color="danger">
+						<ion-label class="ion-text-wrap">
+							Warning: the player matched to this phone is the Among Us game host. Mobile
+							cannot publish lobby settings itself, so another desktop player in the lobby
+							must have Mobile Host enabled to provide this data.
+						</ion-label>
+					</ion-item>
+				}
+			}
+		</ion-list>
+	</div>
+</ion-content>

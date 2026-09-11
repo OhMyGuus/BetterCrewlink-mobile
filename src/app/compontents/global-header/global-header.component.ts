@@ -5,7 +5,7 @@ import { GameHelperService } from '../../services/game-helper.service';
 	selector: 'app-header',
 	templateUrl: './global-header.component.html',
 	styleUrls: ['./global-header.component.scss'],
-	changeDetection: ChangeDetectionStrategy.Eager,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
 export class GlobalHeaderComponent {

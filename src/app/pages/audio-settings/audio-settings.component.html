@@ -1,0 +1,155 @@
+<ion-content color="secondary">
+	<div>
+		<ion-list lines="full" class="ion-no-margin" style="background-color: #25232a">
+			<ion-list-header lines="full" color="secondary">
+				<ion-label fixed class="fixedLabel"> Audio settings </ion-label>
+			</ion-list-header>
+			@if (gameHelper.speakers.length > 0) {
+				<ion-item>
+					<ion-col size="5" class="settingLabelCol">
+						<ion-label>Speaker</ion-label>
+					</ion-col>
+					<ion-col size="7" class="settingInputCol">
+						<ion-select
+							[(ngModel)]="getSettings().selectedSpeaker"
+							[compareWith]="compareFn"
+							(ionChange)="onSpeakerChange()"
+							class="full-width-select"
+						>
+							<ion-select-option [value]="undefined">Default</ion-select-option>
+							@for (speaker of gameHelper.speakers; track speaker) {
+								<ion-select-option [value]="speaker"> {{ speaker.label }}</ion-select-option>
+							}
+						</ion-select>
+					</ion-col>
+				</ion-item>
+			} @else {
+				<ion-item color="secondary">
+					<ion-label class="ion-text-wrap">
+						Output-device selection is not supported on this device; audio plays through the
+						system default.
+					</ion-label>
+				</ion-item>
+			}
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Echo cancellation</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox [(ngModel)]="getSettings().echoCancellation" (ionChange)="onSettingsChange()"></ion-checkbox>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Noise suppression</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox [(ngModel)]="getSettings().noiseSuppression" (ionChange)="onSettingsChange()"></ion-checkbox>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Automatic gain control</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox [(ngModel)]="getSettings().autoGainControl" (ionChange)="onAudioSettingChange()"></ion-checkbox>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Microphone gain enabled</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox
+						[disabled]="getSettings().autoGainControl"
+						[(ngModel)]="getSettings().microphoneGainEnabled"
+						(ionChange)="onAudioSettingChange()"
+					></ion-checkbox>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Microphone gain</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-range
+						[disabled]="!getSettings().microphoneGainEnabled || getSettings().autoGainControl"
+						[(ngModel)]="getSettings().microphoneGain"
+						(ionChange)="onAudioSettingChange()"
+						min="0"
+						max="200"
+					></ion-range>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Mic sensitivity enabled</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox
+						[disabled]="getSettings().autoGainControl"
+						[(ngModel)]="getSettings().micSensitivityEnabled"
+						(ionChange)="onAudioSettingChange()"
+					></ion-checkbox>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Mic sensitivity</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-range
+						[disabled]="!getSettings().micSensitivityEnabled || getSettings().autoGainControl"
+						[(ngModel)]="getSettings().micSensitivity"
+						(ionChange)="onAudioSettingChange()"
+						min="0"
+						max="1"
+						step="0.01"
+					></ion-range>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Master volume</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-range [(ngModel)]="getSettings().masterVolume" (ionChange)="onSettingsChange()" min="0" max="200"></ion-range>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Crew volume as ghost</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-range
+						[(ngModel)]="getSettings().crewVolumeAsGhost"
+						(ionChange)="onSettingsChange()"
+						min="0"
+						max="200"
+					></ion-range>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Ghost volume as impostor</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-range
+						[(ngModel)]="getSettings().ghostVolumeAsImpostor"
+						(ionChange)="onSettingsChange()"
+						min="0"
+						max="100"
+					></ion-range>
+				</ion-col>
+			</ion-item>
+			<ion-item>
+				<ion-col size="7" class="settingLabelCol">
+					<ion-label>Spatial audio</ion-label>
+				</ion-col>
+				<ion-col size="5" class="settingInputCol">
+					<ion-checkbox [(ngModel)]="getSettings().enableSpatialAudio" (ionChange)="onSettingsChange()"></ion-checkbox>
+				</ion-col>
+			</ion-item>
+		</ion-list>
+	</div>
+</ion-content>

@@ -1,19 +1,31 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { SettingsService } from './services/settings.service';
+import { environment } from '../environments/environment';
 @Component({
 	selector: 'app-root',
 	templateUrl: 'app.component.html',
 	styleUrls: ['app.component.scss'],
-	changeDetection: ChangeDetectionStrategy.Eager,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+	readonly appVersion = environment.appVersion;
 	public selectedIndex = 0;
 	public appPages = [
 		{
 			title: 'game',
 			url: '/game',
 			icon: 'home',
+		},
+		{
+			title: 'lobby settings',
+			url: '/lobby-settings',
+			icon: 'options',
+		},
+		{
+			title: 'audio settings',
+			url: '/audio-settings',
+			icon: 'volume-high',
 		},
 		{
 			title: 'settings',
@@ -29,7 +41,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	async ngOnInit() {
 		console.log('AppComponent initialized');
-		this.settingsService.load();
+		await this.settingsService.load();
 	}
 
 	ngAfterViewInit() {

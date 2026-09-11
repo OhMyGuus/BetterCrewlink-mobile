@@ -78,21 +78,30 @@
 								</div>
 							</ion-col>
 						</ion-row>
+						@if (canUseImpostorRadio()) {
+							<ion-row class="ion-justify-content-center">
+								<ion-button
+									color="danger"
+									(pointerdown)="startRadio()"
+									(pointerup)="stopRadio()"
+									(pointercancel)="stopRadio()"
+									(pointerleave)="stopRadio()"
+								>
+									<ion-icon slot="start" name="radio-outline"></ion-icon>
+									Hold to use impostor radio
+								</ion-button>
+							</ion-row>
+						}
 						<ion-row class="playerGrid playersGrid">
-							@for (item of getPlayers(); track item) {
-								@if (item.player) {
-									<ion-col size="4" class="testColumn">
-										@if (item.player) {
-											<app-avatar
-												settings="item.socketId"
-												[settings]="item.settings"
-												[isDead]="item.isDead"
-												[player]="item.player"
-												[talking]="item.talking && item.audible"
-											></app-avatar>
-										}
-									</ion-col>
-								}
+							@for (item of getPlayers(); track item.player.clientId) {
+								<ion-col size="4" class="testColumn">
+									<app-avatar
+										[settings]="item.settings"
+										[isDead]="item.isDead"
+										[player]="item.player"
+										[talking]="item.talking && item.audible"
+									></app-avatar>
+								</ion-col>
 							}
 						</ion-row>
 					</ion-grid>

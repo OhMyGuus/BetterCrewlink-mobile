@@ -10,7 +10,8 @@
     "test": "ng test",
     "dev": "ionic serve --external --ssl --configuration=development",
     "build": "ionic capacitor build android --prod",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "check:drift": "node scripts/check-schema-drift.mjs"
   },
   "private": true,
   "engines": {
@@ -41,8 +42,8 @@
     "cordova-plugin-device": "^2.0.3",
     "events": "^3.3.0",
     "jetifier": "^1.6.6",
+    "path-intersection": "^4.1.0",
     "rxjs": "~7.8.0",
-    "simple-peer": "^9.9.3",
     "socket.io-client": "^4.8.3",
     "tslib": "^2.0.0",
     "zone.js": "~0.16.2"
