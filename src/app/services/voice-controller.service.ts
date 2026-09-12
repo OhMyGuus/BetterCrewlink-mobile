@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AmongUsState, GameState, Player } from '../common/AmongUsState';
+import { AmongUsState, GameState, numberStringMap, Player } from '../common/AmongUsState';
 import { ILobbySettings } from '../common/ISettings';
-import { PlayerSetting } from './smallInterfaces';
+import { PlayerConnectionState, PlayerSetting } from './smallInterfaces';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
 import { MobileHostService } from './mobile-host.service';
 import { SettingsService } from './settings.service';
@@ -25,6 +25,8 @@ export interface RenderablePlayer {
 	isDead: boolean;
 	talking: boolean;
 	audible: boolean;
+	/** Desktop-parity presence indicator shown as a badge on the avatar. */
+	connectionState: PlayerConnectionState;
 }
 
 /** Strips rich-text tags (desktop's `name.split(/<.*?>/).join('')`) and normalizes whitespace/case. */
@@ -197,9 +199,23 @@ export class VoiceController {
 		}
 
 		this.updateMaxDistance(state, newLocalPlayer);
+		this.updatePlayerDeadStates(state, newLocalPlayer);
 		this.updatePeerAudio(state, newLocalPlayer);
 		this.updateImpostorRadioTransmission();
 		this.cleanupImpostorRadio(state, newLocalPlayer);
+	}
+
+	/**
+	 * Latches the dead flag for every other player, including ones with no voice peer, so the
+	 * player grid can render disconnected players with the correct alive/dead sprite. This used
+	 * to live in `updatePeerAudio`, which only visits players that have a peer.
+	 */
+	private updatePlayerDeadStates(state: AmongUsState, myPlayer: Player): void {
+		for (const player of state.players) {
+			if (player.clientId === myPlayer.clientId) continue;
+			const playerState = this.getOrCreatePlayerState(player.clientId);
+			playerState.isDead = this.computeLatchedDead(playerState.isDead, player.isDead, myPlayer);
+		}
 	}
 
 	private updateMaxDistance(state: AmongUsState, myPlayer: Player): void {
@@ -243,7 +259,6 @@ export class VoiceController {
 
 			handledPeerIds.push(peerId);
 			const playerState = this.getOrCreatePlayerState(player.clientId);
-			playerState.isDead = this.computeLatchedDead(playerState.isDead, player.isDead, myPlayer);
 			if (!playerState.settings) {
 				playerState.settings = this.settingsService.getPlayerSettings(playerSettingsKey(player));
 			}
@@ -280,21 +295,23 @@ export class VoiceController {
 		audioController.silencePeersExcept(handledPeerIds);
 	}
 
-	/** Renders the player grid from `state.players`, cross-referenced with this controller's audio/talking state. */
+	/**
+	 * Renders the player grid from `state.players`, cross-referenced with this controller's
+	 * audio/talking state. Every other player is returned - including ones with no voice
+	 * connection - so the grid matches desktop (which renders the full lobby and flags each
+	 * player with a Wi-Fi/link badge). Only the *badge* depends on the peer: disconnected
+	 * players still render, they just aren't audible and never reach the native overlay
+	 * (which is driven solely by talking events from connected peers).
+	 */
 	public getRenderablePlayers(): RenderablePlayer[] {
 		const state = this.connectionController.currentGameState;
 		const myPlayer = this.connectionController.localPLayer;
 		if (!state?.players || !myPlayer) return [];
 
 		const playerSocketIds = this.connectionController.playerSocketIds;
-		const audioController = this.connectionController.audioController;
 
 		return state.players
-			.filter((player) => {
-				if (player.clientId === myPlayer.clientId) return false;
-				const peerId = playerSocketIds[player.clientId];
-				return peerId !== undefined && audioController.hasPeer(peerId);
-			})
+			.filter((player) => player.clientId !== myPlayer.clientId)
 			.map((player) => {
 				const playerState = this.getOrCreatePlayerState(player.clientId);
 				return {
@@ -303,9 +320,23 @@ export class VoiceController {
 					isDead: playerState.isDead,
 					talking: playerState.talking,
 					audible: playerState.audible,
+					connectionState: this.getPlayerConnectionState(player.clientId, playerSocketIds),
 				};
 			})
 			.sort((a, b) => a.player.colorId - b.player.colorId);
+	}
+
+	/**
+	 * Mirrors desktop VoiceView's per-player check:
+	 * `!connected ? 'disconnected' : audioConnected[peer] ? 'connected' : 'novoice'`.
+	 * "Connected" means the voice server still lists a client whose `clientId` matches the
+	 * player; "novoice" means that client exists but no audio stream/peer is established.
+	 */
+	private getPlayerConnectionState(clientId: number, playerSocketIds: numberStringMap): PlayerConnectionState {
+		const peerId = playerSocketIds[clientId];
+		const connected = peerId !== undefined && this.connectionController.getClient(peerId)?.clientId === clientId;
+		if (!connected) return 'disconnected';
+		return this.connectionController.audioController.hasPeer(peerId) ? 'connected' : 'novoice';
 	}
 
 	// --- Impostor radio, ported from desktop v3.2.1 VoiceController.applyImpostorRadio/cleanupImpostorRadio. ---

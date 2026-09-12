@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../../common/AmongUsState';
-import { PlayerSetting } from '../../services/smallInterfaces';
+import { PlayerConnectionState, PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
 import { playerSettingsKey } from '../../services/voice-controller.service';
 
@@ -30,12 +30,21 @@ export class AvatarComponent {
 	@Input() talking: boolean;
 	@Input() isDead = false;
 	@Input() settings: PlayerSetting = undefined;
+	/** Desktop-parity presence badge: Wi-Fi off when disconnected, link off when there's no voice. */
+	@Input() connectionState: PlayerConnectionState = 'connected';
 	volumeOpen: boolean;
 	readonly MAXVOLUME = 500;
 	constructor(private settingsService: SettingsService) {}
 
 	clickable() {
 		return this.settings !== undefined;
+	}
+
+	/** Same two badges (and colors) as desktop Avatar.tsx; `connected` renders no badge. */
+	connectionIcon(): string | undefined {
+		if (this.connectionState === 'disconnected') return 'assets/icons/wifi-off.svg';
+		if (this.connectionState === 'novoice') return 'assets/icons/link-off.svg';
+		return undefined;
 	}
 
 	// Desktop's cosmetic IDs are strings (mod-support); mobile's numeric asset tables below

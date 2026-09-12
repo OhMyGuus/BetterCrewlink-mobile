@@ -8,6 +8,14 @@ export interface PlayerSetting {
 	isMuted: boolean;
 }
 
+/**
+ * Replicates desktop's per-player presence indicator (Avatar's `connectionState`):
+ * - `disconnected`: the player has no client on the voice server at all (Wi-Fi off icon).
+ * - `novoice`: the player is on the voice server but no audio peer/stream is established (link off icon).
+ * - `connected`: the player's voice connection is fully up (no badge).
+ */
+export type PlayerConnectionState = 'connected' | 'novoice' | 'disconnected';
+
 export interface Client {
 	playerId: number;
 	clientId: number;
