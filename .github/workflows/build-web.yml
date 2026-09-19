@@ -1,0 +1,68 @@
+name: Build web
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - 'feature/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    name: Build web bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # .nvmrc pins the Node version CI must match (package.json requires >=24.15.0).
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            plugins/bcl-mobile-overlay/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # bcl-mobile-overlay is a file: dependency whose dist/ is gitignored, so a fresh
+      # checkout has no entry point for the import in game-helper.service.ts.
+      - name: Build local plugin (bcl-mobile-overlay)
+        run: |
+          npm ci --prefix plugins/bcl-mobile-overlay
+          npm --prefix plugins/bcl-mobile-overlay run build
+
+      # Sourced from the same environment file the production build swaps in, so the
+      # artifact name always matches the version baked into the bundle.
+      - name: Read app version
+        id: version
+        run: |
+          VERSION=$(node -p "require('fs').readFileSync('src/environments/environment.prod.ts','utf8').match(/appVersion:\s*'([^']+)'/)[1]")
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build web (production)
+        run: npx ng build --configuration=production --source-map=false
+
+      # upload-artifact builds the zip itself. The recursive wildcard drops the leading
+      # "www/" directory, so the artifact unzips to the same layout as the release zip
+      # (index.html, chunk-*.js, assets/ ... at the root) and nothing is double-zipped.
+      - name: Upload web build
+        uses: actions/upload-artifact@v7
+        with:
+          name: bettercrewlink-mobile-web-v${{ steps.version.outputs.value }}
+          path: www/**/*
+          if-no-files-found: error
+          retention-days: 30
