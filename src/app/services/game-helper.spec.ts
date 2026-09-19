@@ -38,7 +38,7 @@ describe('connectionStageLabel', () => {
 			'Searching for bettercrewlink PC players in lobby: ABCD'
 		);
 		expect(connectionStageLabel(ConnectingStage.WaitingForGameData, ctx())).toBe(
-			'Waiting to recieve gamedata from player'
+			'Waiting to receive gamedata from player'
 		);
 		expect(connectionStageLabel(ConnectingStage.FullyConnected, ctx())).toBe('Connected to the game...');
 		expect(connectionStageLabel(99 as ConnectingStage, ctx())).toBe('unkown state 99');

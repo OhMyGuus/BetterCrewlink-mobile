@@ -39,7 +39,7 @@ export function connectionStageLabel(
 		case ConnectingStage.waitingForHostToEnable:
 			return 'Waiting for a PC player to respond';
 		case ConnectingStage.WaitingForGameData:
-			return 'Waiting to recieve gamedata from player';
+			return 'Waiting to receive gamedata from player';
 		case ConnectingStage.waitingForYouToJoin: {
 			const previousState = ctx.oldGameState ? GAME_STATE_NAMES[ctx.oldGameState.gameState] : undefined;
 			return `Waiting for you to join with the name ${ctx.amongusUsername} --> ${previousState ?? 'UNKNOWN'}`;
