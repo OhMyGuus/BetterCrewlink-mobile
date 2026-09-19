@@ -39,11 +39,17 @@
 .volumeslider-1 {
 	position: absolute;
 	width: 90%;
+	// Without this, the range and the mute button stack as block-level siblings instead of
+	// sharing one row, and the button spills out below the (fixed-height) .volumeslider pill.
+	display: flex;
+	align-items: center;
 }
 .volumeSliderThingy {
 	padding: 0px;
 	margin-top: -5px;
 	margin-left: 10px;
+	flex: 1;
+	min-width: 0;
 }
 
 .base {

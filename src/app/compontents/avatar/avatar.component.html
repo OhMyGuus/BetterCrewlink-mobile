@@ -1,6 +1,6 @@
 <div class="avatarBase">
 	@if (this.volumeOpen) {
-		<div class="volumeslider" tabindex="0" (mouseout)="openVolume(false)" (blur)="openVolume(false)">
+		<div class="volumeslider" tabindex="0" (mouseleave)="openVolume(false)" (blur)="openVolume(false)">
 			<div class="volumeslider-1">
 				<ion-range
 					class="volumeSliderThingy"
@@ -107,8 +107,8 @@
 			/>
 		}
 		@if (connectionIcon(); as icon) {
-			<div class="connectionBadge" [class.novoice]="connectionState === 'novoice'">
-				<img [src]="icon" alt="" />
+			<div class="connectionBadge noselect" [class.novoice]="connectionState === 'novoice'">
+				<img [src]="icon" class="no-drag-img" alt="" />
 			</div>
 		}
 	</div>

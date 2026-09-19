@@ -3,7 +3,7 @@
 		@switch (gameHelper.cManager.connectionState) {
 			@default {
 				<ion-row class="ion-justify-content-center">
-					<p style="text-align: center"><b>Please go to the settings page to setup Crewlink</b></p>
+					<p style="text-align: center"><b>Please go to the settings page to setup BetterCrewlink</b></p>
 				</ion-row>
 				<ion-row class="ion-justify-content-center">
 					<ion-button [routerLink]="['/settings']">Settings</ion-button>
@@ -21,7 +21,7 @@
 					<p style="text-align: center">
 						<b
 							>Please make sure at least one PC player is in the lobby, with "Mobile Host" enabled on
-							Crewlink</b
+							BetterCrewlink</b
 						>
 					</p>
 					<ion-row class="ion-justify-content-center">
@@ -82,6 +82,16 @@
 								</div>
 							</ion-col>
 						</ion-row>
+						<ion-row class="playerGrid ion-justify-content-start connectionButtons">
+							<ion-button size="small" fill="outline" color="light" (click)="gameHelper.connect()">
+								<ion-icon slot="start" name="refresh-outline"></ion-icon>
+								Refresh
+							</ion-button>
+							<ion-button size="small" fill="outline" color="danger" (click)="gameHelper.disconnect()">
+								<ion-icon slot="start" name="close-circle-outline"></ion-icon>
+								Disconnect
+							</ion-button>
+						</ion-row>
 						@if (canUseImpostorRadio()) {
 							<ion-row class="ion-justify-content-center">
 								<ion-button
@@ -116,12 +126,3 @@
 		}
 	</ion-grid>
 </ion-content>
-
-@if (gameHelper.cManager.connectionState === 2) {
-	<div class="testButtons">
-		<ion-row>
-			<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
-			<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
-		</ion-row>
-	</div>
-}
