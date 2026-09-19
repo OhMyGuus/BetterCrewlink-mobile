@@ -46,33 +46,31 @@
 	margin-left: 10px;
 }
 
-.skin {
-	top: calc(33% + 22%);
-	width: 105%;
-	z-index: 3;
-	position: absolute;
-	left: -7px;
-}
-
 .base {
 	width: 105%;
+	// Ionic's global `img { max-width: 100% }` reset otherwise clamps this below its intended
+	// width, which throws off every cosmetic layered on top (they're positioned assuming the
+	// body renders at full scale).
+	max-width: none;
 	position: absolute;
 	top: 22%;
 	left: -7px;
 	z-index: 2;
 }
 
-.hat {
-	cursor: pointer;
+/* Hats, visors and skins are positioned from the shared hat collection's metadata (desktop
+   parity), so this class only supplies the layer defaults; top/left/width/z-index come from
+   CosmeticsService. Legacy numeric sprites use the same class with their bundled dimensions. */
+.cosmetic {
 	position: absolute;
 	display: block;
-	left: -6px;
-	top: -11%;
+	pointer-events: none;
 	z-index: 3;
-	width: 100%;
-}
-.backlayerd-hat {
-	z-index: 1;
+	// Same Ionic `img` reset as `.base`: without this, hats/visors/skins render at 100% width
+	// instead of their intended (often >100%) width, and since their top/left offsets are
+	// calibrated against the intended box size, the clamp makes them appear detached from the
+	// avatar instead of sitting on the head.
+	max-width: none;
 }
 
 .avatarBase {

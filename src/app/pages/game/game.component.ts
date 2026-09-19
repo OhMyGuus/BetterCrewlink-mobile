@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrateg
 import { GameHelperService } from '../../services/game-helper.service';
 import { IDeviceInfo } from '../../services/smallInterfaces';
 import { GameState } from '../../common/AmongUsState';
+import { ModsType } from '../../common/Mods';
 
 @Component({
 	selector: 'app-game',
@@ -24,6 +25,11 @@ export class GameComponent implements OnInit, OnDestroy {
 
 	getPlayers() {
 		return this.gameHelper.voiceController.getRenderablePlayers();
+	}
+
+	/** The lobby's mod, forwarded to each avatar so mod-specific cosmetics resolve. */
+	getMod(): ModsType {
+		return this.gameHelper.cManager.currentGameState?.mod ?? 'NONE';
 	}
 
 	canUseImpostorRadio(): boolean {

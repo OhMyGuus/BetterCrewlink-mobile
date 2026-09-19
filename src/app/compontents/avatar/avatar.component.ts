@@ -1,21 +1,11 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Player } from '../../common/AmongUsState';
+import { ModsType } from '../../common/Mods';
 import { PlayerConnectionState, PlayerSetting } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
+import { CosmeticRender, CosmeticsService, CosmeticType } from '../../services/cosmetics.service';
 import { playerSettingsKey } from '../../services/voice-controller.service';
-
-const hatOffsets: Record<number, number | undefined> = {
-	7: -50,
-	21: -50,
-	28: -50,
-	35: -50,
-	77: -50,
-	90: -50,
-	94: -15,
-	103: -50,
-};
-
-const coloredHats: number[] = [77, 90];
 
 @Component({
 	selector: 'app-avatar',
@@ -24,17 +14,33 @@ const coloredHats: number[] = [77, 90];
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
-export class AvatarComponent {
-	backLayerHats = new Set([39, 4, 6, 15, 29, 42, 75, 85, 102, 105, 106, 104, 103]);
+export class AvatarComponent implements OnDestroy {
 	@Input() player: Player;
 	@Input() talking: boolean;
 	@Input() isDead = false;
 	@Input() settings: PlayerSetting = undefined;
 	/** Desktop-parity presence badge: Wi-Fi off when disconnected, link off when there's no voice. */
 	@Input() connectionState: PlayerConnectionState = 'connected';
+	/** The lobby's mod, so mod-specific hats/skins/visors resolve like they do on desktop. */
+	@Input() mod: ModsType = 'NONE';
 	volumeOpen: boolean;
 	readonly MAXVOLUME = 500;
-	constructor(private settingsService: SettingsService) {}
+	private readonly versionSubscription: Subscription;
+
+	constructor(
+		private settingsService: SettingsService,
+		private cosmetics: CosmeticsService,
+		private changeDetectorRef: ChangeDetectorRef
+	) {
+		// hats.json (and any recoloured sprite) arrives asynchronously, after this component was
+		// first checked; re-check on each version bump so OnPush avatars pick the cosmetics up.
+		this.versionSubscription = this.cosmetics.version$.subscribe(() => this.changeDetectorRef.markForCheck());
+		this.cosmetics.initializeHats();
+	}
+
+	ngOnDestroy(): void {
+		this.versionSubscription.unsubscribe();
+	}
 
 	clickable() {
 		return this.settings !== undefined;
@@ -47,33 +53,10 @@ export class AvatarComponent {
 		return undefined;
 	}
 
-	// Desktop's cosmetic IDs are strings (mod-support); mobile's numeric asset tables below
-	// only cover the pre-3.2 numeric ID range. Numeric hosts still coerce cleanly here; a
-	// modern string ID coerces to NaN and falls through to the "no cosmetic" defaults.
-	// Full string-ID/asset support is tracked separately (P1 cosmetics).
-	hatIdNum(): number {
-		return Number(this.player.hatId);
-	}
-	skinIdNum(): number {
-		return Number(this.player.skinId);
-	}
-	getHatY(): string {
-		return `${(hatOffsets[this.hatIdNum()] || -33) + 22}%`;
-	}
-	getHatImage(): string {
-		const hatIdNum = this.hatIdNum();
-		// Colored hat variants only exist for colorIds 0-11; fall back to the plain sprite
-		// beyond that instead of requesting a nonexistent file (which would hide the hat).
-		if (coloredHats.includes(hatIdNum) && this.player.colorId <= 11) {
-			return `${hatIdNum}-${this.player.colorId}`;
-		}
-		return `${hatIdNum}`;
-	}
-	isBackLayerHat(): boolean {
-		return this.backLayerHats.has(this.hatIdNum());
-	}
-
-	/** Body sprite, with a fallback for out-of-range colors so the avatar never renders broken. */
+	/**
+	 * Body sprite, with a fallback for out-of-range colors so the avatar never renders broken.
+	 * Desktop generates these from the game's colour table; mobile bundles pre-rendered ones.
+	 */
 	getBodyImage(): string {
 		const colorId = Number(this.player.colorId);
 		const alive = colorId >= 0 && colorId <= 17 ? colorId : 0;
@@ -85,8 +68,31 @@ export class AvatarComponent {
 		(event.currentTarget as HTMLImageElement).style.display = 'none';
 	}
 
+	getHat(): CosmeticRender | undefined {
+		return this.resolveCosmetic(CosmeticType.hat, this.player?.hatId);
+	}
+
+	getHatBack(): CosmeticRender | undefined {
+		return this.resolveCosmetic(CosmeticType.hatBack, this.player?.hatId);
+	}
+
+	getVisor(): CosmeticRender | undefined {
+		return this.resolveCosmetic(CosmeticType.visor, this.player?.visorId);
+	}
+
+	getSkin(): CosmeticRender | undefined {
+		return this.resolveCosmetic(CosmeticType.skin, this.player?.skinId);
+	}
+
+	/** Dead players lose their cosmetics, exactly like desktop's `display: isAlive ? ...`. */
+	private resolveCosmetic(type: CosmeticType, id: string | undefined): CosmeticRender | undefined {
+		if (this.isDead || !this.player) {
+			return undefined;
+		}
+		return this.cosmetics.getCosmeticRender(Number(this.player.colorId), type, id, this.mod ?? 'NONE');
+	}
+
 	openVolume(state = !this.volumeOpen) {
-		console.log(this.settings);
 		if (!this.settings) {
 			return;
 		}

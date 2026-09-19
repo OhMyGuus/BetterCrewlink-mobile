@@ -46,25 +46,60 @@
 				(error)="onBodyImageError($event)"
 				alt="{{ player.name }}"
 			/>
-			@if (!isDead && skinIdNum() > 0) {
+			@if (getSkin(); as skin) {
 				<img
-					src="assets/avatar/skins/{{ player.skinId }}.png"
-					class="skin no-drag-img"
+					[src]="skin.src"
+					class="cosmetic no-drag-img"
+					[style.top]="skin.top"
+					[style.left]="skin.left"
+					[style.width]="skin.width"
+					[style.z-index]="skin.zIndex"
 					style="display: none"
 					onload="this.style.display=''"
 					onerror="this.style.display='none'"
 					alt=""
 				/>
 			}
-
-			<!-- {overflow && <img src={coloredHats[`${hat}${color}`] || hats[hat]} ref={hatImg} className={classes.hat} />} -->
 		</div>
-		@if (!isDead && hatIdNum() > 0) {
+
+		<!-- Hat layers and visor sit outside the clipped body circle (desktop's non-overflow
+		     layout) so tall hats and ears can extend past the avatar's edge. -->
+		@if (getHatBack(); as hatBack) {
 			<img
-				src="assets/avatar/hats/{{ getHatImage() }}.png"
-				[style.top]="getHatY()"
-				[class]="isBackLayerHat() ? 'backlayerd-hat' : ''"
-				class="hat no-drag-img"
+				[src]="hatBack.src"
+				class="cosmetic no-drag-img"
+				[style.top]="hatBack.top"
+				[style.left]="hatBack.left"
+				[style.width]="hatBack.width"
+				[style.z-index]="hatBack.zIndex"
+				style="display: none"
+				onload="this.style.display=''"
+				onerror="this.style.display='none'"
+				alt=""
+			/>
+		}
+		@if (getHat(); as hat) {
+			<img
+				[src]="hat.src"
+				class="cosmetic no-drag-img"
+				[style.top]="hat.top"
+				[style.left]="hat.left"
+				[style.width]="hat.width"
+				[style.z-index]="hat.zIndex"
+				style="display: none"
+				onload="this.style.display=''"
+				onerror="this.style.display='none'"
+				alt=""
+			/>
+		}
+		@if (getVisor(); as visor) {
+			<img
+				[src]="visor.src"
+				class="cosmetic no-drag-img"
+				[style.top]="visor.top"
+				[style.left]="visor.left"
+				[style.width]="visor.width"
+				[style.z-index]="visor.zIndex"
 				style="display: none"
 				onload="this.style.display=''"
 				onerror="this.style.display='none'"

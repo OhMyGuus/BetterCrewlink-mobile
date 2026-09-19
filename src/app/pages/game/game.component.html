@@ -19,7 +19,10 @@
 						<b>{{ gameHelper.getConnectionStage() }}</b>
 					</p>
 					<p style="text-align: center">
-						**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**
+						<b
+							>Please make sure at least one PC player is in the lobby, with "Mobile Host" enabled on
+							Crewlink</b
+						>
 					</p>
 					<ion-row class="ion-justify-content-center">
 						<ion-button (click)="gameHelper.connect()">refresh</ion-button>
@@ -47,6 +50,7 @@
 									[isDead]="gameHelper.cManager.localPLayer.isDead"
 									[player]="gameHelper.cManager.localPLayer"
 									[talking]="gameHelper.localTalking()"
+									[mod]="getMod()"
 								></app-avatar>
 							</ion-col>
 							<ion-col size="4">
@@ -101,6 +105,7 @@
 										[player]="item.player"
 										[connectionState]="item.connectionState"
 										[talking]="item.talking && item.audible"
+										[mod]="getMod()"
 									></app-avatar>
 								</ion-col>
 							}
