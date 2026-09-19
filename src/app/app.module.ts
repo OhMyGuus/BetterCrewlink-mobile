@@ -10,6 +10,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { GameComponent } from './pages/game/game.component';
+import { LobbySettingsComponent } from './pages/lobby-settings/lobby-settings.component';
+import { AudioSettingsComponent } from './pages/audio-settings/audio-settings.component';
 import { FormsModule } from '@angular/forms';
 import { GlobalFooterComponent } from './compontents/global-footer/global-footer.component';
 import { GlobalHeaderComponent } from './compontents/global-header/global-header.component';
@@ -24,6 +26,8 @@ import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 		GlobalHeaderComponent,
 		SettingsComponent,
 		GameComponent,
+		LobbySettingsComponent,
+		AudioSettingsComponent,
 	],
 	imports: [
 		BrowserModule,

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { GameHelperService } from '../../services/game-helper.service';
 import { IDeviceInfo } from '../../services/smallInterfaces';
 import { SettingsService } from '../../services/settings.service';
@@ -10,10 +10,12 @@ import { SettingsService } from '../../services/settings.service';
 	selector: 'app-settings',
 	templateUrl: './settings.component.html',
 	styleUrls: ['./settings.component.scss'],
-	changeDetection: ChangeDetectionStrategy.Eager,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
+	private onChangeListener = () => this.changeDetectorRef.detectChanges();
+
 	constructor(
 		public gameHelper: GameHelperService,
 		private changeDetectorRef: ChangeDetectorRef,
@@ -29,8 +31,9 @@ export class SettingsComponent implements OnInit {
 		console.log('Settings changed:', this.settings.get());
 	}
 
-	compareFn(e1: IDeviceInfo, e2: IDeviceInfo): boolean {
-		return e1 && e2 ? e1.id === e2.id : false;
+	compareFn(e1: IDeviceInfo | undefined, e2: IDeviceInfo | undefined): boolean {
+		if (!e1 || !e2) return e1 === e2;
+		return e1.id === e2.id;
 	}
 
 	// async test() {
@@ -40,8 +43,10 @@ export class SettingsComponent implements OnInit {
 	// }
 
 	ngOnInit() {
-		this.gameHelper.events.on('onChange', () => {
-			this.changeDetectorRef.detectChanges();
-		});
+		this.gameHelper.events.on('onChange', this.onChangeListener);
+	}
+
+	ngOnDestroy() {
+		this.gameHelper.events.off('onChange', this.onChangeListener);
 	}
 }

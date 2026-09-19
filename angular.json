@@ -110,11 +110,6 @@
             "scripts": [],
             "assets": [
               {
-                "glob": "favicon.ico",
-                "input": "src/",
-                "output": "/"
-              },
-              {
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "/assets"
@@ -125,7 +120,8 @@
           "configurations": {
             "ci": {
               "progress": false,
-              "watch": false
+              "watch": false,
+              "browsers": "ChromeHeadlessNoSandbox"
             }
           }
         },

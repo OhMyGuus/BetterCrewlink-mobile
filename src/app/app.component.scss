@@ -131,5 +131,8 @@ ion-item.selected {
   bottom:0;
   width: 100%;
   justify-content : center;
+  // Ionic's default MD elevation shadow renders as a hard black bar on this dark theme
+  // instead of a subtle lift, so drop it.
+  box-shadow: none;
   }
 

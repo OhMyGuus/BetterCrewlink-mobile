@@ -1,6 +1,6 @@
 <div class="avatarBase">
 	@if (this.volumeOpen) {
-		<div class="volumeslider" tabindex="0" (mouseout)="openVolume(false)" (blur)="openVolume(false)">
+		<div class="volumeslider" tabindex="0" (mouseleave)="openVolume(false)" (blur)="openVolume(false)">
 			<div class="volumeslider-1">
 				<ion-range
 					class="volumeSliderThingy"
@@ -14,6 +14,18 @@
 				>
 					<ion-icon slot="start" size="small" name="volume-high-outline"></ion-icon>
 				</ion-range>
+				<ion-button
+					size="small"
+					fill="clear"
+					[color]="settings.isMuted ? 'danger' : 'light'"
+					(click)="onMuteToggle()"
+					(pointerdown)="$event.stopPropagation()"
+				>
+					<ion-icon
+						slot="icon-only"
+						[name]="settings.isMuted ? 'volume-mute-outline' : 'volume-medium-outline'"
+					></ion-icon>
+				</ion-button>
 			</div>
 		</div>
 	}
@@ -27,36 +39,77 @@
 	>
 		<div class="avatar avatar-2">
 			<img
-				src="assets/avatar/players/{{ player.colorId }}-{{ isDead ? 'dead' : 'alive' }}.png"
+				[src]="getBodyImage()"
 				class="base no-drag-img"
 				style="display: none"
 				onload="this.style.display=''"
+				(error)="onBodyImageError($event)"
 				alt="{{ player.name }}"
 			/>
-			@if (!isDead && player.skinId > 0) {
+			@if (getSkin(); as skin) {
 				<img
-					src="assets/avatar/skins/{{ player.skinId }}.png"
-					class="skin no-drag-img"
+					[src]="skin.src"
+					class="cosmetic no-drag-img"
+					[style.top]="skin.top"
+					[style.left]="skin.left"
+					[style.width]="skin.width"
+					[style.z-index]="skin.zIndex"
 					style="display: none"
 					onload="this.style.display=''"
 					onerror="this.style.display='none'"
 					alt=""
 				/>
 			}
-
-			<!-- {overflow && <img src={coloredHats[`${hat}${color}`] || hats[hat]} ref={hatImg} className={classes.hat} />} -->
 		</div>
-		@if (!isDead && player.hatId > 0) {
+
+		<!-- Hat layers and visor sit outside the clipped body circle (desktop's non-overflow
+		     layout) so tall hats and ears can extend past the avatar's edge. -->
+		@if (getHatBack(); as hatBack) {
 			<img
-				src="assets/avatar/hats/{{ getHatImage() }}.png"
-				[style.top]="getHatY()"
-				[class]="backLayerHats.has(player.hatId) ? 'backlayerd-hat' : ''"
-				class="hat no-drag-img"
+				[src]="hatBack.src"
+				class="cosmetic no-drag-img"
+				[style.top]="hatBack.top"
+				[style.left]="hatBack.left"
+				[style.width]="hatBack.width"
+				[style.z-index]="hatBack.zIndex"
 				style="display: none"
 				onload="this.style.display=''"
 				onerror="this.style.display='none'"
 				alt=""
 			/>
+		}
+		@if (getHat(); as hat) {
+			<img
+				[src]="hat.src"
+				class="cosmetic no-drag-img"
+				[style.top]="hat.top"
+				[style.left]="hat.left"
+				[style.width]="hat.width"
+				[style.z-index]="hat.zIndex"
+				style="display: none"
+				onload="this.style.display=''"
+				onerror="this.style.display='none'"
+				alt=""
+			/>
+		}
+		@if (getVisor(); as visor) {
+			<img
+				[src]="visor.src"
+				class="cosmetic no-drag-img"
+				[style.top]="visor.top"
+				[style.left]="visor.left"
+				[style.width]="visor.width"
+				[style.z-index]="visor.zIndex"
+				style="display: none"
+				onload="this.style.display=''"
+				onerror="this.style.display='none'"
+				alt=""
+			/>
+		}
+		@if (connectionIcon(); as icon) {
+			<div class="connectionBadge noselect" [class.novoice]="connectionState === 'novoice'">
+				<img [src]="icon" class="no-drag-img" alt="" />
+			</div>
 		}
 	</div>
 	<p class="playername_container">

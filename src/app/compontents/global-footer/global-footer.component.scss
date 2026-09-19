@@ -4,4 +4,12 @@
     justify-self: center !important;
     --border-radius: 30px;
     --vertical-align: middle;
-}  
+}
+
+// Matches the player grid's own column width (game.component.scss `.playerGrid`) so the
+// icons line up under it instead of spanning the full page width.
+.footerRow {
+    max-width: 450px;
+    margin: 0 auto 0 0;
+    padding: 0 16px;
+}

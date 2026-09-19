@@ -3,7 +3,7 @@
 		@switch (gameHelper.cManager.connectionState) {
 			@default {
 				<ion-row class="ion-justify-content-center">
-					<p style="text-align: center"><b>Please go to the settings page to setup Crewlink</b></p>
+					<p style="text-align: center"><b>Please go to the settings page to setup BetterCrewlink</b></p>
 				</ion-row>
 				<ion-row class="ion-justify-content-center">
 					<ion-button [routerLink]="['/settings']">Settings</ion-button>
@@ -19,7 +19,10 @@
 						<b>{{ gameHelper.getConnectionStage() }}</b>
 					</p>
 					<p style="text-align: center">
-						**Please make sure there is a PC user with "Mobile Host" enabled on Crewlink in the lobby**
+						<b
+							>Please make sure at least one PC player is in the lobby, with "Mobile Host" enabled on
+							BetterCrewlink</b
+						>
 					</p>
 					<ion-row class="ion-justify-content-center">
 						<ion-button (click)="gameHelper.connect()">refresh</ion-button>
@@ -47,6 +50,7 @@
 									[isDead]="gameHelper.cManager.localPLayer.isDead"
 									[player]="gameHelper.cManager.localPLayer"
 									[talking]="gameHelper.localTalking()"
+									[mod]="getMod()"
 								></app-avatar>
 							</ion-col>
 							<ion-col size="4">
@@ -78,21 +82,42 @@
 								</div>
 							</ion-col>
 						</ion-row>
+						<ion-row class="playerGrid ion-justify-content-start connectionButtons">
+							<ion-button size="small" fill="outline" color="light" (click)="gameHelper.connect()">
+								<ion-icon slot="start" name="refresh-outline"></ion-icon>
+								Refresh
+							</ion-button>
+							<ion-button size="small" fill="outline" color="danger" (click)="gameHelper.disconnect()">
+								<ion-icon slot="start" name="close-circle-outline"></ion-icon>
+								Disconnect
+							</ion-button>
+						</ion-row>
+						@if (canUseImpostorRadio()) {
+							<ion-row class="ion-justify-content-center">
+								<ion-button
+									color="danger"
+									(pointerdown)="startRadio()"
+									(pointerup)="stopRadio()"
+									(pointercancel)="stopRadio()"
+									(pointerleave)="stopRadio()"
+								>
+									<ion-icon slot="start" name="radio-outline"></ion-icon>
+									Hold to use impostor radio
+								</ion-button>
+							</ion-row>
+						}
 						<ion-row class="playerGrid playersGrid">
-							@for (item of getPlayers(); track item) {
-								@if (item.player) {
-									<ion-col size="4" class="testColumn">
-										@if (item.player) {
-											<app-avatar
-												settings="item.socketId"
-												[settings]="item.settings"
-												[isDead]="item.isDead"
-												[player]="item.player"
-												[talking]="item.talking && item.audible"
-											></app-avatar>
-										}
-									</ion-col>
-								}
+							@for (item of getPlayers(); track item.player.clientId) {
+								<ion-col size="4" class="testColumn">
+									<app-avatar
+										[settings]="item.settings"
+										[isDead]="item.isDead"
+										[player]="item.player"
+										[connectionState]="item.connectionState"
+										[talking]="item.talking && item.audible"
+										[mod]="getMod()"
+									></app-avatar>
+								</ion-col>
 							}
 						</ion-row>
 					</ion-grid>
@@ -101,12 +126,3 @@
 		}
 	</ion-grid>
 </ion-content>
-
-@if (gameHelper.cManager.connectionState === 2) {
-	<div class="testButtons">
-		<ion-row>
-			<ion-button (click)="gameHelper.connect()">Refresh</ion-button>
-			<ion-button (click)="gameHelper.disconnect()">Disconnect</ion-button>
-		</ion-row>
-	</div>
-}
