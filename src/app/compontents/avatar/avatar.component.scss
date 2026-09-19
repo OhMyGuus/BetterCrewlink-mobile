@@ -85,6 +85,39 @@
 	border-color: limegreen !important;
 }
 
+/* Desktop parity (Avatar.tsx `icon`): a red Wi-Fi-off circle when the player is disconnected
+   from the voice server, and an orange link-off circle when they are connected but have no
+   audio peer ("novoice"). Fully connected players get no badge. */
+.connectionBadge {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 34%;
+	aspect-ratio: 1 / 1;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6%;
+	border-radius: 50%;
+	background: #ea3c2a;
+	border: 2px solid #690a00;
+	z-index: 10;
+	pointer-events: none;
+
+	&.novoice {
+		background: #e67e22;
+		border-color: #694900;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+}
+
 .playername_container {
 	width: 100%;
 	z-index: 20;

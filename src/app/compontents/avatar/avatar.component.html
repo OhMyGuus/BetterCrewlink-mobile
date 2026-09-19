@@ -71,6 +71,11 @@
 				alt=""
 			/>
 		}
+		@if (connectionIcon(); as icon) {
+			<div class="connectionBadge" [class.novoice]="connectionState === 'novoice'">
+				<img [src]="icon" alt="" />
+			</div>
+		}
 	</div>
 	<p class="playername_container">
 		<span class="playername noselect">{{ player.name }}</span>

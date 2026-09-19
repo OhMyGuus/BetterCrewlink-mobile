@@ -385,3 +385,94 @@ describe('VoiceController per-player mute', () => {
 		expect((connectionController.audioController as any).peers.get('socket-2').gain.gain.value).toBe(0);
 	});
 });
+
+describe('VoiceController getRenderablePlayers', () => {
+	function makeFakeSettingsService(): SettingsService {
+		return {
+			get: () => ({ ghostVolumeAsImpostor: 10, crewVolumeAsGhost: 100, masterVolume: 100, enableSpatialAudio: true }),
+			getPlayerSettings: () => ({ volume: 100, isMuted: false }),
+		} as unknown as SettingsService;
+	}
+
+	function setup(
+		others: Player[],
+		clients: Record<string, { playerId: number; clientId: number }> = {},
+		meOverrides: Partial<Player> = {}
+	): { voiceController: VoiceController; connectionController: ConnectionController; me: Player } {
+		const settingsService = makeFakeSettingsService();
+		const connectionController = new ConnectionController(settingsService);
+		const voiceController = new VoiceController(
+			connectionController,
+			new MobileHostService(connectionController),
+			settingsService
+		);
+		const me = makePlayer({ id: 1, clientId: 1, name: 'Guus', ...meOverrides });
+		connectionController.localPLayer = me;
+		connectionController.currentGameState = makeState({ players: [me, ...others] });
+		(connectionController as any).clients = clients;
+		return { voiceController, connectionController, me };
+	}
+
+	it('includes players with no voice client and flags them disconnected', () => {
+		const offline = makePlayer({ id: 2, clientId: 2, colorId: 5 });
+		const { voiceController } = setup([offline], {});
+
+		const players = voiceController.getRenderablePlayers();
+
+		expect(players.length).toBe(1);
+		expect(players[0].player).toBe(offline);
+		expect(players[0].connectionState).toBe('disconnected');
+	});
+
+	it('flags a player on the voice server without an audio peer as novoice', () => {
+		const waiting = makePlayer({ id: 2, clientId: 2, colorId: 5 });
+		const { voiceController } = setup([waiting], { 'socket-2': { playerId: 2, clientId: 2 } });
+
+		expect(voiceController.getRenderablePlayers()[0].connectionState).toBe('novoice');
+	});
+
+	it('flags a player with an established audio peer as connected', () => {
+		const connected = makePlayer({ id: 2, clientId: 2, colorId: 5 });
+		const { voiceController, connectionController } = setup([connected], {
+			'socket-2': { playerId: 2, clientId: 2 },
+		});
+		connectionController.audioController.addPeer('socket-2', createSilentStream());
+
+		expect(voiceController.getRenderablePlayers()[0].connectionState).toBe('connected');
+	});
+
+	it('treats a client whose clientId no longer matches the player as disconnected', () => {
+		const stale = makePlayer({ id: 2, clientId: 2, colorId: 5 });
+		// The socket map still has an entry for clientId 2, but the client there claims another id.
+		const { voiceController } = setup([stale], { 'socket-2': { playerId: 9, clientId: 9 } });
+
+		expect(voiceController.getRenderablePlayers()[0].connectionState).toBe('disconnected');
+	});
+
+	it('never includes the local player', () => {
+		const { voiceController } = setup([]);
+
+		expect(voiceController.getRenderablePlayers()).toEqual([]);
+	});
+
+	it('latches the dead state of disconnected players even though they have no peer', () => {
+		const offlineDead = makePlayer({ id: 2, clientId: 2, colorId: 5, isDead: true });
+		const { voiceController, connectionController } = setup([offlineDead], {}, { isDead: true });
+		const state = connectionController.currentGameState;
+
+		// Used to run only inside updatePeerAudio, which skips players without a peer.
+		(voiceController as any).updatePlayerDeadStates(state, connectionController.localPLayer);
+
+		const players = voiceController.getRenderablePlayers();
+		expect(players[0].isDead).toBeTrue();
+		expect(players[0].connectionState).toBe('disconnected');
+	});
+
+	it('sorts players by colorId', () => {
+		const lime = makePlayer({ id: 2, clientId: 2, colorId: 9 });
+		const red = makePlayer({ id: 3, clientId: 3, colorId: 0 });
+		const { voiceController } = setup([lime, red]);
+
+		expect(voiceController.getRenderablePlayers().map((item) => item.player.colorId)).toEqual([0, 9]);
+	});
+});

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { IDeviceInfo } from './smallInterfaces';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';import { Platform } from '@ionic/angular';
 import { ConnectingStage, ConnectionController, ConnectionState } from './ConnectionController.service';
+import { AmongUsState } from '../common/AmongUsState';
 import { VoiceController } from './voice-controller.service';
 import { EventEmitter as EventEmitterO } from 'events';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
@@ -10,6 +11,46 @@ import { BetterCrewlinkNativeService } from 'bcl-mobile-overlay';
 
 interface NativeBridgeEvent extends Event {
 	action: string;
+}
+
+const GAME_STATE_NAMES = ['LOBBY', 'TASKS', 'DISCUSSION', 'MENU', 'UNKNOWN'];
+
+/**
+ * Human-readable status line for the connecting screen. Pure (and therefore unit-testable)
+ * because the view calls it on every change-detection pass while connecting.
+ *
+ * `oldGameState` is undefined until the second game-state frame arrives, so reading
+ * `oldGameState.gameState` unguarded threw a TypeError here. Because the render is triggered
+ * synchronously from inside VoiceController's `hostUpdate` handler, that view-layer throw
+ * unwound into its catch and marked the whole connection as errored - a missing guard in a
+ * status string took down a working connection.
+ */
+export function connectionStageLabel(
+	stage: ConnectingStage,
+	ctx: { gamecode?: string; amongusUsername?: string; oldGameState?: AmongUsState }
+): string {
+	switch (stage) {
+		case ConnectingStage.connectingToVoiceServer:
+			return 'Connecting to voice server..';
+		case ConnectingStage.startingMicrophone:
+			return 'Initializing audio/microphone';
+		case ConnectingStage.searchingForHost:
+			return `Searching for bettercrewlink PC players in lobby: ${ctx.gamecode}`;
+		case ConnectingStage.waitingForHostToEnable:
+			return 'Waiting for a PC player to respond';
+		case ConnectingStage.WaitingForGameData:
+			return 'Waiting to recieve gamedata from player';
+		case ConnectingStage.waitingForYouToJoin: {
+			const previousState = ctx.oldGameState ? GAME_STATE_NAMES[ctx.oldGameState.gameState] : undefined;
+			return `Waiting for you to join with the name ${ctx.amongusUsername} --> ${previousState ?? 'UNKNOWN'}`;
+		}
+		case ConnectingStage.parsingGameData:
+			return 'Waiting for gamedata...';
+		case ConnectingStage.FullyConnected:
+			return 'Connected to the game...';
+		default:
+			return `unkown state ${stage}`;
+	}
 }
 
 @Injectable({
@@ -154,30 +195,8 @@ export class GameHelperService {
 		return true;
 	}
 
-	getConnectionStage() {
-		const test = ['LOBBY', 'TASKS', 'DISCUSSION', 'MENU', 'UNKNOWN'];
-		switch (this.cManager.connectingStage) {
-			case ConnectingStage.connectingToVoiceServer:
-				return 'Connecting to voice server..';
-			case ConnectingStage.startingMicrophone:
-				return 'Initializing audio/microphone';
-			case ConnectingStage.searchingForHost:
-				return `Searching for bettercrewlink PC players in lobby: ${this.cManager.gamecode}`;
-			case ConnectingStage.waitingForHostToEnable:
-				return 'Waiting for a PC player to respond';
-			case ConnectingStage.WaitingForGameData:
-				return 'Waiting to recieve gamedata from player';
-			case ConnectingStage.waitingForYouToJoin:
-				return `Waiting for you to join with the name ${this.cManager.amongusUsername} --> ${
-					test[this.cManager.oldGameState.gameState.toString()]
-				}`;
-			case ConnectingStage.parsingGameData:
-				return 'Waiting for gamedata...';
-			case ConnectingStage.FullyConnected:
-				return 'Connected to the game...';
-			default:
-				return `unkown state ${this.cManager.connectingStage}`;
-		}
+	getConnectionStage(): string {
+		return connectionStageLabel(this.cManager.connectingStage, this.cManager);
 	}
 
 	updateViews() {
