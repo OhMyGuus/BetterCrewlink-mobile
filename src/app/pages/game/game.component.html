@@ -82,6 +82,15 @@
 								</div>
 							</ion-col>
 						</ion-row>
+						@if (gameHelper.overlayPermissionMissing) {
+							<ion-row class="playerGrid overlayWarning">
+								<p>
+									Floating controls are disabled because "Display over other apps" isn't granted.
+									Enable it in your phone's app settings to use them outside BetterCrewlink.
+								</p>
+								<ion-button size="small" fill="clear" (click)="gameHelper.dismissOverlayWarning()">Dismiss</ion-button>
+							</ion-row>
+						}
 						<ion-row class="playerGrid ion-justify-content-start connectionButtons">
 							<ion-button size="small" fill="outline" color="light" (click)="gameHelper.connect()">
 								<ion-icon slot="start" name="refresh-outline"></ion-icon>

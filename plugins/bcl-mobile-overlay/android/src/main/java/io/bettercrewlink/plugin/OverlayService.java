@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -115,10 +118,29 @@ public class OverlayService extends Service {
         BetterCrewlinkNativeServicePlugin.bridgeP.triggerWindowJSEvent("press_overlay", "{ 'action': '" + button + "' }");
     }
 
+    private void notifyOverlayPermissionMissing() {
+        if (BetterCrewlinkNativeServicePlugin.bridgeP == null) {
+            return;
+        }
+        BetterCrewlinkNativeServicePlugin.bridgeP.triggerWindowJSEvent("overlay_permission_missing", "{}");
+    }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // The plugin checks this before starting the service, but the OS can also recreate a
+        // Service on its own (e.g. after the process was killed) without going through that
+        // check, and the permission can be revoked in Settings while the service is alive. Both
+        // leave onCreate() adding a window without the permission, which throws BadTokenException
+        // and crashes the whole process instead of just failing to show the overlay.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Log.w("OverlayService", "Missing draw-over-other-apps permission; not showing overlay");
+            notifyOverlayPermissionMissing();
+            stopSelf();
+            return;
+        }
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         iconsContainerView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
@@ -146,8 +168,15 @@ public class OverlayService extends Service {
         params.y = 100;
 
         AddTouchEventListner(context, iconsContainerView, params);
-        windowManager.addView(iconsContainerView, params);
-
+        try {
+            windowManager.addView(iconsContainerView, params);
+        } catch (WindowManager.BadTokenException e) {
+            // Permission can still be revoked between the check above and this call.
+            Log.w("OverlayService", "Failed to add overlay window", e);
+            notifyOverlayPermissionMissing();
+            iconsContainerView = null;
+            stopSelf();
+        }
     }
 
 
