@@ -61,6 +61,7 @@ export class GameHelperService {
 	speakers: IDeviceInfo[] = [];
 	IsMobile = false;
 	error: string;
+	overlayPermissionMissing = false;
 	events: EventEmitterO = new EventEmitterO();
 	audioMuted = () => this.cManager.audioController.audioMuted ?? false;
 	microphoneMuted = () =>
@@ -162,6 +163,10 @@ export class GameHelperService {
 		// VoiceController's onGameState); this.error carries permission/microphone failures set
 		// directly here. Both land on the same error screen, so both must be readable from it.
 		return this.cManager.error ?? this.error;
+	}
+
+	dismissOverlayWarning() {
+		this.overlayPermissionMissing = false;
 	}
 
 	async requestPermissions(): Promise<boolean> {
@@ -306,6 +311,16 @@ export class GameHelperService {
 				this.muteAudio();
 			} else if (info.action === 'REFRESH') {
 				this.reconnect();
+			}
+		});
+
+		window.addEventListener('overlay_permission_missing', () => {
+			console.log('[EVENT] overlay_permission_missing');
+			// The OS can restart the service (e.g. after the process was killed) independently of
+			// whether the user still wants the overlay, so only warn when they've actually asked
+			// for it - otherwise this fires for people who turned the overlay off on purpose.
+			if (this.settings.get().overlayEnabled) {
+				this.overlayPermissionMissing = true;
 			}
 		});
 		// LocalNotifications.on('yes').subscribe((notification) => {

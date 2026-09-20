@@ -17,6 +17,22 @@
 	border-bottom: solid 1px #00000041;
 }
 
+.overlayWarning {
+	align-items: center;
+	gap: 8px;
+	margin: 6px 0;
+	padding: 6px 10px;
+	background: rgba(230, 126, 34, 0.15);
+	border: 1px solid #e67e22;
+	border-radius: 8px;
+
+	p {
+		flex: 1;
+		margin: 0;
+		font-size: 13px;
+	}
+}
+
 @media only screen and (max-width: 1024) {
 	.playerGrid {
 		max-width: unset !important;
