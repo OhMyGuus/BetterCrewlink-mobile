@@ -321,6 +321,7 @@ export class GameHelperService {
 			// for it - otherwise this fires for people who turned the overlay off on purpose.
 			if (this.settings.get().overlayEnabled) {
 				this.overlayPermissionMissing = true;
+				this.updateViews();
 			}
 		});
 		// LocalNotifications.on('yes').subscribe((notification) => {

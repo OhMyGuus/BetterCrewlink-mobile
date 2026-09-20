@@ -57,6 +57,7 @@ public class BetterCrewlinkNativeServicePlugin extends Plugin {
         OverlayService.updateMuteIcons(micMuted, audioMuted);
         if ((!overlayShown) && overlayEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this.getContext())) {
+                bridge.triggerWindowJSEvent("overlay_permission_missing", "{}");
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + this.getContext().getPackageName()));
                 getActivity().startActivity(intent);
