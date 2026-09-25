@@ -5,7 +5,18 @@
   the resource shrinker can't see via static analysis - without this file it
   strips them as "unused" in release builds, and player icons in the native
   overlay silently stop showing up.
+
+  @xml/config is the same problem at a much bigger scale: Capacitor's Bridge
+  loads it via Cordova's ConfigXmlParser, which resolves it with
+  getIdentifier("config", "xml", ...) instead of a compile-time R reference.
+  Without this keep entry the resource shrinker drops config.xml entirely in
+  release builds, so ConfigXmlParser finds no <feature> entries at all -
+  every Cordova plugin (BackgroundMode included) silently fails to resolve,
+  and backgroundMode.enable() becomes a no-op: the foreground service never
+  starts, and the mic dies after backgrounding exactly like the bug this was
+  supposed to fix, just from a release-only cause invisible in debug builds
+  (which never run the resource shrinker).
   https://developer.android.com/build/shrink-code#keep-resources
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/playericon_0,@drawable/playericon_1,@drawable/playericon_2,@drawable/playericon_3,@drawable/playericon_4,@drawable/playericon_5,@drawable/playericon_6,@drawable/playericon_7,@drawable/playericon_8,@drawable/playericon_9,@drawable/playericon_10,@drawable/playericon_11,@drawable/playericon_12,@drawable/playericon_13,@drawable/playericon_14,@drawable/playericon_15,@drawable/playericon_16,@drawable/playericon_17" />
+    tools:keep="@drawable/playericon_0,@drawable/playericon_1,@drawable/playericon_2,@drawable/playericon_3,@drawable/playericon_4,@drawable/playericon_5,@drawable/playericon_6,@drawable/playericon_7,@drawable/playericon_8,@drawable/playericon_9,@drawable/playericon_10,@drawable/playericon_11,@drawable/playericon_12,@drawable/playericon_13,@drawable/playericon_14,@drawable/playericon_15,@drawable/playericon_16,@drawable/playericon_17,@xml/config" />
