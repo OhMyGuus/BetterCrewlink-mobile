@@ -8,4 +8,4 @@
   https://developer.android.com/build/shrink-code#keep-resources
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/playericon_0,@drawable/playericon_1,@drawable/playericon_2,@drawable/playericon_3,@drawable/playericon_4,@drawable/playericon_5,@drawable/playericon_6,@drawable/playericon_7,@drawable/playericon_8,@drawable/playericon_9,@drawable/playericon_10,@drawable/playericon_11,@drawable/playericon_12" />
+    tools:keep="@drawable/playericon_0,@drawable/playericon_1,@drawable/playericon_2,@drawable/playericon_3,@drawable/playericon_4,@drawable/playericon_5,@drawable/playericon_6,@drawable/playericon_7,@drawable/playericon_8,@drawable/playericon_9,@drawable/playericon_10,@drawable/playericon_11,@drawable/playericon_12,@drawable/playericon_13,@drawable/playericon_14,@drawable/playericon_15,@drawable/playericon_16,@drawable/playericon_17" />

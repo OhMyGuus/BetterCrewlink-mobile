@@ -49,7 +49,7 @@ public class OverlayService extends Service {
     }
 
     public static void setVisible(int color, boolean visible) {
-        if (color >= 0 && color <= 12) {
+        if (color >= 0 && color <= 17) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -149,7 +149,12 @@ public class OverlayService extends Service {
         audioImageView = addImage(audio_muted ? R.drawable.audio_off : R.drawable.audio_on, false);
 
 
-        for (int i = 0; i < 12; i++) {
+        // Among Us has 18 player colors (ids 0-17): the original 12 plus Maroon, Rose,
+        // Banana, Gray, Tan and Coral added later. A talking player whose color falls
+        // outside this range never gets an icon, so their overlay indicator silently
+        // never lights up - matches src/app/compontents/avatar/avatar.component.ts's
+        // own colorId >= 0 && colorId <= 17 range.
+        for (int i = 0; i < 18; i++) {
             ImageView view = addImage(this.getResources().getIdentifier("playericon_" + i, "drawable", this.getPackageName()), true);
             view.setVisibility(View.GONE);
         }
