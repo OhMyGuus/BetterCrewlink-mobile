@@ -109,6 +109,15 @@ export class GameHelperService {
 			// backgroundMode.enable() crashes with a SecurityException.
 			this.cManager.deviceID = this.settings.get().selectedMicrophone.deviceId;
 			await this.cManager.audioController.startAudio();
+			// cordova-plugin-background-mode's default notification icon is a
+			// drawable/mipmap literally named "icon", which this app never had.
+			// startForeground() then posts a notification with resource id 0 -
+			// ActivityManager logs "Attempted to start a foreground service ...
+			// with a broken notification (no icon...)" and does not grant the
+			// service real foreground protection, so the OS (especially
+			// battery-aggressive OEM skins) freezes the process - and the mic -
+			// shortly after the user switches to another app.
+			this.backgroundMode.setDefaults({ icon: 'ic_launcher' });
 			this.backgroundMode.enable();
 			this.cManager.connect(
 				this.settings.getVoiceServer(),
